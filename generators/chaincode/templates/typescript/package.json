@@ -1,0 +1,38 @@
+{
+    "name": "<%= name %>",
+    "version": "<%= version %>",
+    "description": "<%= description %>",
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts",
+    "engines": {
+        "node": ">=8",
+        "npm": ">=5"
+    },
+    "scripts": {
+        "lint": "tslint -c tslint.json 'src/**/*.ts'",
+        "pretest": "npm run lint",
+        "test": "mocha -r ts-node/register src/**/*.spec.ts",
+        "start": "node dist/start.js",
+        "build": "tsc",
+        "build:watch": "tsc -w",
+        "prepublishOnly": "npm run build"
+    },
+    "engineStrict": true,
+    "author": "<%= author %>",
+    "license": "<%= license %>",
+    "dependencies": {
+        "fabric-shim": "^1.1.2"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.1.4",
+        "@types/mocha": "^5.2.3",
+        "@types/node": "^10.3.6",
+        "@types/sinon": "^5.0.1",
+        "chai": "^4.1.2",
+        "mocha": "^5.2.0",
+        "sinon": "^6.0.0",
+        "ts-node": "^7.0.0",
+        "tslint": "^5.10.0",
+        "typescript": "^2.9.2"
+    }
+}
