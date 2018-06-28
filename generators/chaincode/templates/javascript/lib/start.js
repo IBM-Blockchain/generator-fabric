@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-import { Shim } from 'fabric-shim';
-import { Chaincode } from '.';
+'use strict';
 
-Shim.start(new Chaincode());
+const Chaincode = require('..');
+const shim = require('fabric-shim');
+
+shim.start(new Chaincode());
