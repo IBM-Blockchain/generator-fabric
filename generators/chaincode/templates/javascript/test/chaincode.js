@@ -1,10 +1,14 @@
 'use strict';
 
-const Chaincode = require('../lib/chaincode');
-const { Stub } = require('fabric-shim');
+const { ChaincodeStub } = require('fabric-shim');
+const { Chaincode } = require('..');
 
-require('chai').should();
+const chai = require('chai');
 const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
+
+chai.should();
+chai.use(sinonChai);
 
 describe('Chaincode', () => {
 
@@ -12,10 +16,10 @@ describe('Chaincode', () => {
 
         it('should work', async () => {
             const cc = new Chaincode();
-            const stub = sinon.createStubInstance(Stub);
+            const stub = sinon.createStubInstance(ChaincodeStub);
             stub.getFunctionAndParameters.returns({ fcn: 'initFunc', params: [] });
             const res = await cc.Init(stub);
-            res.status.should.equal(Stub.RESPONSE_CODE.OK);
+            res.status.should.equal(ChaincodeStub.RESPONSE_CODE.OK);
         });
 
     });
@@ -24,13 +28,13 @@ describe('Chaincode', () => {
 
         it('should work', async () => {
             const cc = new Chaincode();
-            const stub = sinon.createStubInstance(Stub);
+            const stub = sinon.createStubInstance(ChaincodeStub);
             stub.getFunctionAndParameters.returns({ fcn: 'initFunc', params: [] });
             let res = await cc.Init(stub);
-            res.status.should.equal(Stub.RESPONSE_CODE.OK);
+            res.status.should.equal(ChaincodeStub.RESPONSE_CODE.OK);
             stub.getFunctionAndParameters.returns({ fcn: 'invokeFunc', params: [] });
             res = await cc.Invoke(stub);
-            res.status.should.equal(Stub.RESPONSE_CODE.OK);
+            res.status.should.equal(ChaincodeStub.RESPONSE_CODE.OK);
         });
 
     });

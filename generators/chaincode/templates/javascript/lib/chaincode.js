@@ -17,20 +17,20 @@
 
 'use strict';
 
-const shim = require('fabric-shim');
+const { ChaincodeInterface, Shim } = require('fabric-shim');
 
-class Chaincode {
+class Chaincode extends ChaincodeInterface {
 
     async Init(stub) {
         const { fcn, params } = stub.getFunctionAndParameters();
         console.info('Init()', fcn, params);
-        return shim.success();
+        return Shim.success();
     }
 
     async Invoke(stub) {
         const { fcn, params } = stub.getFunctionAndParameters();
         console.info('Invoke()', fcn, params);
-        return shim.success();
+        return Shim.success();
     }
 
 }

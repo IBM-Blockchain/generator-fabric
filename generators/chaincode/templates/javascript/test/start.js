@@ -1,10 +1,14 @@
 'use strict';
 
-const Chaincode = require('..');
-const shim = require('fabric-shim');
-const sinon = require('sinon');
+const { Shim } = require('fabric-shim');
+const { Chaincode } = require('..');
 
-require('chai').should();
+const chai = require('chai');
+const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
+
+chai.should();
+chai.use(sinonChai);
 
 describe('start', () => {
 
@@ -14,10 +18,9 @@ describe('start', () => {
     });
 
     it('should work', () => {
-        sinon.stub(shim, 'start');
+        const startStub = sinon.stub(Shim, 'start');
         require('../lib/start');
-        sinon.assert.calledOnce(shim.start);
-        sinon.assert.calledWith(shim.start, sinon.match.instanceOf(Chaincode));
+        startStub.should.have.been.calledOnceWithExactly(sinon.match.instanceOf(Chaincode));
     });
 
 });

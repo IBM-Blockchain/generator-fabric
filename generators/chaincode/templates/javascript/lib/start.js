@@ -17,7 +17,7 @@
 
 'use strict';
 
-const Chaincode = require('..');
-const shim = require('fabric-shim');
+const { Shim } = require('fabric-shim');
+const { Chaincode } = require('..');
 
-shim.start(new Chaincode());
+Shim.start(new Chaincode());

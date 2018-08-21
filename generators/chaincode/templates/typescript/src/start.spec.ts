@@ -18,10 +18,12 @@
 import { Shim } from 'fabric-shim';
 import { Chaincode } from '.';
 
-import { should } from 'chai';
-should();
-import 'mocha';
+import * as chai from 'chai';
 import * as sinon from 'sinon';
+import * as sinonChai from 'sinon-chai';
+
+chai.should();
+chai.use(sinonChai);
 
 describe('start', () => {
 
@@ -31,10 +33,9 @@ describe('start', () => {
     });
 
     it('should work', () => {
-        sinon.stub(Shim, 'start');
+        const startStub = sinon.stub(Shim, 'start');
         require('../src/start');
-        sinon.assert.calledOnce(Shim.start);
-        sinon.assert.calledWith(Shim.start, sinon.match.instanceOf(Chaincode));
+        startStub.should.have.been.calledOnceWithExactly(sinon.match.instanceOf(Chaincode));
     });
 
 });
