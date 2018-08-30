@@ -17,22 +17,7 @@
 
 'use strict';
 
-const { ChaincodeInterface, Shim } = require('fabric-shim');
+const { Shim } = require('fabric-shim');
+const { Chaincode } = require('..');
 
-class Chaincode extends ChaincodeInterface {
-
-    async Init(stub) {
-        const { fcn, params } = stub.getFunctionAndParameters();
-        console.info('Init()', fcn, params);
-        return Shim.success();
-    }
-
-    async Invoke(stub) {
-        const { fcn, params } = stub.getFunctionAndParameters();
-        console.info('Invoke()', fcn, params);
-        return Shim.success();
-    }
-
-}
-
-module.exports = Chaincode;
+Shim.start(new Chaincode());

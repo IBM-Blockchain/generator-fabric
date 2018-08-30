@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import { ChaincodeInterface, Shim, Stub } from 'fabric-shim';
+import { ChaincodeInterface, ChaincodeStub, Shim } from 'fabric-shim';
 
 export class Chaincode implements ChaincodeInterface {
 
-    public async Init(stub: Stub): Promise<any> {
+    public async Init(stub: ChaincodeStub): Promise<any> {
         const { fcn, params } = stub.getFunctionAndParameters();
         console.info('Init()', fcn, params);
         return Shim.success();
     }
 
-    public async Invoke(stub: Stub): Promise<any> {
+    public async Invoke(stub: ChaincodeStub): Promise<any> {
         const { fcn, params } = stub.getFunctionAndParameters();
         console.info('Invoke()', fcn, params);
         return Shim.success();

@@ -42,18 +42,20 @@ describe('Chaincode (JavaScript)', () => {
             });
         assert.file([
             'lib/chaincode.js',
+            'lib/start.js',
             'test/chaincode.js',
+            'test/start.js',
             '.editorconfig',
+            '.eslintignore',
             '.eslintrc.js',
             '.gitignore',
             'index.js',
-            'package.json',
-            'start.js'
+            'package.json'
         ]);
-        assert.fileContent('lib/chaincode.js', /class Chaincode {/);
+        assert.fileContent('lib/chaincode.js', /class Chaincode extends ChaincodeInterface {/);
         assert.fileContent('lib/chaincode.js', /async Init\(stub\) {/);
         assert.fileContent('lib/chaincode.js', /async Invoke\(stub\) {/);
-        assert.fileContent('start.js', /shim\.start\(new Chaincode\(\)\);/);
+        assert.fileContent('lib/start.js', /Shim\.start\(new Chaincode\(\)\);/);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.deep.equal({
             name: 'my-javascript-chaincode',
@@ -66,20 +68,38 @@ describe('Chaincode (JavaScript)', () => {
             scripts: {
                 lint: 'eslint .',
                 pretest: 'npm run lint',
-                test: 'mocha -r',
-                start: 'node start.js'
+                test: 'nyc mocha --recursive',
+                start: 'node lib/start.js'
             },
             engineStrict: true,
             author: 'James Conga',
             license: 'Apache-2.0',
             dependencies: {
-                'fabric-shim': '^1.1.2'
+                'fabric-shim': 'unstable'
             },
             devDependencies: {
                 chai: '^4.1.2',
                 eslint: '^4.19.1',
                 mocha: '^5.2.0',
-                sinon: '^6.0.0'
+                nyc: '^12.0.2',
+                sinon: '^6.0.0',
+                'sinon-chai': '^3.2.0'
+            },
+            nyc: {
+                exclude: [
+                    'coverage/**',
+                    'test/**'
+                ],
+                reporter: [
+                    'text-summary',
+                    'html'
+                ],
+                all: true,
+                'check-coverage': true,
+                statements: 100,
+                branches: 100,
+                functions: 100,
+                lines: 100
             }
         });
     });

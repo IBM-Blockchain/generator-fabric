@@ -15,9 +15,27 @@
  * limitations under the License.
  */
 
-'use strict';
+import { Shim } from 'fabric-shim';
+import { Chaincode } from '.';
 
-const Chaincode = require('./lib/chaincode');
-const shim = require('fabric-shim');
+import * as chai from 'chai';
+import * as sinon from 'sinon';
+import * as sinonChai from 'sinon-chai';
 
-shim.start(new Chaincode());
+chai.should();
+chai.use(sinonChai);
+
+describe('start', () => {
+
+    afterEach(() => {
+        sinon.restore();
+        delete require.cache[require.resolve('../src/start')];
+    });
+
+    it('should work', () => {
+        const startStub = sinon.stub(Shim, 'start');
+        require('../src/start');
+        startStub.should.have.been.calledOnceWithExactly(sinon.match.instanceOf(Chaincode));
+    });
+
+});

@@ -17,4 +17,4 @@
 
 'use strict';
 
-module.exports = require('./lib/chaincode');
+module.exports.Chaincode = require('./lib/chaincode');

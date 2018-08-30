@@ -16,6 +16,6 @@
  */
 
 import { Shim } from 'fabric-shim';
-import { Chaincode } from './chaincode';
+import { Chaincode } from '.';
 
 Shim.start(new Chaincode());
