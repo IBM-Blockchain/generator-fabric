@@ -17,22 +17,29 @@
 
 'use strict';
 
-const { ChaincodeInterface, Shim } = require('fabric-shim');
+const { Contract } = require('fabric-contract-api');
 
-class Chaincode extends ChaincodeInterface {
+const assetType = 'WIDGETS';
 
-    async Init(stub) {
-        const { fcn, params } = stub.getFunctionAndParameters();
-        console.info('Init()', fcn, params);
-        return Shim.success();
+class MyContract extends Contract {
+
+    constructor(){
+        super('org.example.mycontract');
     }
 
-    async Invoke(stub) {
-        const { fcn, params } = stub.getFunctionAndParameters();
-        console.info('Invoke()', fcn, params);
-        return Shim.success();
+    async transactionA(ctx,assetid,value) {
+        let key = ctx.stub.createCompositeKey(assetType,[assetid]);
+        console.log(`[putState] ${key} === ${value.toString()}`);
+        await ctx.stub.putState(key,value);
+    }
+
+    async transactionB(ctx,assetid) {
+        let key = ctx.stub.createCompositeKey(assetType,[assetid]);
+        let value = await ctx.stub.getState(key);
+        console.log(`[getState] ${key} === ${value.toString()}`);
+        return value;
     }
 
 }
 
-module.exports = Chaincode;
+module.exports = MyContract;

@@ -28,13 +28,13 @@
     },
     "nyc": {
         "exclude": [
-          "coverage/**",
-          "generators/**/templates/**",
-          "test/**"
+            "coverage/**",
+            "generators/**/templates/**",
+            "test/**"
         ],
         "reporter": [
-          "text-summary",
-          "html"
+            "text-summary",
+            "html"
         ],
         "all": true,
         "check-coverage": true,
@@ -42,5 +42,5 @@
         "branches": 100,
         "functions": 100,
         "lines": 100
-      }
+    }
 }

@@ -21,7 +21,8 @@
     "author": "<%= author %>",
     "license": "<%= license %>",
     "dependencies": {
-        "fabric-shim": "unstable"
+        "fabric-shim": "unstable",
+        "fabric-contract-api": "unstable"
     },
     "devDependencies": {
         "@types/chai": "^4.1.4",

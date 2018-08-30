@@ -15,4 +15,27 @@
  * limitations under the License.
  */
 
-export { Chaincode } from './chaincode';
+import { Contract } from 'fabric-contract-api';
+
+const assetType = 'WIDGETS';
+
+export class MyContract extends Contract  {
+
+    constructor(){
+        super('org.example.mycontract');
+    }
+
+    async transactionA(ctx,assetid,value) {
+        let key = ctx.stub.createCompositeKey(assetType,[assetid]);
+        console.log(`[putState] ${key} === ${value.toString()}`);
+        await ctx.stub.putState(key,value);
+    }
+
+    async transactionB(ctx,assetid) {
+        let key = ctx.stub.createCompositeKey(assetType,[assetid]);
+        let value = await ctx.stub.getState(key);
+        console.log(`[getState] ${key} === ${value.toString()}`);
+        return value;
+    }
+
+}
