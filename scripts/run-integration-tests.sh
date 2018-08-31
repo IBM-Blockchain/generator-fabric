@@ -15,6 +15,14 @@
 
 set -ex
 
+if [ "${TRAVIS}" = "true" ]
+then
+    sudo sh -c "curl https://raw.githubusercontent.com/kadwanev/retry/master/retry -o /usr/local/bin/retry && chmod +x /usr/local/bin/retry"
+    RETRY="retry -t 10 -m 10 -x 60 --"
+else
+    RETRY=""
+fi
+
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${ROOT_DIR}"
 if [ ! -d tmp ]
@@ -52,7 +60,7 @@ do
         npm run build
     fi
     date
-    docker run \
+    ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
         -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
@@ -64,7 +72,7 @@ do
         hyperledger/fabric-tools \
         peer chaincode install -n ${LANGUAGE}-contract -v 0.0.1 -p /tmp/chaincode -l node
     date
-    docker run \
+    ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
         -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
@@ -76,7 +84,7 @@ do
         hyperledger/fabric-tools \
         peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -v 0.0.1 -l node -c '{"Args":["init","a","100","b","200"]}'
     date
-    docker run \
+    ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
         -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
