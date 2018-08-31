@@ -88,3 +88,5 @@ typings/
 
 # Integration test directories
 tmp
+
+package-lock.json
