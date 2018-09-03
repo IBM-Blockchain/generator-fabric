@@ -23,7 +23,7 @@ const path = require('path');
 
 require('chai').should();
 
-describe('Chaincode (TypeScript)', () => {
+describe('Contract (TypeScript)', () => {
 
     it('should generate a TypeScript project using prompts', async () => {
         let dir;
@@ -32,35 +32,33 @@ describe('Chaincode (TypeScript)', () => {
                 dir = dir_;
             })
             .withPrompts({
-                subgenerator: 'chaincode',
+                subgenerator: 'contract',
                 language: 'typescript',
-                name: 'my-typescript-chaincode',
+                name: 'my-typescript-contract',
                 version: '0.0.1',
-                description: 'My TypeScript Chaincode',
+                description: 'My TypeScript Contract',
                 author: 'James Conga',
                 license: 'Apache-2.0'
             });
         assert.file([
-            'src/chaincode.spec.ts',
-            'src/chaincode.ts',
+            'src/my-contract.spec.ts',
+            'src/my-contract.ts',
             'src/index.ts',
-            'src/start.spec.ts',
-            'src/start.ts',
             '.editorconfig',
             '.gitignore',
             'package.json',
             'tsconfig.json',
             'tslint.json'
         ]);
-        assert.fileContent('src/chaincode.ts', /export class Chaincode implements ChaincodeInterface {/);
-        assert.fileContent('src/chaincode.ts', /public async Init\(stub: ChaincodeStub\): Promise<any> {/);
-        assert.fileContent('src/chaincode.ts', /public async Invoke\(stub: ChaincodeStub\): Promise<any> {/);
-        assert.fileContent('src/start.ts', /Shim\.start\(new Chaincode\(\)\);/);
+        assert.fileContent('src/my-contract.ts', /export class MyContract extends Contract {/);
+        assert.fileContent('src/my-contract.ts', /public async instantiate\(ctx: Context\): Promise<any> {/);
+        assert.fileContent('src/my-contract.ts', /public async transaction1\(ctx: Context, arg1: string\): Promise<any> {/);
+        assert.fileContent('src/my-contract.ts', /public async transaction2\(ctx: Context, arg1: string, arg2: string\): Promise<any> {/);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.deep.equal({
-            name: 'my-typescript-chaincode',
+            name: 'my-typescript-contract',
             version: '0.0.1',
-            description: 'My TypeScript Chaincode',
+            description: 'My TypeScript Contract',
             main: 'dist/index.js',
             typings: 'dist/index.d.ts',
             engines: {
@@ -71,7 +69,7 @@ describe('Chaincode (TypeScript)', () => {
                 lint: 'tslint -c tslint.json \'src/**/*.ts\'',
                 pretest: 'npm run lint',
                 test: 'nyc mocha -r ts-node/register src/**/*.spec.ts',
-                start: 'node dist/start.js',
+                start: 'startChaincode',
                 build: 'tsc',
                 'build:watch': 'tsc -w',
                 prepublishOnly: 'npm run build'
@@ -80,7 +78,8 @@ describe('Chaincode (TypeScript)', () => {
             author: 'James Conga',
             license: 'Apache-2.0',
             dependencies: {
-                'fabric-shim': 'unstable'
+                'fabric-shim': 'unstable',
+                'fabric-contract-api': 'unstable'
             },
             devDependencies: {
                 '@types/chai': '^4.1.4',

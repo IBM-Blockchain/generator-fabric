@@ -12,7 +12,7 @@
         "lint": "tslint -c tslint.json 'src/**/*.ts'",
         "pretest": "npm run lint",
         "test": "nyc mocha -r ts-node/register src/**/*.spec.ts",
-        "start": "node dist/start.js",
+        "start": "startChaincode",
         "build": "tsc",
         "build:watch": "tsc -w",
         "prepublishOnly": "npm run build"
@@ -21,6 +21,7 @@
     "author": "<%= author %>",
     "license": "<%= license %>",
     "dependencies": {
+        "fabric-contract-api": "unstable",
         "fabric-shim": "unstable"
     },
     "devDependencies": {
