@@ -33,8 +33,14 @@ else
     mkdir tmp
 fi
 
+for IMAGE in hyperledger/fabric-ca hyperledger/fabric-orderer hyperledger/fabric-peer hyperledger/fabric-tools hyperledger/fabric-ccenv
+do
+    docker pull nexus3.hyperledger.org:10001/${IMAGE}:amd64-1.3.0-stable
+    docker tag nexus3.hyperledger.org:10001/${IMAGE}:amd64-1.3.0-stable ${IMAGE}
+done
+
 pushd tmp
-git clone -b release-1.2 https://github.com/hyperledger/fabric-samples.git
+git clone -b master https://github.com/hyperledger/fabric-samples.git
 pushd fabric-samples/basic-network
 export FABRIC_DIR="$(pwd)"
 ./start.sh
