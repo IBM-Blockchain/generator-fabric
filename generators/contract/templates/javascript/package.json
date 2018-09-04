@@ -11,12 +11,13 @@
         "lint": "eslint .",
         "pretest": "npm run lint",
         "test": "nyc mocha --recursive",
-        "start": "node lib/start.js"
+        "start": "startChaincode"
     },
     "engineStrict": true,
     "author": "<%= author %>",
     "license": "<%= license %>",
     "dependencies": {
+        "fabric-contract-api": "unstable",
         "fabric-shim": "unstable"
     },
     "devDependencies": {
@@ -29,12 +30,12 @@
     },
     "nyc": {
         "exclude": [
-          "coverage/**",
-          "test/**"
+            "coverage/**",
+            "test/**"
         ],
         "reporter": [
-          "text-summary",
-          "html"
+            "text-summary",
+            "html"
         ],
         "all": true,
         "check-coverage": true,

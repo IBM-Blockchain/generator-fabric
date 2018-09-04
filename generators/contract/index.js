@@ -29,6 +29,7 @@ module.exports = class extends Generator {
             name: 'language',
             message: 'Please specify the contract language:',
             choices: [
+                { name: 'JavaScript', value: 'javascript' },
                 { name: 'TypeScript', value: 'typescript' }
             ],
             when: () => !this.options.language
