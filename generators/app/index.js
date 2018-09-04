@@ -26,7 +26,8 @@ module.exports = class extends Generator {
             name: 'subgenerator',
             message: 'Please specify the generator to run:',
             choices: [
-                { name: 'Chaincode', value: 'chaincode' }
+                { name: 'Chaincode', value: 'chaincode' },
+                { name: 'Contract', value: 'contract' }
             ],
             store: true,
             when: () => !this.options.subgenerator
