@@ -68,7 +68,7 @@ describe('Contract (JavaScript)', () => {
                 lint: 'eslint .',
                 pretest: 'npm run lint',
                 test: 'nyc mocha --recursive',
-                start: 'startChaincode'
+                start: 'fabric-chaincode-node start'
             },
             engineStrict: true,
             author: 'James Conga',

@@ -225,7 +225,7 @@ javascript_contract_deploy() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -v 0.0.1 -l node -c '{"Args":["contract_instantiate"]}'
+        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -v 0.0.1 -l node -c '{"Args":["instantiate"]}'
     date
 }
 
@@ -256,7 +256,7 @@ typescript_contract_deploy() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -v 0.0.1 -l node -c '{"Args":["contract_instantiate"]}'
+        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -v 0.0.1 -l node -c '{"Args":["instantiate"]}'
     date
 }
 
@@ -271,7 +271,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["contract_transaction1","hello"]}' --waitForEvent
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["transaction1","hello"]}' --waitForEvent
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -282,7 +282,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["contract_transaction2","hello","world"]}' --waitForEvent
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["transaction2","hello","world"]}' --waitForEvent
     date
 }
 
