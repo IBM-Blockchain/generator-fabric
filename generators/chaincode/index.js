@@ -70,4 +70,10 @@ module.exports = class extends Generator {
         this.fs.copyTpl(this.templatePath(this.options.language), this.destinationRoot(), this.options, undefined, { globOptions: { dot: true } });
     }
 
+    async install() {
+        if (this.options.language === 'javascript' || this.options.language === 'typescript') {
+            this.installDependencies({ bower: false, npm: true });
+        }
+    }
+
 };

@@ -69,4 +69,8 @@ module.exports = class extends Generator {
         this.fs.copyTpl(this.templatePath(this.options.language), this.destinationRoot(), this.options, undefined, { globOptions: { dot: true } });
     }
 
+    async install() {
+        this.installDependencies({ bower: false, npm: true });
+    }
+
 };
