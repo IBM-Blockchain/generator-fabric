@@ -30,7 +30,8 @@
         "exclude": [
             "coverage/**",
             "generators/**/templates/**",
-            "test/**"
+            "test/**",
+            "tmp/**"
         ],
         "reporter": [
             "text-summary",

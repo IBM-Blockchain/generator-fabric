@@ -108,7 +108,6 @@ go_chaincode_deploy() {
 
 javascript_chaincode_deploy() {
     yo fabric:chaincode -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Chaincode" --name=${LANGUAGE}-chaincode --version=0.0.1 --license=Apache-2.0
-    npm install
     npm test
     date
     ${RETRY} docker run \
@@ -138,7 +137,6 @@ javascript_chaincode_deploy() {
 
 typescript_chaincode_deploy() {
     yo fabric:chaincode -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Chaincode" --name=${LANGUAGE}-chaincode --version=0.0.1 --license=Apache-2.0
-    npm install
     npm test
     npm run build
     date
@@ -201,7 +199,6 @@ contract_test() {
 
 javascript_contract_deploy() {
     yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0
-    npm install
     npm test
     date
     ${RETRY} docker run \
@@ -231,7 +228,6 @@ javascript_contract_deploy() {
 
 typescript_contract_deploy() {
     yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0
-    npm install
     npm test
     npm run build
     date
