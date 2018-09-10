@@ -69,7 +69,7 @@ describe('Contract (TypeScript)', () => {
                 lint: 'tslint -c tslint.json \'src/**/*.ts\'',
                 pretest: 'npm run lint',
                 test: 'nyc mocha -r ts-node/register src/**/*.spec.ts',
-                start: 'startChaincode',
+                start: 'fabric-chaincode-node start',
                 build: 'tsc',
                 'build:watch': 'tsc -w',
                 prepublishOnly: 'npm run build'
