@@ -35,9 +35,11 @@ else
     mkdir tmp
 fi
 
-for IMAGE in hyperledger/fabric-ca hyperledger/fabric-orderer hyperledger/fabric-peer hyperledger/fabric-tools hyperledger/fabric-ccenv
+for IMAGE in hyperledger/fabric-ca hyperledger/fabric-orderer hyperledger/fabric-peer hyperledger/fabric-tools hyperledger/fabric-ccenv hyperledger/fabric-javaenv
 do
     docker pull nexus3.hyperledger.org:10001/${IMAGE}:amd64-1.3.0-stable
+    docker tag nexus3.hyperledger.org:10001/${IMAGE}:amd64-1.3.0-stable ${IMAGE}:amd64-1.3.0-stable
+    docker tag nexus3.hyperledger.org:10001/${IMAGE}:amd64-1.3.0-stable ${IMAGE}:amd64-1.3.0
     docker tag nexus3.hyperledger.org:10001/${IMAGE}:amd64-1.3.0-stable ${IMAGE}
 done
 
@@ -55,7 +57,7 @@ npm install -g yo generator-fabric-*.tgz
 rm -f generator-fabric-*.tgz
 
 chaincode_tests() {
-    LANGUAGES="go javascript typescript"
+    LANGUAGES="go java javascript typescript"
     for LANGUAGE in ${LANGUAGES}
     do
         chaincode_test ${LANGUAGE}
@@ -103,6 +105,35 @@ go_chaincode_deploy() {
         --rm \
         hyperledger/fabric-tools \
         peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-chaincode -v 0.0.1 -l golang -c '{"Args":["init","a","100","b","200"]}'
+    date
+}
+
+java_chaincode_deploy() {
+    yo fabric:chaincode -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Chaincode" --name=${LANGUAGE}-chaincode --version=0.0.1 --license=Apache-2.0
+    ./gradlew build
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "$(pwd)":/tmp/chaincode \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode install -n ${LANGUAGE}-chaincode -v 0.0.1 -p /tmp/chaincode -l java
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-chaincode -v 0.0.1 -l java -c '{"Args":["init","a","100","b","200"]}'
     date
 }
 

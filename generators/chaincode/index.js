@@ -30,6 +30,7 @@ module.exports = class extends Generator {
             message: 'Please specify the chaincode language:',
             choices: [
                 { name: 'Go', value: 'go' },
+                { name: 'Java', value: 'java' },
                 { name: 'JavaScript', value: 'javascript' },
                 { name: 'TypeScript', value: 'typescript' }
             ],
