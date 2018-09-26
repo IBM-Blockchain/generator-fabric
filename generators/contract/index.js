@@ -66,13 +66,23 @@ module.exports = class extends Generator {
     }
 
     async writing () {
-        this.fs.copyTpl(this.templatePath(this.options.language), this.destinationRoot(), this.options, undefined, { globOptions: { dot: true } });
+        console.log('Generating files...');
+        this.fs.copyTpl(this.templatePath(this.options.language), this._getDestination(), this.options, undefined, { globOptions: { dot: true } });
         // npm install does dumb stuff and renames our gitignore to npmignore, so rename it back!
         this.fs.move(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
     }
 
     async install() {
-        this.installDependencies({ bower: false, npm: true });
+        if(this.options['skip-install'] !== true){
+            this.installDependencies({ bower: false, npm: true });
+        }
     }
 
+    _getDestination(){
+        return (this.options.destination) ? (this.destinationRoot(this.options.destination)) : ((this.destinationRoot()));
+    }
+
+    end(){
+        console.log('Finished generating contract');
+    }
 };
