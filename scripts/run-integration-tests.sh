@@ -68,12 +68,13 @@ chaincode_test() {
     LANGUAGE=$1
     mkdir ${LANGUAGE}-chaincode
     pushd ${LANGUAGE}-chaincode
-    ${LANGUAGE}_chaincode_deploy
+    ${LANGUAGE}_chaincode_package
+    common_chaincode_deploy
     common_chaincode_test
     popd
 }
 
-go_chaincode_deploy() {
+go_chaincode_package() {
     export GOPATH=$PWD
     mkdir -p src/chaincode
     pushd src/chaincode
@@ -93,22 +94,11 @@ go_chaincode_deploy() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode install -n ${LANGUAGE}-chaincode -v 0.0.1 -p chaincode -l golang
-    date
-    ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
-        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
-        --rm \
-        hyperledger/fabric-tools \
-        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-chaincode -v 0.0.1 -l golang -c '{"Args":["init","a","100","b","200"]}'
+        peer chaincode package -n ${LANGUAGE}-chaincode -v 0.0.1 -p chaincode -l golang /opt/gopath/chaincode.cds
     date
 }
 
-java_chaincode_deploy() {
+java_chaincode_package() {
     yo fabric:chaincode -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Chaincode" --name=${LANGUAGE}-chaincode --version=0.0.1 --license=Apache-2.0
     ./gradlew build
     date
@@ -122,22 +112,11 @@ java_chaincode_deploy() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode install -n ${LANGUAGE}-chaincode -v 0.0.1 -p /tmp/chaincode -l java
-    date
-    ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
-        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
-        --rm \
-        hyperledger/fabric-tools \
-        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-chaincode -v 0.0.1 -l java -c '{"Args":["init","a","100","b","200"]}'
+        peer chaincode package -n ${LANGUAGE}-chaincode -v 0.0.1 -p /tmp/chaincode -l java /tmp/chaincode/chaincode.cds
     date
 }
 
-javascript_chaincode_deploy() {
+javascript_chaincode_package() {
     yo fabric:chaincode -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Chaincode" --name=${LANGUAGE}-chaincode --version=0.0.1 --license=Apache-2.0
     npm test
     date
@@ -151,22 +130,11 @@ javascript_chaincode_deploy() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode install -n ${LANGUAGE}-chaincode -v 0.0.1 -p /tmp/chaincode -l node
-    date
-    ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
-        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
-        --rm \
-        hyperledger/fabric-tools \
-        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-chaincode -v 0.0.1 -l node -c '{"Args":["init","a","100","b","200"]}'
+        peer chaincode package -n ${LANGUAGE}-chaincode -v 0.0.1 -p /tmp/chaincode -l node /tmp/chaincode/chaincode.cds
     date
 }
 
-typescript_chaincode_deploy() {
+typescript_chaincode_package() {
     yo fabric:chaincode -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Chaincode" --name=${LANGUAGE}-chaincode --version=0.0.1 --license=Apache-2.0
     npm test
     npm run build
@@ -181,7 +149,23 @@ typescript_chaincode_deploy() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode install -n ${LANGUAGE}-chaincode -v 0.0.1 -p /tmp/chaincode -l node
+        peer chaincode package -n ${LANGUAGE}-chaincode -v 0.0.1 -p /tmp/chaincode -l node /tmp/chaincode/chaincode.cds
+    date
+}
+
+common_chaincode_deploy() {
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "$(pwd)":/tmp/chaincode \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode install /tmp/chaincode/chaincode.cds
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -192,7 +176,7 @@ typescript_chaincode_deploy() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-chaincode -v 0.0.1 -l node -c '{"Args":["init","a","100","b","200"]}'
+        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-chaincode -v 0.0.1 -c '{"Args":["init","a","100","b","200"]}'
     date
 }
 
@@ -223,12 +207,13 @@ contract_test() {
     LANGUAGE=$1
     mkdir ${LANGUAGE}-contract
     pushd ${LANGUAGE}-contract
-    ${LANGUAGE}_contract_deploy
+    ${LANGUAGE}_contract_package
+    common_contract_deploy
     common_contract_test
     popd
 }
 
-javascript_contract_deploy() {
+javascript_contract_package() {
     yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0
     npm test
     date
@@ -242,22 +227,11 @@ javascript_contract_deploy() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode install -n ${LANGUAGE}-contract -v 0.0.1 -p /tmp/contract -l node
-    date
-    ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
-        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
-        --rm \
-        hyperledger/fabric-tools \
-        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -v 0.0.1 -l node -c '{"Args":["instantiate"]}'
+        peer chaincode package -n ${LANGUAGE}-contract -v 0.0.1 -p /tmp/contract -l node /tmp/contract/contract.cds
     date
 }
 
-typescript_contract_deploy() {
+typescript_contract_package() {
     yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0
     npm test
     npm run build
@@ -272,7 +246,23 @@ typescript_contract_deploy() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode install -n ${LANGUAGE}-contract -v 0.0.1 -p /tmp/contract -l node
+        peer chaincode package -n ${LANGUAGE}-contract -v 0.0.1 -p /tmp/contract -l node /tmp/contract/contract.cds
+    date
+}
+
+common_contract_deploy() {
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode install /tmp/contract/contract.cds
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -283,7 +273,7 @@ typescript_contract_deploy() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -v 0.0.1 -l node -c '{"Args":["instantiate"]}'
+        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -v 0.0.1 -c '{"Args":["instantiate"]}'
     date
 }
 
