@@ -67,6 +67,8 @@ module.exports = class extends Generator {
 
     async writing () {
         this.fs.copyTpl(this.templatePath(this.options.language), this.destinationRoot(), this.options, undefined, { globOptions: { dot: true } });
+        // npm install does dumb stuff and renames our gitignore to npmignore, so rename it back!
+        this.fs.move(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
     }
 
     async install() {
