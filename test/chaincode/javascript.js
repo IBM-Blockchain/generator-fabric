@@ -76,7 +76,7 @@ describe('Chaincode (JavaScript)', () => {
             author: 'James Conga',
             license: 'Apache-2.0',
             dependencies: {
-                'fabric-shim': 'unstable'
+                'fabric-shim': '1.3.0-snapshot.17'
             },
             devDependencies: {
                 chai: '^4.1.2',
