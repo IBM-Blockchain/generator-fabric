@@ -50,8 +50,8 @@ describe('Contract (JavaScript)', () => {
         author: 'James Conga',
         license: 'Apache-2.0',
         dependencies: {
-            'fabric-contract-api': '1.3.0-snapshot.10',
-            'fabric-shim': '1.3.0-snapshot.17'
+            'fabric-contract-api': '1.4.0-snapshot.17',
+            'fabric-shim': '1.4.0-snapshot.27'
         },
         devDependencies: {
             chai: '^4.1.2',
@@ -156,8 +156,8 @@ describe('Contract (JavaScript)', () => {
             author: 'James Conga',
             license: 'Apache-2.0',
             dependencies: {
-                'fabric-contract-api': '1.3.0-snapshot.10',
-                'fabric-shim': '1.3.0-snapshot.17'
+                'fabric-contract-api': '1.4.0-snapshot.17',
+                'fabric-shim': '1.4.0-snapshot.27'
             },
             devDependencies: {
                 chai: '^4.1.2',
