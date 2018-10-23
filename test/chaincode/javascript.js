@@ -93,7 +93,7 @@ describe('Chaincode (JavaScript)', () => {
             author: 'James Conga',
             license: 'Apache-2.0',
             dependencies: {
-                'fabric-shim': '1.3.0-snapshot.17'
+                'fabric-shim': '1.4.0-snapshot.27'
             },
             devDependencies: {
                 chai: '^4.1.2',
@@ -178,7 +178,7 @@ describe('Chaincode (JavaScript)', () => {
             author: 'James Conga',
             license: 'Apache-2.0',
             dependencies: {
-                'fabric-shim': '1.3.0-snapshot.17'
+                'fabric-shim': '1.4.0-snapshot.27'
             },
             devDependencies: {
                 chai: '^4.1.2',
@@ -266,7 +266,7 @@ describe('Chaincode (JavaScript)', () => {
             author: 'James Conga',
             license: 'Apache-2.0',
             dependencies: {
-                'fabric-shim': '1.3.0-snapshot.17'
+                'fabric-shim': '1.4.0-snapshot.27'
             },
             devDependencies: {
                 chai: '^4.1.2',
@@ -350,7 +350,7 @@ describe('Chaincode (JavaScript)', () => {
             author: 'James Conga',
             license: 'Apache-2.0',
             dependencies: {
-                'fabric-shim': '1.3.0-snapshot.17'
+                'fabric-shim': '1.4.0-snapshot.27'
             },
             devDependencies: {
                 chai: '^4.1.2',
