@@ -133,6 +133,23 @@ describe('Chaincode (TypeScript)', () => {
                 lines: 100
             }
         });
+        const tsconfigJSON = require(path.join(dir, 'tsconfig.json'));
+        tsconfigJSON.should.deep.equal({
+            compilerOptions: {
+                outDir: 'dist',
+                target: 'es2017',
+                moduleResolution: 'node',
+                module: 'commonjs',
+                declaration: true,
+                sourceMap: true
+            },
+            include: [
+                './src/**/*'
+            ],
+            exclude: [
+                './src/**/*.spec.ts'
+            ]
+        });
     });
 
     it('should detect if no skip-install option is passed with typescript language', async () => {
