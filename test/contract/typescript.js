@@ -41,6 +41,7 @@ describe('Contract (TypeScript)', () => {
                 license: 'Apache-2.0'
             });
         assert.file([
+            '.vscode/extensions.json',
             'src/my-contract.spec.ts',
             'src/my-contract.ts',
             'src/index.ts',

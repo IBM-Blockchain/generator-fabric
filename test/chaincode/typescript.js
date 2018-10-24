@@ -56,6 +56,7 @@ describe('Chaincode (TypeScript)', () => {
                 license: 'Apache-2.0'
             });
         assert.file([
+            '.vscode/extensions.json',
             'src/chaincode.spec.ts',
             'src/chaincode.ts',
             'src/index.ts',

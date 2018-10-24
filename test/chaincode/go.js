@@ -35,6 +35,7 @@ describe('Chaincode (Go)', () => {
                 license: 'Apache-2.0'
             });
         assert.file([
+            '.vscode/extensions.json',
             '.editorconfig',
             '.gitignore',
             'chaincode_test.go',

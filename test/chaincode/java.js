@@ -35,6 +35,7 @@ describe('Chaincode (Java)', () => {
                 license: 'Apache-2.0'
             });
         assert.file([
+            '.vscode/extensions.json',
             'gradle/wrapper/gradle-wrapper.jar',
             'gradle/wrapper/gradle-wrapper.properties',
             'src/main/java/org/example/Chaincode.java',
