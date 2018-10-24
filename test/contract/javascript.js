@@ -126,6 +126,7 @@ describe('Contract (JavaScript)', () => {
                 license: 'Apache-2.0'
             });
         assert.file([
+            '.vscode/extensions.json',
             'lib/my-contract.js',
             'test/my-contract.js',
             '.editorconfig',

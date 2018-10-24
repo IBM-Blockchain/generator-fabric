@@ -58,6 +58,7 @@ describe('Chaincode (JavaScript)', () => {
                 license: 'Apache-2.0'
             });
         assert.file([
+            '.vscode/extensions.json',
             'lib/chaincode.js',
             'lib/start.js',
             'test/chaincode.js',
