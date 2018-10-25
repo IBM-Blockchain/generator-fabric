@@ -39,7 +39,7 @@ npm install -g yo generator-fabric-*.tgz
 rm -f generator-fabric-*.tgz
 
 chaincode_tests() {
-    LANGUAGES="go java javascript typescript"
+    LANGUAGES="go java javascript kotlin typescript"
     for LANGUAGE in ${LANGUAGES}
     do
         chaincode_test ${LANGUAGE}
@@ -113,6 +113,24 @@ javascript_chaincode_package() {
         --rm \
         hyperledger/fabric-tools \
         peer chaincode package -n ${LANGUAGE}-chaincode -v 0.0.1 -p /tmp/chaincode -l node /tmp/chaincode/chaincode.cds
+    date
+}
+
+kotlin_chaincode_package() {
+    yo fabric:chaincode -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Chaincode" --name=${LANGUAGE}-chaincode --version=0.0.1 --license=Apache-2.0
+    ./gradlew build
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "$(pwd)":/tmp/chaincode \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode package -n ${LANGUAGE}-chaincode -v 0.0.1 -p /tmp/chaincode -l java /tmp/chaincode/chaincode.cds
     date
 }
 
