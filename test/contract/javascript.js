@@ -1,18 +1,5 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: WTFPL
  */
 
 'use strict';
@@ -48,7 +35,7 @@ describe('Contract (JavaScript)', () => {
         },
         engineStrict: true,
         author: 'James Conga',
-        license: 'Apache-2.0',
+        license: 'WTFPL',
         dependencies: {
             'fabric-contract-api': '1.4.0-snapshot.17',
             'fabric-shim': '1.4.0-snapshot.27'
@@ -92,7 +79,7 @@ describe('Contract (JavaScript)', () => {
                 version: '0.0.1',
                 description: 'My JavaScript Contract',
                 author: 'James Conga',
-                license: 'Apache-2.0'
+                license: 'WTFPL'
             });
         assert.file([
             'lib/my-contract.js',
@@ -104,6 +91,7 @@ describe('Contract (JavaScript)', () => {
             'index.js',
             'package.json'
         ]);
+        assert.fileContent('lib/my-contract.js', /SPDX-License-Identifier: WTFPL/);
         assert.fileContent('lib/my-contract.js', /class MyContract extends Contract {/);
         assert.fileContent('lib/my-contract.js', /async instantiate\(ctx\) {/);
         assert.fileContent('lib/my-contract.js', /async transaction1\(ctx, arg1\) {/);
@@ -123,7 +111,7 @@ describe('Contract (JavaScript)', () => {
                 version: '0.0.1',
                 description: 'My JavaScript Contract',
                 author: 'James Conga',
-                license: 'Apache-2.0'
+                license: 'WTFPL'
             });
         assert.file([
             '.vscode/extensions.json',
@@ -155,7 +143,7 @@ describe('Contract (JavaScript)', () => {
             version: '0.0.1',
             description: 'My JavaScript Contract',
             author: 'James Conga',
-            license: 'Apache-2.0',
+            license: 'WTFPL',
             dependencies: {
                 'fabric-contract-api': '1.4.0-snapshot.17',
                 'fabric-shim': '1.4.0-snapshot.27'
@@ -226,7 +214,7 @@ describe('Contract (JavaScript)', () => {
                 version: '0.0.1',
                 description: 'My JavaScript Contract',
                 author: 'James Conga',
-                license: 'Apache-2.0',
+                license: 'WTFPL',
                 destination: tmpdir
             });
 
