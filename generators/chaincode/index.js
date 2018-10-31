@@ -19,6 +19,7 @@ module.exports = class extends Generator {
                 { name: 'Go', value: 'go' },
                 { name: 'Java', value: 'java' },
                 { name: 'JavaScript', value: 'javascript' },
+                { name: 'Kotlin', value: 'kotlin' },
                 { name: 'TypeScript', value: 'typescript' }
             ],
             when: () => !this.options.language
