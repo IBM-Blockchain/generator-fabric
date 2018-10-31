@@ -29,6 +29,7 @@ describe('Contract (TypeScript)', () => {
             });
         assert.file([
             '.vscode/extensions.json',
+            '.vscode/launch.json',
             'src/my-contract.spec.ts',
             'src/my-contract.ts',
             'src/index.ts',

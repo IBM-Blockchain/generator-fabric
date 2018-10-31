@@ -82,6 +82,8 @@ describe('Contract (JavaScript)', () => {
                 license: 'WTFPL'
             });
         assert.file([
+            '.vscode/extensions.json',
+            '.vscode/launch.json',
             'lib/my-contract.js',
             'test/my-contract.js',
             '.editorconfig',
@@ -114,7 +116,6 @@ describe('Contract (JavaScript)', () => {
                 license: 'WTFPL'
             });
         assert.file([
-            '.vscode/extensions.json',
             'lib/my-contract.js',
             'test/my-contract.js',
             '.editorconfig',
