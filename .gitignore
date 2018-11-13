@@ -80,3 +80,4 @@ typings/
 tmp
 
 package-lock.json
+/.idea
