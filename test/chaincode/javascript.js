@@ -83,15 +83,15 @@ describe('Chaincode (JavaScript)', () => {
             author: 'James Conga',
             license: 'WTFPL',
             dependencies: {
-                'fabric-shim': '1.4.0-beta'
+                'fabric-shim': '1.4.0-snapshot.51'
             },
             devDependencies: {
-                chai: '^4.1.2',
-                eslint: '^4.19.1',
+                chai: '^4.2.0',
+                eslint: '^5.9.0',
                 mocha: '^5.2.0',
-                nyc: '^12.0.2',
-                sinon: '^6.0.0',
-                'sinon-chai': '^3.2.0'
+                nyc: '^13.1.0',
+                sinon: '^7.1.1',
+                'sinon-chai': '^3.3.0'
             },
             nyc: {
                 exclude: [
@@ -168,15 +168,15 @@ describe('Chaincode (JavaScript)', () => {
             author: 'James Conga',
             license: 'Apache-2.0',
             dependencies: {
-                'fabric-shim': '1.4.0-beta'
+                'fabric-shim': '1.4.0-snapshot.51'
             },
             devDependencies: {
-                chai: '^4.1.2',
-                eslint: '^4.19.1',
+                chai: '^4.2.0',
+                eslint: '^5.9.0',
                 mocha: '^5.2.0',
-                nyc: '^12.0.2',
-                sinon: '^6.0.0',
-                'sinon-chai': '^3.2.0'
+                nyc: '^13.1.0',
+                sinon: '^7.1.1',
+                'sinon-chai': '^3.3.0'
             },
             nyc: {
                 exclude: [
@@ -256,15 +256,15 @@ describe('Chaincode (JavaScript)', () => {
             author: 'James Conga',
             license: 'Apache-2.0',
             dependencies: {
-                'fabric-shim': '1.4.0-beta'
+                'fabric-shim': '1.4.0-snapshot.51'
             },
             devDependencies: {
-                chai: '^4.1.2',
-                eslint: '^4.19.1',
+                chai: '^4.2.0',
+                eslint: '^5.9.0',
                 mocha: '^5.2.0',
-                nyc: '^12.0.2',
-                sinon: '^6.0.0',
-                'sinon-chai': '^3.2.0'
+                nyc: '^13.1.0',
+                sinon: '^7.1.1',
+                'sinon-chai': '^3.3.0'
             },
             nyc: {
                 exclude: [
@@ -340,15 +340,15 @@ describe('Chaincode (JavaScript)', () => {
             author: 'James Conga',
             license: 'Apache-2.0',
             dependencies: {
-                'fabric-shim': '1.4.0-beta'
+                'fabric-shim': '1.4.0-snapshot.51'
             },
             devDependencies: {
-                chai: '^4.1.2',
-                eslint: '^4.19.1',
+                chai: '^4.2.0',
+                eslint: '^5.9.0',
                 mocha: '^5.2.0',
-                nyc: '^12.0.2',
-                sinon: '^6.0.0',
-                'sinon-chai': '^3.2.0'
+                nyc: '^13.1.0',
+                sinon: '^7.1.1',
+                'sinon-chai': '^3.3.0'
             },
             nyc: {
                 exclude: [
