@@ -68,8 +68,8 @@ describe('Contract (TypeScript)', () => {
             author: 'James Conga',
             license: 'WTFPL',
             dependencies: {
-                'fabric-shim': '1.4.0-snapshot.51',
-                'fabric-contract-api': '1.4.0-snapshot.41'
+                'fabric-shim': '1.4.0-beta2',
+                'fabric-contract-api': '1.4.0-beta2'
             },
             devDependencies: {
                 '@types/chai': '^4.1.7',
