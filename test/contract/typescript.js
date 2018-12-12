@@ -42,9 +42,9 @@ describe('Contract (TypeScript)', () => {
         ]);
         assert.fileContent('src/my-contract.ts', /SPDX-License-Identifier: WTFPL/);
         assert.fileContent('src/my-contract.ts', /export class MyContract extends Contract {/);
-        assert.fileContent('src/my-contract.ts', /public async instantiate\(ctx: Context\): Promise<any> {/);
-        assert.fileContent('src/my-contract.ts', /public async transaction1\(ctx: Context, arg1: string\): Promise<any> {/);
-        assert.fileContent('src/my-contract.ts', /public async transaction2\(ctx: Context, arg1: string, arg2: string\): Promise<any> {/);
+        assert.fileContent('src/my-contract.ts', /public async instantiate\(ctx: Context\): Promise<void> {/);
+        assert.fileContent('src/my-contract.ts', /public async transaction1\(ctx: Context, arg1: string\): Promise<string> {/);
+        assert.fileContent('src/my-contract.ts', /public async transaction2\(ctx: Context, arg1: string, arg2: string\): Promise<string> {/);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.deep.equal({
             name: 'my-typescript-contract',
@@ -116,7 +116,9 @@ describe('Contract (TypeScript)', () => {
                 moduleResolution: 'node',
                 module: 'commonjs',
                 declaration: true,
-                sourceMap: true
+                sourceMap: true,
+                experimentalDecorators: true,
+                emitDecoratorMetadata: true,
             },
             include: [
                 './src/**/*'
