@@ -21,7 +21,7 @@
     "author": "<%= author %>",
     "license": "<%= license %>",
     "dependencies": {
-        "fabric-shim": "1.4.0-beta2"
+        "fabric-shim": "1.4.0"
     },
     "devDependencies": {
         "@types/chai": "^4.1.7",
