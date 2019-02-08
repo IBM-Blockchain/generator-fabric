@@ -1,0 +1,16 @@
+#
+# <%= spdxAndLicense // SPDX-License-Identifier: Apache-2.0 %>
+#
+
+# don't package the connection details
+local_fabric
+
+# don't package the tests
+test
+
+# don't package config files
+.vscode
+.gitignore
+.npmignore
+tsconfig.json
+tslint.json

@@ -35,6 +35,7 @@ describe('Contract (TypeScript)', () => {
             'src/index.ts',
             '.editorconfig',
             '.gitignore',
+            '.npmignore',
             'package.json',
             'tsconfig.json',
             'tslint.json'
