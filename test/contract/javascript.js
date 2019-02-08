@@ -90,6 +90,7 @@ describe('Contract (JavaScript)', () => {
             '.eslintignore',
             '.eslintrc.js',
             '.gitignore',
+            '.npmignore',
             'index.js',
             'package.json'
         ]);
@@ -122,6 +123,7 @@ describe('Contract (JavaScript)', () => {
             '.eslintignore',
             '.eslintrc.js',
             '.gitignore',
+            '.npmignore',
             'index.js',
             'package.json'
         ]);
@@ -189,6 +191,7 @@ describe('Contract (JavaScript)', () => {
             '.eslintignore',
             '.eslintrc.js',
             '.gitignore',
+            '.npmignore',
             'index.js',
             'package.json'
         ]);
@@ -229,6 +232,7 @@ describe('Contract (JavaScript)', () => {
             '.eslintignore',
             '.eslintrc.js',
             '.gitignore',
+            '.npmignore',
             'index.js',
             'package.json'
         ]);

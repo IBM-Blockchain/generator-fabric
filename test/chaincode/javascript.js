@@ -55,6 +55,7 @@ describe('Chaincode (JavaScript)', () => {
             '.eslintignore',
             '.eslintrc.js',
             '.gitignore',
+            '.npmignore',
             'index.js',
             'package.json'
         ]);
@@ -141,6 +142,7 @@ describe('Chaincode (JavaScript)', () => {
             '.eslintignore',
             '.eslintrc.js',
             '.gitignore',
+            '.npmignore',
             'index.js',
             'package.json'
         ]);
@@ -229,6 +231,7 @@ describe('Chaincode (JavaScript)', () => {
             '.eslintignore',
             '.eslintrc.js',
             '.gitignore',
+            '.npmignore',
             'index.js',
             'package.json'
         ]);
@@ -313,6 +316,7 @@ describe('Chaincode (JavaScript)', () => {
             '.eslintignore',
             '.eslintrc.js',
             '.gitignore',
+            '.npmignore',
             'index.js',
             'package.json'
         ]);

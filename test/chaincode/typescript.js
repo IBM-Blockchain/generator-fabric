@@ -52,6 +52,7 @@ describe('Chaincode (TypeScript)', () => {
             'src/start.ts',
             '.editorconfig',
             '.gitignore',
+            '.npmignore',
             'package.json',
             'tsconfig.json',
             'tslint.json'
@@ -173,6 +174,7 @@ describe('Chaincode (TypeScript)', () => {
             'src/start.ts',
             '.editorconfig',
             '.gitignore',
+            '.npmignore',
             'package.json',
             'tsconfig.json',
             'tslint.json'
