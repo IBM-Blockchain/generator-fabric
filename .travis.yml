@@ -10,5 +10,6 @@ node_js:
     - "8"
 script: |
     set -ex
+    npm audit
     npm test
     ./scripts/run-integration-tests.sh
