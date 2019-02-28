@@ -19,14 +19,17 @@ script: |
     if [ $TRAVIS_OS_NAME == "linux" ]; then
         ./scripts/run-integration-tests.sh
     fi
-before_deploy: |
-    set -ex
-    npm shrinkwrap
-deploy:
-    provider: npm
-    email: sstone1@uk.ibm.com
-    api_key:
-        secure: R0rw2+Kzb8R80BrOZPIn513X6btR7SJs6BXzRuglrFynNr3pS8gXh3Nd0VshPIFOzp52ex+4XNh0J+uN1tWL18lGyhM8b+ple2BzQDySUrAI0s20E5fcr3TTSyojskDi86tP8wiRUyRFoLZO4JGxiqBTWgCqAGaKmoqEZbenpsUzfPKFxcGcpGXkBD5XWnysRFZvJrwpuXyr5PXfFZm9pxkYH1f+WbjIid5yu5pHB3gWI1pXvoD6BtTH+17QiAhEnGz0TMpeUPgcAQwdUtiNv1oMNWMqmSAvkowTaKnNysbDd7tszniX06dglFrUIuDAdend7neOzmo2ZebDAJ6184BYBSmRVbhEUXyn91/rWB9dO5QyaLefddOz5iUm5Ne6/wDED+zoog4n7jvBblz5wGlOKH3wxDwA2x3R3q9eJykayM+hC1TOINUWiZgY9hsAzm+dm0FktM+Ehwp6wHQ8WjMPjjSUABHRqhXa6d+NNuRDHY1lFRK7GuxIeCF+83wabndxdD9WpboWHp/tnwCnkmo0SiQDsss9AxyW90eSSTbM+OzMlTk7VE2gs0ZbGJiI3dqBJN+qhyZ/OS+/wN5Nl5M6RPXXmRF6PAwGyotHFMrC4C7+/z5IEBBQKGKy5vEtVIRukfXhm+B6svuyAsJ+z5xXoS8aKk01Lq+jzFcCxQU=
-    on:
-        tags: true
-        repo: IBM-Blockchain/generator-fabric
+jobs:
+    include:
+        - stage: deploy
+          script: |
+            set -ex
+            npm shrinkwrap
+          deploy:
+            provider: npm
+            email: sstone1@uk.ibm.com
+            api_key:
+                secure: R0rw2+Kzb8R80BrOZPIn513X6btR7SJs6BXzRuglrFynNr3pS8gXh3Nd0VshPIFOzp52ex+4XNh0J+uN1tWL18lGyhM8b+ple2BzQDySUrAI0s20E5fcr3TTSyojskDi86tP8wiRUyRFoLZO4JGxiqBTWgCqAGaKmoqEZbenpsUzfPKFxcGcpGXkBD5XWnysRFZvJrwpuXyr5PXfFZm9pxkYH1f+WbjIid5yu5pHB3gWI1pXvoD6BtTH+17QiAhEnGz0TMpeUPgcAQwdUtiNv1oMNWMqmSAvkowTaKnNysbDd7tszniX06dglFrUIuDAdend7neOzmo2ZebDAJ6184BYBSmRVbhEUXyn91/rWB9dO5QyaLefddOz5iUm5Ne6/wDED+zoog4n7jvBblz5wGlOKH3wxDwA2x3R3q9eJykayM+hC1TOINUWiZgY9hsAzm+dm0FktM+Ehwp6wHQ8WjMPjjSUABHRqhXa6d+NNuRDHY1lFRK7GuxIeCF+83wabndxdD9WpboWHp/tnwCnkmo0SiQDsss9AxyW90eSSTbM+OzMlTk7VE2gs0ZbGJiI3dqBJN+qhyZ/OS+/wN5Nl5M6RPXXmRF6PAwGyotHFMrC4C7+/z5IEBBQKGKy5vEtVIRukfXhm+B6svuyAsJ+z5xXoS8aKk01Lq+jzFcCxQU=
+            on:
+                tags: true
+                repo: IBM-Blockchain/generator-fabric
