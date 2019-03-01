@@ -33,3 +33,4 @@ jobs:
             on:
                 tags: true
                 repo: IBM-Blockchain/generator-fabric
+            skip_cleanup: true
