@@ -1,14 +1,16 @@
 {
     "name": "generator-fabric",
-    "version": "0.0.17",
+    "version": "0.0.18",
     "description": "Yeoman generator for Hyperledger Fabric",
     "scripts": {
         "lint": "eslint .",
         "pretest": "npm run lint",
-        "test": "nyc mocha --recursive"
+        "test": "nyc mocha --recursive",
+        "prepublishOnly": "npm shrinkwrap"
     },
     "files": [
-        "generators"
+        "generators",
+        "npm-shrinkwrap.json"
     ],
     "keywords": [
         "yeoman-generator"
