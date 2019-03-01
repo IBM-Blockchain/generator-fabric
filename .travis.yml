@@ -24,7 +24,6 @@ jobs:
         - stage: deploy
           script: |
             set -ex
-            npm shrinkwrap
           deploy:
             provider: npm
             email: sstone1@uk.ibm.com
@@ -33,4 +32,3 @@ jobs:
             on:
                 tags: true
                 repo: IBM-Blockchain/generator-fabric
-            skip_cleanup: true
