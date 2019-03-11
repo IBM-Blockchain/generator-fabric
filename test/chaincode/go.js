@@ -23,6 +23,7 @@ describe('Chaincode (Go)', () => {
             });
         assert.file([
             '.vscode/extensions.json',
+            '.vscode/launch.json',
             '.editorconfig',
             '.gitignore',
             'chaincode_test.go',
