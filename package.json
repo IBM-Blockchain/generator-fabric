@@ -51,5 +51,11 @@
     "contractLanguages": [
         "JavaScript",
         "TypeScript"
+    ],
+    "chaincodeLanguages": [
+        "Go",
+        "Java",
+        "JavaScript",
+        "TypeScript"
     ]
 }
