@@ -1,5 +1,7 @@
 {
     "recommendations": [
-        "ibmblockchain.ibm-blockchain-platform"
+        "fwcd.kotlindebug",
+        "ibmblockchain.ibm-blockchain-platform",
+        "mathiasfrohlich.kotlin"
     ]
 }
