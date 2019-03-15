@@ -1,5 +1,7 @@
 {
     "recommendations": [
-        "ibmblockchain.ibm-blockchain-platform"
+        "ibmblockchain.ibm-blockchain-platform",
+        "redhat.java",
+        "vscjava.vscode-java-debug"
     ]
 }
