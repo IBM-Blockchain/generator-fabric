@@ -1,13 +1,13 @@
 {
     "name": "generator-fabric",
-    "version": "0.0.19",
+    "version": "0.0.20",
     "description": "Yeoman generator for Hyperledger Fabric",
     "main": "generators/app/index.js",
     "scripts": {
         "lint": "eslint .",
         "pretest": "npm run lint",
         "test": "nyc mocha --recursive",
-        "prepublishOnly": "npm shrinkwrap"
+        "prepublishOnly": "npm prune --production && rimraf package-lock.json && npm shrinkwrap"
     },
     "files": [
         "generators",
@@ -26,6 +26,7 @@
         "eslint": "^4.19.1",
         "mocha": "^5.2.0",
         "nyc": "^13.3.0",
+        "rimraf": "^2.6.3",
         "sinon": "^6.3.4",
         "sinon-chai": "^3.2.0",
         "yeoman-assert": "^3.1.1",
