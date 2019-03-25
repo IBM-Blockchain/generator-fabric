@@ -7,6 +7,7 @@ local_fabric
 
 # don't package the tests
 test
+functionalTests
 
 # don't package config files
 .vscode
@@ -14,3 +15,6 @@ test
 .npmignore
 tsconfig.json
 tslint.json
+.editorconfig
+.nyc_output
+coverage

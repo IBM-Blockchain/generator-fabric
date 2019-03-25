@@ -16,3 +16,5 @@ functionalTests
 .eslintrc.js
 .gitignore
 .npmignore
+.nyc_output
+coverage
