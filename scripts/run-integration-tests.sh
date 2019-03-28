@@ -303,9 +303,22 @@ common_contract_test() {
     date
 }
 
+network_test() {
+    date
+    mkdir yofn
+    pushd yofn
+    yo fabric:network -- --name yofn --orderer 17050 --peerRequest 17051 --peerChaincode 17052 --certificateAuthority 17054 --couchDB 17055 --logspout 17056
+    ./generate.sh 
+    ./start.sh 
+    ./stop.sh 
+    ./teardown.sh
+    popd
+}
+
 pushd tmp
 chaincode_tests
 contract_tests
+network_test
 popd
 
 pushd tmp/fabric-samples/basic-network
