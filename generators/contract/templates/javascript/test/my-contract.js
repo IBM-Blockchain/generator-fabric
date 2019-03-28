@@ -10,6 +10,7 @@ const { MyContract } = require('..');
 const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
+const winston = require('winston');
 
 chai.should();
 chai.use(sinonChai);
@@ -19,6 +20,10 @@ class TestContext {
     constructor() {
         this.stub = sinon.createStubInstance(ChaincodeStub);
         this.clientIdentity = sinon.createStubInstance(ClientIdentity);
+        this.logging = {
+            getLogger: sinon.createStubInstance(winston.createLogger().constructor),
+            setLevel: sinon.stub(),
+        };
     }
 
 }

@@ -9,6 +9,7 @@ import { MyContract } from '.';
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
+import winston = require('winston');
 
 chai.should();
 chai.use(sinonChai);
@@ -16,6 +17,10 @@ chai.use(sinonChai);
 class TestContext implements Context {
     public stub: ChaincodeStub = sinon.createStubInstance(ChaincodeStub);
     public clientIdentity: ClientIdentity = sinon.createStubInstance(ClientIdentity);
+    public logging: object = {
+        getLogger: sinon.createStubInstance(winston.createLogger().constructor),
+        setLevel: sinon.stub(),
+     };
 }
 
 describe('MyContract', () => {
