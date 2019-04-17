@@ -6,12 +6,6 @@ sudo: required
 services:
     - docker
 language: node_js
-os:
-    - linux
-    - osx
-    - windows
-node_js:
-    - '8'
 script: |
     set -ex
     npm audit
@@ -21,6 +15,15 @@ script: |
     fi
 jobs:
     include:
+        - stage: test
+          os: linux
+          node_js: '8'
+        - stage: test
+          os: osx
+          node_js: '10'
+        - stage: test
+          os: windows
+          node_js: '10'
         - stage: deploy
           script: |
             set -ex
