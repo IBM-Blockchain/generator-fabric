@@ -28,6 +28,12 @@ module.exports = class extends Generator {
             when : () => !this.options.name
         }, {
             type : 'input',
+            name : 'dockerName',
+            message : 'Please specify the Docker name:',
+            default : path.basename(process.cwd()).replace(/[^A-Za-z0-9]/g, ''),
+            when : () => !this.options.dockerName
+        }, {
+            type : 'input',
             name : 'orderer',
             message : 'Please specify the orderer port:',
             default : orderer,
@@ -70,6 +76,90 @@ module.exports = class extends Generator {
     async writing() {
         console.log('Generating files...');
         this.fs.copyTpl(this.templatePath(), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+        this.fs.writeJSON(this.destinationPath('nodes/orderer.example.com.json'), {
+            short_name: 'orderer.example.com',
+            name: 'orderer.example.com',
+            url: `grpc://localhost:${this.options.orderer}`,
+            type: 'fabric-orderer',
+            wallet: 'local_wallet',
+            identity: 'admin',
+            msp_id: 'OrdererMSP',
+            container_name: `${this.options.dockerName}_orderer.example.com`
+        }, null, 4);
+        this.fs.writeJSON(this.destinationPath('nodes/peer0.org1.example.com.json'), {
+            short_name: 'peer0.org1.example.com',
+            name: 'peer0.org1.example.com',
+            url: `grpc://localhost:${this.options.peerRequest}`,
+            chaincode_url: `grpc://localhost:${this.options.peerChaincode}`,
+            type: 'fabric-peer',
+            wallet: 'local_wallet',
+            identity: 'admin',
+            msp_id: 'Org1MSP',
+            container_name: `${this.options.dockerName}_peer0.org1.example.com`
+        }, null, 4);
+        this.fs.writeJSON(this.destinationPath('nodes/ca.org1.example.com.json'), {
+            short_name: 'ca.org1.example.com',
+            name: 'ca.org1.example.com',
+            url: `http://localhost:${this.options.certificateAuthority}`,
+            type: 'fabric-ca',
+            ca_name: 'ca.org1.example.com',
+            wallet: 'local_wallet',
+            identity: 'admin',
+            msp_id: 'Org1MSP',
+            container_name: `${this.options.dockerName}_ca.org1.example.com`
+        }, null, 4);
+        this.fs.writeJSON(this.destinationPath('nodes/couchdb.json'), {
+            short_name: 'couchdb',
+            name: 'couchdb',
+            url: `http://localhost:${this.options.couchDB}`,
+            type: 'couchdb',
+            container_name: `${this.options.dockerName}_couchdb`
+        }, null, 4);
+        this.fs.writeJSON(this.destinationPath('nodes/logspout.json'), {
+            short_name: 'logspout',
+            name: 'logspout',
+            url: `http://localhost:${this.options.logspout}`,
+            type: 'logspout',
+            container_name: `${this.options.dockerName}_logspout`
+        }, null, 4);
+        this.fs.writeJSON(this.destinationPath(`gateways/${this.options.name}.json`), {
+            name: this.options.name,
+            version: '1.0.0',
+            wallet: 'local_wallet',
+            client: {
+                organization: 'Org1',
+                connection: {
+                    timeout: {
+                        peer: {
+                            endorser: '300'
+                        },
+                        orderer: '300'
+                    }
+                }
+            },
+            organizations: {
+                Org1: {
+                    mspid: 'Org1MSP',
+                    peers: [
+                        'peer0.org1.example.com'
+                    ],
+                    certificateAuthorities: [
+                        'ca.org1.example.com'
+                    ]
+                }
+            },
+            peers: {
+                'peer0.org1.example.com': {
+                    url: `grpc://localhost:${this.options.peerRequest}`
+                }
+            },
+            certificateAuthorities: {
+                'ca.org1.example.com': {
+                    url: `http://localhost:${this.options.certificateAuthority}`,
+                    caName: 'ca.org1.example.com'
+                }
+            }
+        }, null, 4);
     }
 
     async install() {
