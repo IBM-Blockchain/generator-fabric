@@ -11,7 +11,7 @@ set COMPOSE_CONVERT_WINDOWS_PATHS=1
 set CHANNEL_NAME=mychannel
 
 rem remove previous crypto material and config transactions
-for %%d in (admin-msp configtx crypto-config gateways nodes wallets) do (
+for %%d in (admin-msp configtx crypto-config wallets\local_wallet) do (
   pushd %%d
   rmdir /q/s .
   popd
@@ -27,7 +27,7 @@ rem start the certificate authority
 docker-compose -f docker-compose.yml up -d ca.org1.example.com
 
 rem enroll the admin identity
-docker run --network <%= name %>_basic --rm -v %CD%:/etc/hyperledger/fabric hyperledger/fabric-ca:1.4.0 fabric-ca-client enroll -u http://admin:adminpw@ca.org1.example.com:<%= certificateAuthority %> -M /etc/hyperledger/fabric/admin-msp
+docker run --network <%= dockerName %>_basic --rm -v %CD%:/etc/hyperledger/fabric hyperledger/fabric-ca:1.4.0 fabric-ca-client enroll -u http://admin:adminpw@ca.org1.example.com:<%= certificateAuthority %> -M /etc/hyperledger/fabric/admin-msp
 copy /y admin-msp\signcerts\cert.pem crypto-config\peerOrganizations\org1.example.com\msp\admincerts\
 copy /y admin-msp\signcerts\cert.pem crypto-config\peerOrganizations\org1.example.com\peers\peer0.org1.example.com\msp\admincerts\
 

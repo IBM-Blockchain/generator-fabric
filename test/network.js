@@ -23,19 +23,25 @@ describe('Network', () => {
             'crypto-config/.gitkeep',
             'docker-compose.yml',
             'gateways/.gitkeep',
+            'gateways/local_fabric.json',
             'generate.cmd',
             'generate.js',
             'generate.sh',
             'nodes/.gitkeep',
+            'nodes/orderer.example.com.json',
+            'nodes/peer0.org1.example.com.json',
+            'nodes/ca.org1.example.com.json',
+            'nodes/couchdb.json',
+            'nodes/logspout.json',
             'start.cmd',
             'start.sh',
             'stop.cmd',
             'stop.sh',
             'teardown.cmd',
             'teardown.sh',
-            'wallets/.gitkeep'
+            'wallets/local_wallet/.gitkeep'
         ]);
-        assert.fileContent('.env', /COMPOSE_PROJECT_NAME=local_fabric/);
+        assert.fileContent('.env', /COMPOSE_PROJECT_NAME=localfabric/);
         assert.fileContent('configtx.yaml', /Port: 17051/);
         assert.fileContent('configtx.yaml', /- orderer.example.com:17050/);
         assert.fileContent('docker-compose.yml', /- ORDERER_GENERAL_LISTENPORT=17050/);
@@ -49,19 +55,26 @@ describe('Network', () => {
         assert.fileContent('docker-compose.yml', /- FABRIC_CA_SERVER_PORT=17054/);
         assert.fileContent('docker-compose.yml', /- 17055:5984/);
         assert.fileContent('docker-compose.yml', /- 17056:80/);
-        assert.fileContent('generate.js', /url: 'grpc:\/\/localhost:17050'/);
-        assert.fileContent('generate.js', /url: 'grpc:\/\/localhost:17051'/);
-        assert.fileContent('generate.js', /url: 'http:\/\/localhost:17054'/);
-        assert.fileContent('generate.js', /name: 'local_fabric'/);
-        assert.fileContent('generate.js', /wallet: 'local_wallet'/);
+        assert.fileContent('gateways/local_fabric.json', /"url": "grpc:\/\/localhost:17051"/);
+        assert.fileContent('gateways/local_fabric.json', /"url": "grpc:\/\/localhost:17051"/);
         assert.fileContent('generate.cmd', /http:\/\/admin:adminpw@ca.org1.example.com:17054/);
         assert.fileContent('generate.sh', /http:\/\/admin:adminpw@ca.org1.example.com:17054/);
-        assert.fileContent('start.cmd', /local_fabric_peer0.org1.example.com/);
+        assert.fileContent('is_generated.cmd', /localfabric_orderer.example.com localfabric_ca.org1.example.com localfabric_peer0.org1.example.com localfabric_couchdb/);
+        assert.fileContent('is_generated.sh', /localfabric_orderer.example.com localfabric_ca.org1.example.com localfabric_peer0.org1.example.com localfabric_couchdb/);
+        assert.fileContent('is_running.cmd', /localfabric_orderer.example.com localfabric_ca.org1.example.com localfabric_peer0.org1.example.com localfabric_couchdb localfabric_logspout/);
+        assert.fileContent('is_running.sh', /localfabric_orderer.example.com localfabric_ca.org1.example.com localfabric_peer0.org1.example.com localfabric_couchdb localfabric_logspout/);
+        assert.fileContent('nodes/orderer.example.com.json', /"url": "grpc:\/\/localhost:17050"/);
+        assert.fileContent('nodes/peer0.org1.example.com.json', /"url": "grpc:\/\/localhost:17051"/);
+        assert.fileContent('nodes/peer0.org1.example.com.json', /"chaincode_url": "grpc:\/\/localhost:17052"/);
+        assert.fileContent('nodes/ca.org1.example.com.json', /"url": "http:\/\/localhost:17054"/);
+        assert.fileContent('nodes/couchdb.json', /"url": "http:\/\/localhost:17055"/);
+        assert.fileContent('nodes/logspout.json', /"url": "http:\/\/localhost:17056"/);
+        assert.fileContent('start.cmd', /localfabric_peer0.org1.example.com/);
         assert.fileContent('start.cmd', /orderer.example.com:17050/);
-        assert.fileContent('start.sh', /local_fabric_peer0.org1.example.com/);
+        assert.fileContent('start.sh', /localfabric_peer0.org1.example.com/);
         assert.fileContent('start.sh', /orderer.example.com:17050/);
-        assert.fileContent('teardown.cmd', /for \/f "tokens=\*" %%i in \('docker ps -aq --filter "name=local_fabric-\*"'\) do docker rm -f %%i/);
-        assert.fileContent('teardown.sh', /docker ps -aq --filter "name=local_fabric-*" | xargs docker rm -f/);
+        assert.fileContent('teardown.cmd', /for \/f "tokens=\*" %%i in \('docker ps -aq --filter "name=localfabric-\*"'\) do docker rm -f %%i/);
+        assert.fileContent('teardown.sh', /docker ps -aq --filter "name=localfabric-*" | xargs docker rm -f/);
     }
 
     it('should generate a network using prompts into a test directory', async () => {
@@ -69,6 +82,7 @@ describe('Network', () => {
             .withPrompts({
                 subgenerator: 'network',
                 name: 'local_fabric',
+                dockerName: 'localfabric',
                 orderer: '17050',
                 peerRequest: '17051',
                 peerChaincode: '17052',
@@ -86,6 +100,7 @@ describe('Network', () => {
             .withOptions({
                 subgenerator: 'network',
                 name: 'local_fabric',
+                dockerName: 'localfabric',
                 orderer: '17050',
                 peerRequest: '17051',
                 peerChaincode: '17052',

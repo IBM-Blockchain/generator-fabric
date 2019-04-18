@@ -13,7 +13,7 @@ export MSYS_NO_PATHCONV=1
 CHANNEL_NAME=mychannel
 
 # remove previous crypto material and config transactions
-rm -fr admin-msp/* configtx/* crypto-config/* gateways/* nodes/* wallets/*
+rm -fr admin-msp/* configtx/* crypto-config/* wallets/local_wallet/*
 
 fix_permissions () {
   docker run --rm -v $PWD:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.0 chown -R $(id -u):$(id -g) ./configtx ./crypto-config ./admin-msp
@@ -30,7 +30,7 @@ mv ./crypto-config/peerOrganizations/org1.example.com/ca/*_sk ./crypto-config/pe
 docker-compose -f docker-compose.yml up -d ca.org1.example.com
 
 # enroll the admin identity
-docker run --network <%= name %>_basic --rm -v $PWD:/etc/hyperledger/fabric hyperledger/fabric-ca:1.4.0 fabric-ca-client enroll -u http://admin:adminpw@ca.org1.example.com:<%= certificateAuthority %> -M /etc/hyperledger/fabric/admin-msp
+docker run --network <%= dockerName %>_basic --rm -v $PWD:/etc/hyperledger/fabric hyperledger/fabric-ca:1.4.0 fabric-ca-client enroll -u http://admin:adminpw@ca.org1.example.com:<%= certificateAuthority %> -M /etc/hyperledger/fabric/admin-msp
 fix_permissions
 cp -f admin-msp/signcerts/cert.pem crypto-config/peerOrganizations/org1.example.com/msp/admincerts/
 cp -f admin-msp/signcerts/cert.pem crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp/admincerts/

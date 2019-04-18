@@ -18,7 +18,7 @@ export FABRIC_START_TIMEOUT=30
 for i in $(seq 1 ${FABRIC_START_TIMEOUT})
 do
     # This command only works if the peer is up and running
-    if docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" <%= name %>_peer0.org1.example.com peer channel list > /dev/null 2>&1
+    if docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" <%= dockerName %>_peer0.org1.example.com peer channel list > /dev/null 2>&1
     then
         # Peer now available
         break
@@ -30,12 +30,12 @@ done
 echo Hyperledger Fabric started in $i seconds
 
 # Check to see if the channel already exists
-if ! docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" <%= name %>_peer0.org1.example.com peer channel getinfo -c mychannel
+if ! docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" <%= dockerName %>_peer0.org1.example.com peer channel getinfo -c mychannel
 then
     # Create the channel
-    docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" <%= name %>_peer0.org1.example.com peer channel create -o orderer.example.com:<%= orderer %> -c mychannel -f /etc/hyperledger/configtx/channel.tx
+    docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" <%= dockerName %>_peer0.org1.example.com peer channel create -o orderer.example.com:<%= orderer %> -c mychannel -f /etc/hyperledger/configtx/channel.tx
     # Update the channel with the anchor peers
-    docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" <%= name %>_peer0.org1.example.com peer channel update -o orderer.example.com:<%= orderer %> -c mychannel -f /etc/hyperledger/configtx/Org1MSPanchors.tx
+    docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" <%= dockerName %>_peer0.org1.example.com peer channel update -o orderer.example.com:<%= orderer %> -c mychannel -f /etc/hyperledger/configtx/Org1MSPanchors.tx
     # Join peer0.org1.example.com to the channel.
-    docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" <%= name %>_peer0.org1.example.com peer channel join -b mychannel.block
+    docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" <%= dockerName %>_peer0.org1.example.com peer channel join -b mychannel.block
 fi

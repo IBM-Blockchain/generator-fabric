@@ -11,10 +11,10 @@ set -ev
 docker-compose -f docker-compose.yml kill && docker-compose -f docker-compose.yml down -v
 
 # remove chaincode docker images
-(docker ps -aq --filter "name=<%= name %>-*" | xargs docker rm -f) || true
-(docker images -aq "<%= name %>-*" | xargs docker rmi -f) || true
+(docker ps -aq --filter "name=<%= dockerName %>-*" | xargs docker rm -f) || true
+(docker images -aq "<%= dockerName %>-*" | xargs docker rmi -f) || true
 
 # remove previous crypto material and config transactions
-rm -fr admin-msp/* configtx/* crypto-config/* gateways/* nodes/* wallets/*
+rm -fr admin-msp/* configtx/* crypto-config/* wallets/local_wallet/*
 
 # Your system is now clean
