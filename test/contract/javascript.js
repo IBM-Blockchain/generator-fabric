@@ -46,7 +46,8 @@ describe('Contract (JavaScript)', () => {
             mocha: '^5.2.0',
             nyc: '^13.1.0',
             sinon: '^7.1.1',
-            'sinon-chai': '^3.3.0'
+            'sinon-chai': '^3.3.0',
+            winston: '^3.2.1'
         },
         nyc: {
             exclude: [
@@ -157,7 +158,8 @@ describe('Contract (JavaScript)', () => {
                 mocha: '^5.2.0',
                 nyc: '^13.1.0',
                 sinon: '^7.1.1',
-                'sinon-chai': '^3.3.0'
+                'sinon-chai': '^3.3.0',
+                winston: '^3.2.1'
             },
             nyc: {
                 exclude: [

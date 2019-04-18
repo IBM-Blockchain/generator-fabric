@@ -80,3 +80,6 @@ typings/
 tmp
 
 /.idea
+
+# gradle build files
+**/.gradle/**/*
