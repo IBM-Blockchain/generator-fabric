@@ -10,15 +10,16 @@ jobs:
     include:
         -
             stage: test
+            name: "Unit Tests"
             os: linux
             node_js: '8'
             script: |
                 set -ex
                 npm audit
                 npm test
-                ./scripts/run-integration-tests.sh
         -
             stage: test
+            name: "Unit Tests"
             os: osx
             node_js: '10'
             script: |
@@ -27,12 +28,40 @@ jobs:
                 npm test
         -
             stage: test
+            name: "Unit Tests"
             os: windows
             node_js: '10'
             script: |
                 set -ex
                 npm audit
                 npm test
+        -
+            stage: test
+            name: "Integration Tests (Chaincode)"
+            os: linux
+            node_js: '8'
+            script: |
+                set -ex
+                npm audit
+                ./scripts/run-integration-tests.sh chaincode_tests
+        -
+            stage: test
+            name: "Integration Tests (Contract)"
+            os: linux
+            node_js: '10'
+            script: |
+                set -ex
+                npm audit
+                ./scripts/run-integration-tests.sh contract_tests
+        -
+            stage: test
+            name: "Integration Tests (Network)"
+            os: linux
+            node_js: '8'
+            script: |
+                set -ex
+                npm audit
+                ./scripts/run-integration-tests.sh network_test
         -
             stage: deploy
             os: linux
