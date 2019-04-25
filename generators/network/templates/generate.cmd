@@ -18,7 +18,7 @@ for %%d in (admin-msp configtx crypto-config wallets\<%= name %>_wallet) do (
 )
 
 rem generate crypto material
-docker run --rm -v %CD%:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.0 cryptogen generate --config=./crypto-config.yaml
+docker run --rm -v %CD%:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.1 cryptogen generate --config=./crypto-config.yaml
 
 rem rename the certificate authority private key
 move /y .\crypto-config\peerOrganizations\org1.example.com\ca\*_sk .\crypto-config\peerOrganizations\org1.example.com\ca\ca.org1.example.com-key.pem
@@ -27,7 +27,7 @@ rem start the certificate authority
 docker-compose -f docker-compose.yml up -d ca.org1.example.com
 
 rem enroll the admin identity
-docker run --network <%= dockerName %>_basic --rm -v %CD%:/etc/hyperledger/fabric hyperledger/fabric-ca:1.4.0 fabric-ca-client enroll -u http://admin:adminpw@ca.org1.example.com:<%= certificateAuthority %> -M /etc/hyperledger/fabric/admin-msp
+docker run --network <%= dockerName %>_basic --rm -v %CD%:/etc/hyperledger/fabric hyperledger/fabric-ca:1.4.1 fabric-ca-client enroll -u http://admin:adminpw@ca.org1.example.com:<%= certificateAuthority %> -M /etc/hyperledger/fabric/admin-msp
 copy /y admin-msp\signcerts\cert.pem crypto-config\peerOrganizations\org1.example.com\msp\admincerts\
 copy /y admin-msp\signcerts\cert.pem crypto-config\peerOrganizations\org1.example.com\peers\peer0.org1.example.com\msp\admincerts\
 
@@ -35,13 +35,13 @@ rem stop the certificate authority
 docker-compose -f docker-compose.yml stop ca.org1.example.com
 
 rem generate genesis block for orderer
-docker run --rm -v %CD%:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.0 configtxgen -profile OneOrgOrdererGenesis -outputBlock ./configtx/genesis.block
+docker run --rm -v %CD%:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.1 configtxgen -profile OneOrgOrdererGenesis -outputBlock ./configtx/genesis.block
 
 rem generate channel configuration transaction
-docker run --rm -v %CD%:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.0 configtxgen -profile OneOrgChannel -outputCreateChannelTx ./configtx/channel.tx -channelID %CHANNEL_NAME%
+docker run --rm -v %CD%:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.1 configtxgen -profile OneOrgChannel -outputCreateChannelTx ./configtx/channel.tx -channelID %CHANNEL_NAME%
 
 rem generate anchor peer transaction
-docker run --rm -v %CD%:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.0 configtxgen -profile OneOrgChannel -outputAnchorPeersUpdate ./configtx/Org1MSPanchors.tx -channelID %CHANNEL_NAME% -asOrg Org1MSP
+docker run --rm -v %CD%:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.1 configtxgen -profile OneOrgChannel -outputAnchorPeersUpdate ./configtx/Org1MSPanchors.tx -channelID %CHANNEL_NAME% -asOrg Org1MSP
 
 rem generate gateways, nodes, and wallets
 node generate.js
