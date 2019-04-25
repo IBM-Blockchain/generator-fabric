@@ -5,7 +5,7 @@
 'use strict';
 
 const { ChaincodeStub, ClientIdentity } = require('fabric-shim');
-const { MyContract } = require('..');
+const { <%= assetPascalCase %>Contract } = require('..');
 const winston = require('winston');
 
 const chai = require('chai');
@@ -30,77 +30,77 @@ class TestContext {
 
 }
 
-describe('MyContract', () => {
+describe('<%= assetPascalCase %>Contract', () => {
 
     let contract;
     let ctx;
 
     beforeEach(() => {
-        contract = new MyContract();
+        contract = new <%= assetPascalCase %>Contract();
         ctx = new TestContext();
-        ctx.stub.getState.withArgs('1001').resolves(Buffer.from('{"value":"asset 1001 value"}'));
-        ctx.stub.getState.withArgs('1002').resolves(Buffer.from('{"value":"asset 1002 value"}'));
+        ctx.stub.getState.withArgs('1001').resolves(Buffer.from('{"value":"<%= assetSpaceSeparator %> 1001 value"}'));
+        ctx.stub.getState.withArgs('1002').resolves(Buffer.from('{"value":"<%= assetSpaceSeparator %> 1002 value"}'));
     });
 
-    describe('#assetExists', () => {
+    describe('#<%= assetCamelCase %>Exists', () => {
 
-        it('should return true for an asset', async () => {
-            await contract.assetExists(ctx, '1001').should.eventually.be.true;
+        it('should return true for a <%= assetSpaceSeparator %>', async () => {
+            await contract.<%= assetCamelCase %>Exists(ctx, '1001').should.eventually.be.true;
         });
 
-        it('should return false for an asset that does not exist', async () => {
-            await contract.assetExists(ctx, '1003').should.eventually.be.false;
-        });
-
-    });
-
-    describe('#createAsset', () => {
-
-        it('should create an asset', async () => {
-            await contract.createAsset(ctx, '1003', 'asset 1003 value');
-            ctx.stub.putState.should.have.been.calledOnceWithExactly('1003', Buffer.from('{"value":"asset 1003 value"}'));
-        });
-
-        it('should throw an error for an asset that already exists', async () => {
-            await contract.createAsset(ctx, '1001', 'myvalue').should.be.rejectedWith(/The asset 1001 already exists/);
+        it('should return false for a <%= assetSpaceSeparator %> that does not exist', async () => {
+            await contract.<%= assetCamelCase %>Exists(ctx, '1003').should.eventually.be.false;
         });
 
     });
 
-    describe('#readAsset', () => {
+    describe('#create<%= assetPascalCase %>', () => {
 
-        it('should return an asset', async () => {
-            await contract.readAsset(ctx, '1001').should.eventually.deep.equal({ value: 'asset 1001 value' });
+        it('should create a <%= assetSpaceSeparator %>', async () => {
+            await contract.create<%= assetPascalCase %>(ctx, '1003', '<%= assetSpaceSeparator %> 1003 value');
+            ctx.stub.putState.should.have.been.calledOnceWithExactly('1003', Buffer.from('{"value":"<%= assetSpaceSeparator %> 1003 value"}'));
         });
 
-        it('should throw an error for an asset that does not exist', async () => {
-            await contract.readAsset(ctx, '1003').should.be.rejectedWith(/The asset 1003 does not exist/);
-        });
-
-    });
-
-    describe('#updateAsset', () => {
-
-        it('should update an asset', async () => {
-            await contract.updateAsset(ctx, '1001', 'asset 1001 new value');
-            ctx.stub.putState.should.have.been.calledOnceWithExactly('1001', Buffer.from('{"value":"asset 1001 new value"}'));
-        });
-
-        it('should throw an error for an asset that does not exist', async () => {
-            await contract.updateAsset(ctx, '1003', 'asset 1003 new value').should.be.rejectedWith(/The asset 1003 does not exist/);
+        it('should throw an error for a <%= assetSpaceSeparator %> that already exists', async () => {
+            await contract.create<%= assetPascalCase %>(ctx, '1001', 'myvalue').should.be.rejectedWith(/The <%= assetSpaceSeparator %> 1001 already exists/);
         });
 
     });
 
-    describe('#deleteAsset', () => {
+    describe('#read<%= assetPascalCase %>', () => {
 
-        it('should delete an asset', async () => {
-            await contract.deleteAsset(ctx, '1001');
+        it('should return a <%= assetSpaceSeparator %>', async () => {
+            await contract.read<%= assetPascalCase %>(ctx, '1001').should.eventually.deep.equal({ value: '<%= assetSpaceSeparator %> 1001 value' });
+        });
+
+        it('should throw an error for a <%= assetSpaceSeparator %> that does not exist', async () => {
+            await contract.read<%= assetPascalCase %>(ctx, '1003').should.be.rejectedWith(/The <%= assetSpaceSeparator %> 1003 does not exist/);
+        });
+
+    });
+
+    describe('#update<%= assetPascalCase %>', () => {
+
+        it('should update a <%= assetSpaceSeparator %>', async () => {
+            await contract.update<%= assetPascalCase %>(ctx, '1001', '<%= assetSpaceSeparator %> 1001 new value');
+            ctx.stub.putState.should.have.been.calledOnceWithExactly('1001', Buffer.from('{"value":"<%= assetSpaceSeparator %> 1001 new value"}'));
+        });
+
+        it('should throw an error for a <%= assetSpaceSeparator %> that does not exist', async () => {
+            await contract.update<%= assetPascalCase %>(ctx, '1003', '<%= assetSpaceSeparator %> 1003 new value').should.be.rejectedWith(/The <%= assetSpaceSeparator %> 1003 does not exist/);
+        });
+
+    });
+
+    describe('#delete<%= assetPascalCase %>', () => {
+
+        it('should delete a <%= assetSpaceSeparator %>', async () => {
+            await contract.delete<%= assetPascalCase %>(ctx, '1001');
             ctx.stub.deleteState.should.have.been.calledOnceWithExactly('1001');
         });
 
-        it('should throw an error for an asset that does not exist', async () => {
-            await contract.deleteAsset(ctx, '1003').should.be.rejectedWith(/The asset 1003 does not exist/);
+        it('should throw an error for a <%= assetSpaceSeparator %> that does not exist', async () => {
+            await contract.delete<%= assetPascalCase %>(ctx, '1003').should.be.rejectedWith(/The <%= assetSpaceSeparator %> 1003 does not exist/);
         });
 
     });

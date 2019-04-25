@@ -4,6 +4,8 @@
 
 'use strict';
 
+const camelcase = require('camelcase');
+const decamelize = require('decamelize');
 const Generator = require('yeoman-generator');
 const path = require('path');
 const process = require('process');
@@ -47,15 +49,33 @@ module.exports = class extends Generator {
             name : 'license',
             message : 'Please specify the contract license:',
             when : () => !this.options.license
+        }, {
+            type: 'input',
+            name: 'asset',
+            message: 'Please specify the asset type:',
+            when: () => !this.options.asset
         }];
         const answers = await this.prompt(questions);
         Object.assign(this.options, answers);
         this.options.spdxAndLicense = `SPDX-License-Identifier: ${this.options.license}`;
+        this.options.assetCamelCase = camelcase(this.options.asset);
+        this.options.assetPascalCase = camelcase(this.options.asset, { pascalCase: true });
+        this.options.assetDashSeparator = decamelize(this.options.assetCamelCase, '-');
+        this.options.assetSpaceSeparator = decamelize(this.options.assetCamelCase, ' ');
     }
 
     async writing () {
         console.log('Generating files...');
         this.fs.copyTpl(this.templatePath(this.options.language), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+        if (this.options.language === 'javascript') {
+            this.fs.move(this.destinationPath('lib/my-contract.js'), this.destinationPath(`lib/${this.options.assetDashSeparator}-contract.js`));
+            this.fs.move(this.destinationPath('test/my-contract.js'), this.destinationPath(`test/${this.options.assetDashSeparator}-contract.js`));
+        }
+        if (this.options.language === 'typescript') {
+            this.fs.move(this.destinationPath('src/my-asset.ts'), this.destinationPath(`src/${this.options.assetDashSeparator}.ts`));
+            this.fs.move(this.destinationPath('src/my-contract.ts'), this.destinationPath(`src/${this.options.assetDashSeparator}-contract.ts`));
+            this.fs.move(this.destinationPath('src/my-contract.spec.ts'), this.destinationPath(`src/${this.options.assetDashSeparator}-contract.spec.ts`));
+        }
         // npm install does dumb stuff and renames our gitignore to npmignore, so rename it back!
         this.fs.move(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
         this.fs.move(this.destinationPath('.npmignore-hidefromnpm'), this.destinationPath('.npmignore'));

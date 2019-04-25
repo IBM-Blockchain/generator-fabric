@@ -5,7 +5,7 @@
 import { Object, Property } from 'fabric-contract-api';
 
 @Object()
-export class MyAsset {
+export class <%= assetPascalCase %> {
 
     @Property()
     public value: string;

@@ -2,7 +2,7 @@
  * <%= spdxAndLicense // SPDX-License-Identifier: Apache-2.0 %>
  */
 
-import { MyContract } from './my-contract';
-export { MyContract } from './my-contract';
+import { <%= assetPascalCase %>Contract } from './<%= assetDashSeparator %>-contract';
+export { <%= assetPascalCase %>Contract } from './<%= assetDashSeparator %>-contract';
 
-export const contracts: any[] = [ MyContract ];
+export const contracts: any[] = [ <%= assetPascalCase %>Contract ];

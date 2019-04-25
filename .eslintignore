@@ -3,4 +3,5 @@
 #
 
 coverage
+generators/*/templates/**
 tmp

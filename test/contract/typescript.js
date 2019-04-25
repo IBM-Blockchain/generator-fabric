@@ -25,14 +25,15 @@ describe('Contract (TypeScript)', () => {
                 version: '0.0.1',
                 description: 'My TypeScript Contract',
                 author: 'James Conga',
-                license: 'WTFPL'
+                license: 'WTFPL',
+                asset: 'conga'
             });
         assert.file([
             '.vscode/extensions.json',
             '.vscode/launch.json',
-            'src/my-asset.ts',
-            'src/my-contract.spec.ts',
-            'src/my-contract.ts',
+            'src/conga.ts',
+            'src/conga-contract.spec.ts',
+            'src/conga-contract.ts',
             'src/index.ts',
             '.editorconfig',
             '.gitignore',
@@ -41,15 +42,15 @@ describe('Contract (TypeScript)', () => {
             'tsconfig.json',
             'tslint.json'
         ]);
-        assert.fileContent('src/my-asset.ts', /SPDX-License-Identifier: WTFPL/);
-        assert.fileContent('src/my-asset.ts', /export class MyAsset {/);
-        assert.fileContent('src/my-contract.ts', /SPDX-License-Identifier: WTFPL/);
-        assert.fileContent('src/my-contract.ts', /export class MyContract extends Contract {/);
-        assert.fileContent('src/my-contract.ts', /public async assetExists\(ctx: Context, assetId: string\): Promise<boolean> {/);
-        assert.fileContent('src/my-contract.ts', /public async createAsset\(ctx: Context, assetId: string, value: string\): Promise<void> {/);
-        assert.fileContent('src/my-contract.ts', /public async readAsset\(ctx: Context, assetId: string\): Promise<MyAsset> {/);
-        assert.fileContent('src/my-contract.ts', /public async updateAsset\(ctx: Context, assetId: string, newValue: string\): Promise<void> {/);
-        assert.fileContent('src/my-contract.ts', /public async deleteAsset\(ctx: Context, assetId: string\): Promise<void> {/);
+        assert.fileContent('src/conga.ts', /SPDX-License-Identifier: WTFPL/);
+        assert.fileContent('src/conga.ts', /export class Conga {/);
+        assert.fileContent('src/conga-contract.ts', /SPDX-License-Identifier: WTFPL/);
+        assert.fileContent('src/conga-contract.ts', /export class CongaContract extends Contract {/);
+        assert.fileContent('src/conga-contract.ts', /public async congaExists\(ctx: Context, congaId: string\): Promise<boolean> {/);
+        assert.fileContent('src/conga-contract.ts', /public async createConga\(ctx: Context, congaId: string, value: string\): Promise<void> {/);
+        assert.fileContent('src/conga-contract.ts', /public async readConga\(ctx: Context, congaId: string\): Promise<Conga> {/);
+        assert.fileContent('src/conga-contract.ts', /public async updateConga\(ctx: Context, congaId: string, newValue: string\): Promise<void> {/);
+        assert.fileContent('src/conga-contract.ts', /public async deleteConga\(ctx: Context, congaId: string\): Promise<void> {/);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.deep.equal({
             name: 'my-typescript-contract',

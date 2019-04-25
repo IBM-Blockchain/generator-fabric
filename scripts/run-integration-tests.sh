@@ -216,7 +216,7 @@ contract_test() {
 }
 
 javascript_contract_package() {
-    yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0
+    yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
     npm audit
     npm test
     date
@@ -235,7 +235,7 @@ javascript_contract_package() {
 }
 
 typescript_contract_package() {
-    yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0
+    yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
     npm audit
     npm test
     npm run build
@@ -292,7 +292,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["assetExists","1001"]}'
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["congaExists","1001"]}'
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -303,7 +303,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["createAsset","1001","asset 1001 value"]}' --waitForEvent
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["createConga","1001","conga 1001 value"]}' --waitForEvent
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -314,7 +314,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["assetExists","1001"]}'
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["congaExists","1001"]}'
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -325,7 +325,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["readAsset","1001"]}'
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["readConga","1001"]}'
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -336,7 +336,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["updateAsset","1001","asset 1001 new value"]}' --waitForEvent
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["updateConga","1001","conga 1001 new value"]}' --waitForEvent
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -347,7 +347,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["readAsset","1001"]}'
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["readConga","1001"]}'
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -358,7 +358,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["deleteAsset","1001"]}' --waitForEvent
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["deleteConga","1001"]}' --waitForEvent
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -369,7 +369,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["assetExists","1001"]}'
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["congaExists","1001"]}'
     date
 }
 
