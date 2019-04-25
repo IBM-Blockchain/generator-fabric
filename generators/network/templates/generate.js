@@ -13,7 +13,7 @@ const adminIdentityKeystorePath = path.resolve(adminIdentityMspPath, 'keystore')
 const adminIdentityKeyPath = fs.readdirSync(adminIdentityKeystorePath).filter(key => !key.startsWith('.')).map(key => path.resolve(adminIdentityKeystorePath, key))[0];
 const adminIdentity = {
     name: 'admin',
-    certificate: fs.readFileSync(adminIdentityCertificatePath, 'base64'),
+    cert: fs.readFileSync(adminIdentityCertificatePath, 'base64'),
     private_key: fs.readFileSync(adminIdentityKeyPath, 'base64'),
     msp_id: 'Org1MSP'
 };
