@@ -17,20 +17,22 @@
     "author": "<%= author %>",
     "license": "<%= license %>",
     "dependencies": {
-        "fabric-contract-api": "1.4.0",
-        "fabric-shim": "1.4.0"
+        "fabric-contract-api": "1.4.1",
+        "fabric-shim": "1.4.1"
     },
     "devDependencies": {
         "chai": "^4.2.0",
+        "chai-as-promised": "^7.1.1",
         "eslint": "^5.9.0",
         "mocha": "^5.2.0",
-        "nyc": "^13.1.0",
+        "nyc": "^14.0.0",
         "sinon": "^7.1.1",
         "sinon-chai": "^3.3.0",
         "winston": "^3.2.1"
     },
     "nyc": {
         "exclude": [
+            ".eslintrc.js",
             "coverage/**",
             "test/**"
         ],

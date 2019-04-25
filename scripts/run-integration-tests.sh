@@ -100,6 +100,7 @@ java_chaincode_package() {
 
 javascript_chaincode_package() {
     yo fabric:chaincode -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Chaincode" --name=${LANGUAGE}-chaincode --version=0.0.1 --license=Apache-2.0
+    npm audit
     npm test
     date
     ${RETRY} docker run \
@@ -136,6 +137,7 @@ kotlin_chaincode_package() {
 
 typescript_chaincode_package() {
     yo fabric:chaincode -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Chaincode" --name=${LANGUAGE}-chaincode --version=0.0.1 --license=Apache-2.0
+    npm audit
     npm test
     npm run build
     date
@@ -215,6 +217,7 @@ contract_test() {
 
 javascript_contract_package() {
     yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0
+    npm audit
     npm test
     date
     ${RETRY} docker run \
@@ -233,6 +236,7 @@ javascript_contract_package() {
 
 typescript_contract_package() {
     yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0
+    npm audit
     npm test
     npm run build
     date
@@ -273,7 +277,7 @@ common_contract_deploy() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -v 0.0.1 -c '{"Args":["instantiate"]}'
+        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -v 0.0.1 -c '{"Args":[]}'
     date
 }
 
@@ -288,7 +292,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["transaction1","hello"]}' --waitForEvent
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["assetExists","1001"]}'
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -299,7 +303,73 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["transaction2","hello","world"]}' --waitForEvent
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["createAsset","1001","asset 1001 value"]}' --waitForEvent
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["assetExists","1001"]}'
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["readAsset","1001"]}'
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["updateAsset","1001","asset 1001 new value"]}' --waitForEvent
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["readAsset","1001"]}'
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["deleteAsset","1001"]}' --waitForEvent
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["assetExists","1001"]}'
     date
 }
 
@@ -316,12 +386,19 @@ network_test() {
 }
 
 pushd tmp
-chaincode_tests
-contract_tests
-network_test
+if [ -z "$1" ]
+then
+    chaincode_tests
+    contract_tests
+    network_test
+else
+    $1
+fi
 popd
 
 pushd tmp/fabric-samples/basic-network
+# Don't really care if these stop/teardown scripts fail
+set +e
 ./stop.sh
 ./teardown.sh
 popd
