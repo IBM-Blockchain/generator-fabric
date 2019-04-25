@@ -13,7 +13,7 @@ for /f "tokens=*" %%i in ('docker ps -aq --filter "name=<%= dockerName %>-*"') d
 for /f "tokens=*" %%i in ('docker images -aq "<%= dockerName %>-*"') do docker rmi -f %%i
 
 rem remove previous crypto material and config transactions
-for %%d in (admin-msp configtx crypto-config wallets\local_wallet) do (
+for %%d in (admin-msp configtx crypto-config wallets\<%= name %>_wallet) do (
   pushd %%d
   rmdir /q/s .
   popd
