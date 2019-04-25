@@ -4,7 +4,7 @@
 
 'use strict';
 
-const MyContract = require('./lib/my-contract');
+const <%= assetPascalCase %>Contract = require('./lib/<%= assetDashSeparator %>-contract');
 
-module.exports.MyContract = MyContract;
-module.exports.contracts = [ MyContract ];
+module.exports.<%= assetPascalCase %>Contract = <%= assetPascalCase %>Contract;
+module.exports.contracts = [ <%= assetPascalCase %>Contract ];

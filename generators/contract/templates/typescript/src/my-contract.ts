@@ -3,61 +3,61 @@
  */
 
 import { Context, Contract, Info, Returns, Transaction } from 'fabric-contract-api';
-import { MyAsset } from './my-asset';
+import { <%= assetPascalCase %> } from './<%= assetDashSeparator %>';
 
-@Info({title: 'MyContract', description: '<%= description %>' })
-export class MyContract extends Contract {
+@Info({title: '<%= assetPascalCase %>Contract', description: '<%= description %>' })
+export class <%= assetPascalCase %>Contract extends Contract {
 
     @Transaction(false)
     @Returns('boolean')
-    public async assetExists(ctx: Context, assetId: string): Promise<boolean> {
-        const buffer = await ctx.stub.getState(assetId);
+    public async <%= assetCamelCase %>Exists(ctx: Context, <%= assetCamelCase %>Id: string): Promise<boolean> {
+        const buffer = await ctx.stub.getState(<%= assetCamelCase %>Id);
         return (!!buffer && buffer.length > 0);
     }
 
     @Transaction()
-    public async createAsset(ctx: Context, assetId: string, value: string): Promise<void> {
-        const exists = await this.assetExists(ctx, assetId);
+    public async create<%= assetPascalCase %>(ctx: Context, <%= assetCamelCase %>Id: string, value: string): Promise<void> {
+        const exists = await this.<%= assetCamelCase %>Exists(ctx, <%= assetCamelCase %>Id);
         if (exists) {
-            throw new Error(`The asset ${assetId} already exists`);
+            throw new Error(`The <%= assetSpaceSeparator %> ${<%= assetCamelCase %>Id} already exists`);
         }
-        const asset = new MyAsset();
-        asset.value = value;
-        const buffer = Buffer.from(JSON.stringify(asset));
-        await ctx.stub.putState(assetId, buffer);
+        const <%= assetCamelCase %> = new <%= assetPascalCase %>();
+        <%= assetCamelCase %>.value = value;
+        const buffer = Buffer.from(JSON.stringify(<%= assetCamelCase %>));
+        await ctx.stub.putState(<%= assetCamelCase %>Id, buffer);
     }
 
     @Transaction(false)
-    @Returns('MyAsset')
-    public async readAsset(ctx: Context, assetId: string): Promise<MyAsset> {
-        const exists = await this.assetExists(ctx, assetId);
+    @Returns('<%= assetPascalCase %>')
+    public async read<%= assetPascalCase %>(ctx: Context, <%= assetCamelCase %>Id: string): Promise<<%= assetPascalCase %>> {
+        const exists = await this.<%= assetCamelCase %>Exists(ctx, <%= assetCamelCase %>Id);
         if (!exists) {
-            throw new Error(`The asset ${assetId} does not exist`);
+            throw new Error(`The <%= assetSpaceSeparator %> ${<%= assetCamelCase %>Id} does not exist`);
         }
-        const buffer = await ctx.stub.getState(assetId);
-        const asset = JSON.parse(buffer.toString()) as MyAsset;
-        return asset;
+        const buffer = await ctx.stub.getState(<%= assetCamelCase %>Id);
+        const <%= assetCamelCase %> = JSON.parse(buffer.toString()) as <%= assetPascalCase %>;
+        return <%= assetCamelCase %>;
     }
 
     @Transaction()
-    public async updateAsset(ctx: Context, assetId: string, newValue: string): Promise<void> {
-        const exists = await this.assetExists(ctx, assetId);
+    public async update<%= assetPascalCase %>(ctx: Context, <%= assetCamelCase %>Id: string, newValue: string): Promise<void> {
+        const exists = await this.<%= assetCamelCase %>Exists(ctx, <%= assetCamelCase %>Id);
         if (!exists) {
-            throw new Error(`The asset ${assetId} does not exist`);
+            throw new Error(`The <%= assetSpaceSeparator %> ${<%= assetCamelCase %>Id} does not exist`);
         }
-        const asset = new MyAsset();
-        asset.value = newValue;
-        const buffer = Buffer.from(JSON.stringify(asset));
-        await ctx.stub.putState(assetId, buffer);
+        const <%= assetCamelCase %> = new <%= assetPascalCase %>();
+        <%= assetCamelCase %>.value = newValue;
+        const buffer = Buffer.from(JSON.stringify(<%= assetCamelCase %>));
+        await ctx.stub.putState(<%= assetCamelCase %>Id, buffer);
     }
 
     @Transaction()
-    public async deleteAsset(ctx: Context, assetId: string): Promise<void> {
-        const exists = await this.assetExists(ctx, assetId);
+    public async delete<%= assetPascalCase %>(ctx: Context, <%= assetCamelCase %>Id: string): Promise<void> {
+        const exists = await this.<%= assetCamelCase %>Exists(ctx, <%= assetCamelCase %>Id);
         if (!exists) {
-            throw new Error(`The asset ${assetId} does not exist`);
+            throw new Error(`The <%= assetSpaceSeparator %> ${<%= assetCamelCase %>Id} does not exist`);
         }
-        await ctx.stub.deleteState(assetId);
+        await ctx.stub.deleteState(<%= assetCamelCase %>Id);
     }
 
 }
