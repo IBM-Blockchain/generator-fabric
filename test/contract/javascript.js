@@ -42,15 +42,17 @@ describe('Contract (JavaScript)', () => {
         },
         devDependencies: {
             chai: '^4.2.0',
+            'chai-as-promised': '^7.1.1',
             eslint: '^5.9.0',
             mocha: '^5.2.0',
-            nyc: '^13.1.0',
+            nyc: '^14.0.0',
             sinon: '^7.1.1',
             'sinon-chai': '^3.3.0',
             winston: '^3.2.1'
         },
         nyc: {
             exclude: [
+                '.eslintrc.js',
                 'coverage/**',
                 'test/**'
             ],
@@ -97,9 +99,11 @@ describe('Contract (JavaScript)', () => {
         ]);
         assert.fileContent('lib/my-contract.js', /SPDX-License-Identifier: WTFPL/);
         assert.fileContent('lib/my-contract.js', /class MyContract extends Contract {/);
-        assert.fileContent('lib/my-contract.js', /async instantiate\(ctx\) {/);
-        assert.fileContent('lib/my-contract.js', /async transaction1\(ctx, arg1\) {/);
-        assert.fileContent('lib/my-contract.js', /async transaction2\(ctx, arg1, arg2\) {/);
+        assert.fileContent('lib/my-contract.js', /async assetExists\(ctx, assetId\) {/);
+        assert.fileContent('lib/my-contract.js', /async createAsset\(ctx, assetId, value\) {/);
+        assert.fileContent('lib/my-contract.js', /async readAsset\(ctx, assetId\) {/);
+        assert.fileContent('lib/my-contract.js', /async updateAsset\(ctx, assetId, newValue\) {/);
+        assert.fileContent('lib/my-contract.js', /async deleteAsset\(ctx, assetId\) {/);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.deep.equal(genericPackage);
     });
@@ -129,9 +133,11 @@ describe('Contract (JavaScript)', () => {
             'package.json'
         ]);
         assert.fileContent('lib/my-contract.js', /class MyContract extends Contract {/);
-        assert.fileContent('lib/my-contract.js', /async instantiate\(ctx\) {/);
-        assert.fileContent('lib/my-contract.js', /async transaction1\(ctx, arg1\) {/);
-        assert.fileContent('lib/my-contract.js', /async transaction2\(ctx, arg1, arg2\) {/);
+        assert.fileContent('lib/my-contract.js', /async assetExists\(ctx, assetId\) {/);
+        assert.fileContent('lib/my-contract.js', /async createAsset\(ctx, assetId, value\) {/);
+        assert.fileContent('lib/my-contract.js', /async readAsset\(ctx, assetId\) {/);
+        assert.fileContent('lib/my-contract.js', /async updateAsset\(ctx, assetId, newValue\) {/);
+        assert.fileContent('lib/my-contract.js', /async deleteAsset\(ctx, assetId\) {/);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.deep.equal(genericPackage);
     });
@@ -154,15 +160,17 @@ describe('Contract (JavaScript)', () => {
             },
             devDependencies: {
                 chai: '^4.2.0',
+                'chai-as-promised': '^7.1.1',
                 eslint: '^5.9.0',
                 mocha: '^5.2.0',
-                nyc: '^13.1.0',
+                nyc: '^14.0.0',
                 sinon: '^7.1.1',
                 'sinon-chai': '^3.3.0',
                 winston: '^3.2.1'
             },
             nyc: {
                 exclude: [
+                    '.eslintrc.js',
                     'coverage/**',
                     'test/**'
                 ],
@@ -199,9 +207,11 @@ describe('Contract (JavaScript)', () => {
         ]);
 
         assert.fileContent('lib/my-contract.js', /class MyContract extends Contract {/);
-        assert.fileContent('lib/my-contract.js', /async instantiate\(ctx\) {/);
-        assert.fileContent('lib/my-contract.js', /async transaction1\(ctx, arg1\) {/);
-        assert.fileContent('lib/my-contract.js', /async transaction2\(ctx, arg1, arg2\) {/);
+        assert.fileContent('lib/my-contract.js', /async assetExists\(ctx, assetId\) {/);
+        assert.fileContent('lib/my-contract.js', /async createAsset\(ctx, assetId, value\) {/);
+        assert.fileContent('lib/my-contract.js', /async readAsset\(ctx, assetId\) {/);
+        assert.fileContent('lib/my-contract.js', /async updateAsset\(ctx, assetId, newValue\) {/);
+        assert.fileContent('lib/my-contract.js', /async deleteAsset\(ctx, assetId\) {/);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.deep.equal(genericPackage);
 
@@ -239,9 +249,11 @@ describe('Contract (JavaScript)', () => {
             'package.json'
         ]);
         assert.fileContent('lib/my-contract.js', /class MyContract extends Contract {/);
-        assert.fileContent('lib/my-contract.js', /async instantiate\(ctx\) {/);
-        assert.fileContent('lib/my-contract.js', /async transaction1\(ctx, arg1\) {/);
-        assert.fileContent('lib/my-contract.js', /async transaction2\(ctx, arg1, arg2\) {/);
+        assert.fileContent('lib/my-contract.js', /async assetExists\(ctx, assetId\) {/);
+        assert.fileContent('lib/my-contract.js', /async createAsset\(ctx, assetId, value\) {/);
+        assert.fileContent('lib/my-contract.js', /async readAsset\(ctx, assetId\) {/);
+        assert.fileContent('lib/my-contract.js', /async updateAsset\(ctx, assetId, newValue\) {/);
+        assert.fileContent('lib/my-contract.js', /async deleteAsset\(ctx, assetId\) {/);
         const packageJSON = require(path.join(tmpdir, 'package.json'));
         packageJSON.should.deep.equal(genericPackage);
     });

@@ -90,12 +90,13 @@ describe('Chaincode (JavaScript)', () => {
                 chai: '^4.2.0',
                 eslint: '^5.9.0',
                 mocha: '^5.2.0',
-                nyc: '^13.1.0',
+                nyc: '^14.0.0',
                 sinon: '^7.1.1',
                 'sinon-chai': '^3.3.0'
             },
             nyc: {
                 exclude: [
+                    '.eslintrc.js',
                     'coverage/**',
                     'test/**'
                 ],
@@ -176,12 +177,13 @@ describe('Chaincode (JavaScript)', () => {
                 chai: '^4.2.0',
                 eslint: '^5.9.0',
                 mocha: '^5.2.0',
-                nyc: '^13.1.0',
+                nyc: '^14.0.0',
                 sinon: '^7.1.1',
                 'sinon-chai': '^3.3.0'
             },
             nyc: {
                 exclude: [
+                    '.eslintrc.js',
                     'coverage/**',
                     'test/**'
                 ],
@@ -265,12 +267,13 @@ describe('Chaincode (JavaScript)', () => {
                 chai: '^4.2.0',
                 eslint: '^5.9.0',
                 mocha: '^5.2.0',
-                nyc: '^13.1.0',
+                nyc: '^14.0.0',
                 sinon: '^7.1.1',
                 'sinon-chai': '^3.3.0'
             },
             nyc: {
                 exclude: [
+                    '.eslintrc.js',
                     'coverage/**',
                     'test/**'
                 ],
@@ -350,12 +353,13 @@ describe('Chaincode (JavaScript)', () => {
                 chai: '^4.2.0',
                 eslint: '^5.9.0',
                 mocha: '^5.2.0',
-                nyc: '^13.1.0',
+                nyc: '^14.0.0',
                 sinon: '^7.1.1',
                 'sinon-chai': '^3.3.0'
             },
             nyc: {
                 exclude: [
+                    '.eslintrc.js',
                     'coverage/**',
                     'test/**'
                 ],

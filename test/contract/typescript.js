@@ -30,6 +30,7 @@ describe('Contract (TypeScript)', () => {
         assert.file([
             '.vscode/extensions.json',
             '.vscode/launch.json',
+            'src/my-asset.ts',
             'src/my-contract.spec.ts',
             'src/my-contract.ts',
             'src/index.ts',
@@ -40,11 +41,15 @@ describe('Contract (TypeScript)', () => {
             'tsconfig.json',
             'tslint.json'
         ]);
+        assert.fileContent('src/my-asset.ts', /SPDX-License-Identifier: WTFPL/);
+        assert.fileContent('src/my-asset.ts', /export class MyAsset {/);
         assert.fileContent('src/my-contract.ts', /SPDX-License-Identifier: WTFPL/);
         assert.fileContent('src/my-contract.ts', /export class MyContract extends Contract {/);
-        assert.fileContent('src/my-contract.ts', /public async instantiate\(ctx: Context\): Promise<void> {/);
-        assert.fileContent('src/my-contract.ts', /public async transaction1\(ctx: Context, arg1: string\): Promise<string> {/);
-        assert.fileContent('src/my-contract.ts', /public async transaction2\(ctx: Context, arg1: string, arg2: string\): Promise<string> {/);
+        assert.fileContent('src/my-contract.ts', /public async assetExists\(ctx: Context, assetId: string\): Promise<boolean> {/);
+        assert.fileContent('src/my-contract.ts', /public async createAsset\(ctx: Context, assetId: string, value: string\): Promise<void> {/);
+        assert.fileContent('src/my-contract.ts', /public async readAsset\(ctx: Context, assetId: string\): Promise<MyAsset> {/);
+        assert.fileContent('src/my-contract.ts', /public async updateAsset\(ctx: Context, assetId: string, newValue: string\): Promise<void> {/);
+        assert.fileContent('src/my-contract.ts', /public async deleteAsset\(ctx: Context, assetId: string\): Promise<void> {/);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.deep.equal({
             name: 'my-typescript-contract',
@@ -74,13 +79,15 @@ describe('Contract (TypeScript)', () => {
             },
             devDependencies: {
                 '@types/chai': '^4.1.7',
+                '@types/chai-as-promised': '^7.1.0',
                 '@types/mocha': '^5.2.5',
                 '@types/node': '^10.12.10',
                 '@types/sinon': '^5.0.7',
                 '@types/sinon-chai': '^3.2.1',
                 chai: '^4.2.0',
+                'chai-as-promised': '^7.1.1',
                 mocha: '^5.2.0',
-                nyc: '^13.1.0',
+                nyc: '^14.0.0',
                 sinon: '^7.1.1',
                 'sinon-chai': '^3.3.0',
                 winston: '^3.2.1',
@@ -119,7 +126,7 @@ describe('Contract (TypeScript)', () => {
                 declaration: true,
                 sourceMap: true,
                 experimentalDecorators: true,
-                emitDecoratorMetadata: true,
+                emitDecoratorMetadata: true
             },
             include: [
                 './src/**/*'

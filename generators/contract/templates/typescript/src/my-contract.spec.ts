@@ -7,50 +7,95 @@ import { ChaincodeStub, ClientIdentity } from 'fabric-shim';
 import { MyContract } from '.';
 
 import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
 import winston = require('winston');
 
 chai.should();
+chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 class TestContext implements Context {
-    public stub: ChaincodeStub = sinon.createStubInstance(ChaincodeStub);
-    public clientIdentity: ClientIdentity = sinon.createStubInstance(ClientIdentity);
-    public logging: object = {
-        getLogger: sinon.createStubInstance(winston.createLogger().constructor),
+    public stub: sinon.SinonStubbedInstance<ChaincodeStub> = sinon.createStubInstance(ChaincodeStub);
+    public clientIdentity: sinon.SinonStubbedInstance<ClientIdentity> = sinon.createStubInstance(ClientIdentity);
+    public logging = {
+        getLogger: sinon.stub().returns(sinon.createStubInstance(winston.createLogger().constructor)),
         setLevel: sinon.stub(),
      };
 }
 
 describe('MyContract', () => {
 
-    describe('#instantiate', () => {
+    let contract: MyContract;
+    let ctx: TestContext;
 
-        it('should work', async () => {
-            const contract = new MyContract();
-            const ctx = new TestContext();
-            await contract.instantiate(ctx);
+    beforeEach(() => {
+        contract = new MyContract();
+        ctx = new TestContext();
+        ctx.stub.getState.withArgs('1001').resolves(Buffer.from('{"value":"asset 1001 value"}'));
+        ctx.stub.getState.withArgs('1002').resolves(Buffer.from('{"value":"asset 1002 value"}'));
+    });
+
+    describe('#assetExists', () => {
+
+        it('should return true for an asset', async () => {
+            await contract.assetExists(ctx, '1001').should.eventually.be.true;
+        });
+
+        it('should return false for an asset that does not exist', async () => {
+            await contract.assetExists(ctx, '1003').should.eventually.be.false;
         });
 
     });
 
-    describe('#transaction1', () => {
+    describe('#createAsset', () => {
 
-        it('should work', async () => {
-            const contract = new MyContract();
-            const ctx = new TestContext();
-            await contract.transaction1(ctx, 'hello');
+        it('should create an asset', async () => {
+            await contract.createAsset(ctx, '1003', 'asset 1003 value');
+            ctx.stub.putState.should.have.been.calledOnceWithExactly('1003', Buffer.from('{"value":"asset 1003 value"}'));
+        });
+
+        it('should throw an error for an asset that already exists', async () => {
+            await contract.createAsset(ctx, '1001', 'myvalue').should.be.rejectedWith(/The asset 1001 already exists/);
         });
 
     });
 
-    describe('#transaction2', () => {
+    describe('#readAsset', () => {
 
-        it('should work', async () => {
-            const contract = new MyContract();
-            const ctx = new TestContext();
-            await contract.transaction2(ctx, 'hello', 'world');
+        it('should return an asset', async () => {
+            await contract.readAsset(ctx, '1001').should.eventually.deep.equal({ value: 'asset 1001 value' });
+        });
+
+        it('should throw an error for an asset that does not exist', async () => {
+            await contract.readAsset(ctx, '1003').should.be.rejectedWith(/The asset 1003 does not exist/);
+        });
+
+    });
+
+    describe('#updateAsset', () => {
+
+        it('should update an asset', async () => {
+            await contract.updateAsset(ctx, '1001', 'asset 1001 new value');
+            ctx.stub.putState.should.have.been.calledOnceWithExactly('1001', Buffer.from('{"value":"asset 1001 new value"}'));
+        });
+
+        it('should throw an error for an asset that does not exist', async () => {
+            await contract.updateAsset(ctx, '1003', 'asset 1003 new value').should.be.rejectedWith(/The asset 1003 does not exist/);
+        });
+
+    });
+
+    describe('#deleteAsset', () => {
+
+        it('should delete an asset', async () => {
+            await contract.deleteAsset(ctx, '1001');
+            ctx.stub.deleteState.should.have.been.calledOnceWithExactly('1001');
+        });
+
+        it('should throw an error for an asset that does not exist', async () => {
+            await contract.deleteAsset(ctx, '1003').should.be.rejectedWith(/The asset 1003 does not exist/);
         });
 
     });

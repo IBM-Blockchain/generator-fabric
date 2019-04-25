@@ -39,7 +39,7 @@ describe('Network', () => {
             'stop.sh',
             'teardown.cmd',
             'teardown.sh',
-            'wallets/local_wallet/.gitkeep'
+            'wallets/local_fabric_wallet/.gitkeep'
         ]);
         assert.fileContent('.env', /COMPOSE_PROJECT_NAME=localfabric/);
         assert.fileContent('configtx.yaml', /Port: 17051/);
@@ -57,7 +57,10 @@ describe('Network', () => {
         assert.fileContent('docker-compose.yml', /- 17056:80/);
         assert.fileContent('gateways/local_fabric.json', /"url": "grpc:\/\/localhost:17051"/);
         assert.fileContent('gateways/local_fabric.json', /"url": "grpc:\/\/localhost:17051"/);
+        assert.fileContent('generate.cmd', /for %%d in \(admin-msp configtx crypto-config wallets\\local_fabric_wallet\) do \(/);
         assert.fileContent('generate.cmd', /http:\/\/admin:adminpw@ca.org1.example.com:17054/);
+        assert.fileContent('generate.js', /const identityPath = path.resolve\(__dirname, 'wallets', 'local_fabric_wallet', `\${identity.name}.json`\);/);
+        assert.fileContent('generate.sh', /rm -fr admin-msp\/\* configtx\/\* crypto-config\/\* wallets\/local_fabric_wallet\/\*/);
         assert.fileContent('generate.sh', /http:\/\/admin:adminpw@ca.org1.example.com:17054/);
         assert.fileContent('is_generated.cmd', /localfabric_orderer.example.com localfabric_ca.org1.example.com localfabric_peer0.org1.example.com localfabric_couchdb/);
         assert.fileContent('is_generated.sh', /localfabric_orderer.example.com localfabric_ca.org1.example.com localfabric_peer0.org1.example.com localfabric_couchdb/);
@@ -73,7 +76,9 @@ describe('Network', () => {
         assert.fileContent('start.cmd', /orderer.example.com:17050/);
         assert.fileContent('start.sh', /localfabric_peer0.org1.example.com/);
         assert.fileContent('start.sh', /orderer.example.com:17050/);
+        assert.fileContent('teardown.cmd', /for %%d in \(admin-msp configtx crypto-config wallets\\local_fabric_wallet\) do \(/);
         assert.fileContent('teardown.cmd', /for \/f "tokens=\*" %%i in \('docker ps -aq --filter "name=localfabric-\*"'\) do docker rm -f %%i/);
+        assert.fileContent('teardown.sh', /rm -fr admin-msp\/\* configtx\/\* crypto-config\/\* wallets\/local_fabric_wallet\/\*/);
         assert.fileContent('teardown.sh', /docker ps -aq --filter "name=localfabric-*" | xargs docker rm -f/);
     }
 

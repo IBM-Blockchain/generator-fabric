@@ -76,12 +76,13 @@ module.exports = class extends Generator {
     async writing() {
         console.log('Generating files...');
         this.fs.copyTpl(this.templatePath(), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+        this.fs.write(this.destinationPath(`wallets/${this.options.name}_wallet/.gitkeep`), '');
         this.fs.writeJSON(this.destinationPath('nodes/orderer.example.com.json'), {
             short_name: 'orderer.example.com',
             name: 'orderer.example.com',
             url: `grpc://localhost:${this.options.orderer}`,
             type: 'fabric-orderer',
-            wallet: 'local_wallet',
+            wallet: `${this.options.name}_wallet`,
             identity: 'admin',
             msp_id: 'OrdererMSP',
             container_name: `${this.options.dockerName}_orderer.example.com`
@@ -92,7 +93,7 @@ module.exports = class extends Generator {
             url: `grpc://localhost:${this.options.peerRequest}`,
             chaincode_url: `grpc://localhost:${this.options.peerChaincode}`,
             type: 'fabric-peer',
-            wallet: 'local_wallet',
+            wallet: `${this.options.name}_wallet`,
             identity: 'admin',
             msp_id: 'Org1MSP',
             container_name: `${this.options.dockerName}_peer0.org1.example.com`
@@ -103,7 +104,7 @@ module.exports = class extends Generator {
             url: `http://localhost:${this.options.certificateAuthority}`,
             type: 'fabric-ca',
             ca_name: 'ca.org1.example.com',
-            wallet: 'local_wallet',
+            wallet: `${this.options.name}_wallet`,
             identity: 'admin',
             msp_id: 'Org1MSP',
             container_name: `${this.options.dockerName}_ca.org1.example.com`
@@ -125,7 +126,7 @@ module.exports = class extends Generator {
         this.fs.writeJSON(this.destinationPath(`gateways/${this.options.name}.json`), {
             name: this.options.name,
             version: '1.0.0',
-            wallet: 'local_wallet',
+            wallet: `${this.options.name}_wallet`,
             client: {
                 organization: 'Org1',
                 connection: {
