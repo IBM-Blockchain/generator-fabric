@@ -80,7 +80,7 @@ module.exports = class extends Generator {
         this.fs.writeJSON(this.destinationPath('nodes/orderer.example.com.json'), {
             short_name: 'orderer.example.com',
             name: 'orderer.example.com',
-            url: `grpc://localhost:${this.options.orderer}`,
+            api_url: `grpc://localhost:${this.options.orderer}`,
             type: 'fabric-orderer',
             wallet: `${this.options.name}_wallet`,
             identity: 'admin',
@@ -90,7 +90,7 @@ module.exports = class extends Generator {
         this.fs.writeJSON(this.destinationPath('nodes/peer0.org1.example.com.json'), {
             short_name: 'peer0.org1.example.com',
             name: 'peer0.org1.example.com',
-            url: `grpc://localhost:${this.options.peerRequest}`,
+            api_url: `grpc://localhost:${this.options.peerRequest}`,
             chaincode_url: `grpc://localhost:${this.options.peerChaincode}`,
             type: 'fabric-peer',
             wallet: `${this.options.name}_wallet`,
@@ -101,7 +101,7 @@ module.exports = class extends Generator {
         this.fs.writeJSON(this.destinationPath('nodes/ca.org1.example.com.json'), {
             short_name: 'ca.org1.example.com',
             name: 'ca.org1.example.com',
-            url: `http://localhost:${this.options.certificateAuthority}`,
+            api_url: `http://localhost:${this.options.certificateAuthority}`,
             type: 'fabric-ca',
             ca_name: 'ca.org1.example.com',
             wallet: `${this.options.name}_wallet`,
@@ -112,14 +112,14 @@ module.exports = class extends Generator {
         this.fs.writeJSON(this.destinationPath('nodes/couchdb.json'), {
             short_name: 'couchdb',
             name: 'couchdb',
-            url: `http://localhost:${this.options.couchDB}`,
+            api_url: `http://localhost:${this.options.couchDB}`,
             type: 'couchdb',
             container_name: `${this.options.dockerName}_couchdb`
         }, null, 4);
         this.fs.writeJSON(this.destinationPath('nodes/logspout.json'), {
             short_name: 'logspout',
             name: 'logspout',
-            url: `http://localhost:${this.options.logspout}`,
+            api_url: `http://localhost:${this.options.logspout}`,
             type: 'logspout',
             container_name: `${this.options.dockerName}_logspout`
         }, null, 4);

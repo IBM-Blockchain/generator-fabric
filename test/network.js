@@ -66,12 +66,12 @@ describe('Network', () => {
         assert.fileContent('is_generated.sh', /localfabric_orderer.example.com localfabric_ca.org1.example.com localfabric_peer0.org1.example.com localfabric_couchdb/);
         assert.fileContent('is_running.cmd', /localfabric_orderer.example.com localfabric_ca.org1.example.com localfabric_peer0.org1.example.com localfabric_couchdb localfabric_logspout/);
         assert.fileContent('is_running.sh', /localfabric_orderer.example.com localfabric_ca.org1.example.com localfabric_peer0.org1.example.com localfabric_couchdb localfabric_logspout/);
-        assert.fileContent('nodes/orderer.example.com.json', /"url": "grpc:\/\/localhost:17050"/);
-        assert.fileContent('nodes/peer0.org1.example.com.json', /"url": "grpc:\/\/localhost:17051"/);
+        assert.fileContent('nodes/orderer.example.com.json', /"api_url": "grpc:\/\/localhost:17050"/);
+        assert.fileContent('nodes/peer0.org1.example.com.json', /"api_url": "grpc:\/\/localhost:17051"/);
         assert.fileContent('nodes/peer0.org1.example.com.json', /"chaincode_url": "grpc:\/\/localhost:17052"/);
-        assert.fileContent('nodes/ca.org1.example.com.json', /"url": "http:\/\/localhost:17054"/);
-        assert.fileContent('nodes/couchdb.json', /"url": "http:\/\/localhost:17055"/);
-        assert.fileContent('nodes/logspout.json', /"url": "http:\/\/localhost:17056"/);
+        assert.fileContent('nodes/ca.org1.example.com.json', /"api_url": "http:\/\/localhost:17054"/);
+        assert.fileContent('nodes/couchdb.json', /"api_url": "http:\/\/localhost:17055"/);
+        assert.fileContent('nodes/logspout.json', /"api_url": "http:\/\/localhost:17056"/);
         assert.fileContent('start.cmd', /localfabric_peer0.org1.example.com/);
         assert.fileContent('start.cmd', /orderer.example.com:17050/);
         assert.fileContent('start.sh', /localfabric_peer0.org1.example.com/);
