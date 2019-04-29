@@ -20,7 +20,7 @@ for /L %%i in (1, 1, %FABRIC_START_TIMEOUT%) do (
     docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" <%= dockerName %>_peer0.org1.example.com peer channel list > NUL 2>&1
     if errorlevel 1 (
         rem This is the closest thing that Windows has to the sleep command
-        choice /t 1 /c x /d x /n > NUL
+        node -e "setTimeout(() => true, 1000)"
     ) else (
         set i=%%i
         goto :done
