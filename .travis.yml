@@ -33,6 +33,8 @@ jobs:
             node_js: '10'
             script: |
                 set -ex
+                docker -v
+                docker run --rm hyperledger/fabric-tools cryptogen version
                 npm audit
                 npm test
         -
