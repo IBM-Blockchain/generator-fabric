@@ -64,21 +64,28 @@ module.exports = class extends Generator {
         this.options.assetSpaceSeparator = decamelize(this.options.assetCamelCase, ' ');
     }
 
+    _rename(from, to) {
+        if (from === to) {
+            return;
+        }
+        this.fs.move(from, to);
+    }
+
     async writing () {
         console.log('Generating files...');
         this.fs.copyTpl(this.templatePath(this.options.language), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
         if (this.options.language === 'javascript') {
-            this.fs.move(this.destinationPath('lib/my-contract.js'), this.destinationPath(`lib/${this.options.assetDashSeparator}-contract.js`));
-            this.fs.move(this.destinationPath('test/my-contract.js'), this.destinationPath(`test/${this.options.assetDashSeparator}-contract.js`));
+            this._rename(this.destinationPath('lib/my-contract.js'), this.destinationPath(`lib/${this.options.assetDashSeparator}-contract.js`));
+            this._rename(this.destinationPath('test/my-contract.js'), this.destinationPath(`test/${this.options.assetDashSeparator}-contract.js`));
         }
         if (this.options.language === 'typescript') {
-            this.fs.move(this.destinationPath('src/my-asset.ts'), this.destinationPath(`src/${this.options.assetDashSeparator}.ts`));
-            this.fs.move(this.destinationPath('src/my-contract.ts'), this.destinationPath(`src/${this.options.assetDashSeparator}-contract.ts`));
-            this.fs.move(this.destinationPath('src/my-contract.spec.ts'), this.destinationPath(`src/${this.options.assetDashSeparator}-contract.spec.ts`));
+            this._rename(this.destinationPath('src/my-asset.ts'), this.destinationPath(`src/${this.options.assetDashSeparator}.ts`));
+            this._rename(this.destinationPath('src/my-contract.ts'), this.destinationPath(`src/${this.options.assetDashSeparator}-contract.ts`));
+            this._rename(this.destinationPath('src/my-contract.spec.ts'), this.destinationPath(`src/${this.options.assetDashSeparator}-contract.spec.ts`));
         }
         // npm install does dumb stuff and renames our gitignore to npmignore, so rename it back!
-        this.fs.move(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
-        this.fs.move(this.destinationPath('.npmignore-hidefromnpm'), this.destinationPath('.npmignore'));
+        this._rename(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
+        this._rename(this.destinationPath('.npmignore-hidefromnpm'), this.destinationPath('.npmignore'));
     }
 
     async install () {
