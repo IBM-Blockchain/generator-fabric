@@ -57,6 +57,7 @@ services:
       - CORE_PEER_NETWORKID=<%= dockerName %>
       - CORE_PEER_LISTENADDRESS=0.0.0.0:<%= peerRequest %>
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:<%= peerChaincode %>
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:<%= peerRequest %>
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:<%= peerRequest %>
       - CORE_CHAINCODE_BUILDER=hyperledger/fabric-ccenv:1.4.1
       - CORE_CHAINCODE_GOLANG_RUNTIME=hyperledger/fabric-baseos:0.4.15
