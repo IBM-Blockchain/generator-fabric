@@ -177,6 +177,8 @@ Profiles:
             <<: *OrdererDefaults
             Organizations:
                 - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
         Consortiums:
             SampleConsortium:
                 Organizations:
@@ -187,4 +189,6 @@ Profiles:
             <<: *ApplicationDefaults
             Organizations:
                 - *Org1
+            Capabilities:
+                <<: *ApplicationCapabilities
 
