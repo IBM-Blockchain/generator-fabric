@@ -374,15 +374,24 @@ common_contract_test() {
 }
 
 network_test() {
+    VERSION=$1
     date
-    mkdir yofn
-    pushd yofn
-    yo fabric:network -- --name yofn --dockerName yofn --orderer 17050 --peerRequest 17051 --peerChaincode 17052 --certificateAuthority 17054 --couchDB 17055 --logspout 17056
-    ./generate.sh 
-    ./start.sh 
-    ./stop.sh 
+    mkdir yofn${VERSION}
+    pushd yofn${VERSION}
+    yo fabric:network -- --name yofn --dockerName yofn --orderer 17050 --peerRequest 17051 --peerChaincode 17052 --certificateAuthority 17054 --couchDB 17055 --logspout 17056 --version ${VERSION}
+    ./generate.sh
+    ./start.sh
+    ./stop.sh
     ./teardown.sh
     popd
+}
+
+network_tests() {
+    VERSIONS="1.4.1 2.0.0-alpha"
+    for VERSION in ${VERSIONS}
+    do
+        network_test ${VERSION}
+    done
 }
 
 pushd tmp
@@ -390,7 +399,7 @@ if [ -z "$1" ]
 then
     chaincode_tests
     contract_tests
-    network_test
+    network_tests
 else
     $1
 fi

@@ -61,7 +61,7 @@ jobs:
             script: |
                 set -ex
                 npm audit
-                ./scripts/run-integration-tests.sh network_test
+                ./scripts/run-integration-tests.sh network_tests
         -
             stage: deploy
             os: linux
