@@ -11,4 +11,7 @@ for volume in <%= dockerName %>_orderer.example.com <%= dockerName %>_ca.org1.ex
     exit 1
   fi
 done
+if [ ! -f generate.complete ]; then
+  exit 1
+fi
 exit 0

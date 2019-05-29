@@ -20,3 +20,4 @@ for %%d in (admin-msp configtx crypto-config wallets\<%= name %>_wallet) do (
 )
 
 rem Your system is now clean
+del /f generate.complete

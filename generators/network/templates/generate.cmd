@@ -10,12 +10,8 @@ set COMPOSE_CONVERT_WINDOWS_PATHS=1
 
 set CHANNEL_NAME=mychannel
 
-rem remove previous crypto material and config transactions
-for %%d in (admin-msp configtx crypto-config wallets\<%= name %>_wallet) do (
-  pushd %%d
-  rmdir /q/s .
-  popd
-)
+rem teardown any existing network
+cmd /c .\teardown.cmd
 
 rem generate crypto material
 docker run --rm -v %CD%:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.1 cryptogen generate --config=./crypto-config.yaml
@@ -45,3 +41,6 @@ docker run --rm -v %CD%:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyper
 
 rem generate gateways, nodes, and wallets
 node generate.js
+
+rem mark the process as complete
+copy /y nul generate.complete
