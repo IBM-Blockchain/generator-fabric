@@ -26,7 +26,7 @@ else
 fi
 
 pushd tmp
-curl -sSL http://bit.ly/2ysbOFE | bash -s 1.4.0
+curl -sSL http://bit.ly/2ysbOFE | bash -s 1.4.1
 pushd fabric-samples/basic-network
 export FABRIC_DIR="$(pwd)"
 ./start.sh
@@ -378,10 +378,36 @@ network_test() {
     mkdir yofn
     pushd yofn
     yo fabric:network -- --name yofn --dockerName yofn --orderer 17050 --peerRequest 17051 --peerChaincode 17052 --certificateAuthority 17054 --couchDB 17055 --logspout 17056
-    ./generate.sh 
-    ./start.sh 
-    ./stop.sh 
+    if ./is_generated.sh; then
+        echo is_generated.sh should not return 0 before generate.sh is run
+        exit 1
+    fi
+    ./generate.sh
+    if ! ./is_generated.sh; then
+        echo is_generated.sh should return 0 after generate.sh is run
+        exit 1
+    elif ./is_running.sh; then
+        echo is_running.sh should not return 0 before start.sh is run
+        exit 1
+    fi
+    ./start.sh
+    if ! ./is_running.sh; then
+        echo is_running.sh should return 0 after start.sh is run
+        exit 1
+    fi
+    ./stop.sh
+    if ./is_running.sh; then
+        echo is_running.sh should not return 0 after stop.sh is run
+        exit 1
+    fi
     ./teardown.sh
+    if ./is_running.sh; then
+        echo is_running.sh should not return 0 after stop.sh is run
+        exit 1
+    elif ./is_generated.sh; then
+        echo is_generated.sh should not return 0 after teardown.sh is run
+        exit 1
+    fi
     popd
 }
 

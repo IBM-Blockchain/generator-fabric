@@ -18,3 +18,4 @@ docker-compose -f docker-compose.yml kill && docker-compose -f docker-compose.ym
 rm -fr admin-msp/* configtx/* crypto-config/* wallets/<%= name %>_wallet/*
 
 # Your system is now clean
+rm -f generate.complete

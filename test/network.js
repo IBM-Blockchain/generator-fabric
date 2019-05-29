@@ -57,10 +57,8 @@ describe('Network', () => {
         assert.fileContent('docker-compose.yml', /- 17056:80/);
         assert.fileContent('gateways/local_fabric.json', /"url": "grpc:\/\/localhost:17051"/);
         assert.fileContent('gateways/local_fabric.json', /"url": "grpc:\/\/localhost:17051"/);
-        assert.fileContent('generate.cmd', /for %%d in \(admin-msp configtx crypto-config wallets\\local_fabric_wallet\) do \(/);
         assert.fileContent('generate.cmd', /http:\/\/admin:adminpw@ca.org1.example.com:17054/);
         assert.fileContent('generate.js', /const identityPath = path.resolve\(__dirname, 'wallets', 'local_fabric_wallet', `\${identity.name}.json`\);/);
-        assert.fileContent('generate.sh', /rm -fr admin-msp\/\* configtx\/\* crypto-config\/\* wallets\/local_fabric_wallet\/\*/);
         assert.fileContent('generate.sh', /http:\/\/admin:adminpw@ca.org1.example.com:17054/);
         assert.fileContent('is_generated.cmd', /localfabric_orderer.example.com localfabric_ca.org1.example.com localfabric_peer0.org1.example.com localfabric_couchdb/);
         assert.fileContent('is_generated.sh', /localfabric_orderer.example.com localfabric_ca.org1.example.com localfabric_peer0.org1.example.com localfabric_couchdb/);
