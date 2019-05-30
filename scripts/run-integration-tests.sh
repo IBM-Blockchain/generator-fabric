@@ -198,7 +198,7 @@ common_chaincode_test() {
 }
 
 contract_tests() {
-    LANGUAGES="javascript typescript"
+    LANGUAGES="javascript typescript java"
     for LANGUAGE in ${LANGUAGES}
     do
         contract_test ${LANGUAGE}
@@ -213,6 +213,24 @@ contract_test() {
     common_contract_deploy
     common_contract_test
     popd
+}
+
+java_contract_package() {
+    yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
+    ./gradlew clean build shadowJar
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode package -n ${LANGUAGE}-contract -v 0.0.1 -p /tmp/contract -l java /tmp/contract/contract.cds
+    date
 }
 
 javascript_contract_package() {

@@ -83,3 +83,9 @@ tmp
 
 # gradle build files
 **/.gradle/**/*
+
+# Ignore the .project and bin directories from java builds
+**/.project
+**/bin/
+**/.classpath
+**/.settings

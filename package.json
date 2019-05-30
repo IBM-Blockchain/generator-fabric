@@ -22,10 +22,12 @@
         "camelcase": "^5.3.1",
         "decamelize": "^3.2.0",
         "find-free-port": "^2.0.0",
+        "gradle-to-js": "^1.2.1",
         "yeoman-generator": "^2.0.5"
     },
     "devDependencies": {
         "chai": "^4.1.2",
+        "chai-as-promised": "^7.1.1",
         "eslint": "^5.15.3",
         "mocha": "^5.2.0",
         "nyc": "^14.0.0",
@@ -56,7 +58,8 @@
     },
     "contractLanguages": [
         "JavaScript",
-        "TypeScript"
+        "TypeScript",
+        "Java"
     ],
     "chaincodeLanguages": [
         "Go",
