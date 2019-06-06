@@ -53,7 +53,7 @@ services:
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
-      - CORE_CHAINCODE_MODE=${CORE_CHAINCODE_MODE:-net}
+      - CORE_CHAINCODE_MODE=dev
       - CORE_PEER_NETWORKID=<%= dockerName %>
       - CORE_PEER_LISTENADDRESS=0.0.0.0:<%= peerRequest %>
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:<%= peerChaincode %>
@@ -63,7 +63,7 @@ services:
       - CORE_CHAINCODE_GOLANG_RUNTIME=hyperledger/fabric-baseos:0.4.15
       - CORE_CHAINCODE_JAVA_RUNTIME=hyperledger/fabric-javaenv:1.4.1
       - CORE_CHAINCODE_NODE_RUNTIME=hyperledger/fabric-baseimage:0.4.15
-      - CORE_CHAINCODE_EXECUTETIMEOUT=${CORE_CHAINCODE_EXECUTETIMEOUT:-30s}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=99999s
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: peer node start
     ports:

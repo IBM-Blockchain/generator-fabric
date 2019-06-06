@@ -50,6 +50,8 @@ describe('Network', () => {
         assert.fileContent('docker-compose.yml', /- CORE_PEER_LISTENADDRESS=0.0.0.0:17051/);
         assert.fileContent('docker-compose.yml', /- CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:17052/);
         assert.fileContent('docker-compose.yml', /- CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:17051/);
+        assert.fileContent('docker-compose.yml', /- CORE_CHAINCODE_MODE=dev/);
+        assert.fileContent('docker-compose.yml', /- CORE_CHAINCODE_EXECUTETIMEOUT=99999s/);
         assert.fileContent('docker-compose.yml', /- 17051:17051/);
         assert.fileContent('docker-compose.yml', /- 17052:17052/);
         assert.fileContent('docker-compose.yml', /- FABRIC_CA_SERVER_PORT=17054/);
