@@ -17,7 +17,7 @@ isRunning() {
 }
 
 if [ "$#" -gt 0 ]; then
-    isRunning <%= dockerName %>-peer0.org1.example.com-$1
+    isRunning <%= dockerName %>-peer0.org1.example.com-$1-$2
 else
   for container in <%= dockerName %>_orderer.example.com <%= dockerName %>_ca.org1.example.com <%= dockerName %>_peer0.org1.example.com <%= dockerName %>_couchdb <%= dockerName %>_logspout; do
     isRunning $container;
