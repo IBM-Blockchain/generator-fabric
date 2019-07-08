@@ -64,6 +64,8 @@ describe('Network', () => {
         assert.fileContent('is_generated.sh', /localfabric_orderer.example.com localfabric_ca.org1.example.com localfabric_peer0.org1.example.com localfabric_couchdb/);
         assert.fileContent('is_running.cmd', /localfabric_orderer.example.com localfabric_ca.org1.example.com localfabric_peer0.org1.example.com localfabric_couchdb localfabric_logspout/);
         assert.fileContent('is_running.sh', /localfabric_orderer.example.com localfabric_ca.org1.example.com localfabric_peer0.org1.example.com localfabric_couchdb localfabric_logspout/);
+        assert.fileContent('kill_chaincode.sh', /docker stop localfabric-peer0.org1.example.com/);
+        assert.fileContent('kill_chaincode.cmd', /docker stop localfabric-peer0.org1.example.com/);
         assert.fileContent('nodes/orderer.example.com.json', /"api_url": "grpc:\/\/localhost:17050"/);
         assert.fileContent('nodes/peer0.org1.example.com.json', /"api_url": "grpc:\/\/localhost:17051"/);
         assert.fileContent('nodes/peer0.org1.example.com.json', /"chaincode_url": "grpc:\/\/localhost:17052"/);
