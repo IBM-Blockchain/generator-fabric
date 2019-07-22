@@ -22,7 +22,7 @@
         "camelcase": "^5.3.1",
         "decamelize": "^3.2.0",
         "find-free-port": "^2.0.0",
-        "gradle-to-js": "^1.2.1",
+        "gradle-to-js": "^2.0.0",
         "yeoman-generator": "^4.0.1"
     },
     "devDependencies": {
