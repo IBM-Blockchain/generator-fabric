@@ -20,7 +20,8 @@ module.exports = class extends Generator {
             choices : [
                 {name : 'JavaScript', value : 'javascript'},
                 {name : 'TypeScript', value : 'typescript'},
-                {name : 'Java', value : 'java'}
+                {name : 'Java', value : 'java'},
+                {name : 'Kotlin', value : 'kotlin'}
             ],
             when : () => !this.options.language
         }, {
@@ -99,6 +100,14 @@ module.exports = class extends Generator {
             this._rename(this.destinationPath(`${root}/MyContract.java`), this.destinationPath(`${root}/${this.options.assetPascalCase}Contract.java`));
             root = 'src/test/java/org/example';
             this._rename(this.destinationPath(`${root}/MyContractTest.java`), this.destinationPath(`${root}/${this.options.assetPascalCase}ContractTest.java`));
+        } else if (this.options.language === 'kotlin'){
+            this.fs.copyTpl(this.templatePath(this.options.language), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+            this._rename(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
+            let root = 'src/main/kotlin/org/example';
+            this._rename(this.destinationPath(`${root}/MyAsset.kt`), this.destinationPath(`${root}/${this.options.assetPascalCase}.kt`));
+            this._rename(this.destinationPath(`${root}/MyContract.kt`), this.destinationPath(`${root}/${this.options.assetPascalCase}Contract.kt`));
+            root = 'src/test/kotlin/org/example';
+            this._rename(this.destinationPath(`${root}/MyContractTest.kt`), this.destinationPath(`${root}/${this.options.assetPascalCase}ContractTest.kt`));
         } else {
             // language not understood
             console.log(`Sorry ${this.options.language} is not recognized`);
@@ -112,7 +121,7 @@ module.exports = class extends Generator {
                 this.installDependencies({bower : false, npm : true});
             }
         } else {
-            console.log('Please run  \'./gradlew clean build shadowJar\' to build the Java Smart Contract');
+            console.log('Please run  \'./gradlew clean build shadowJar\' to build the Java/Kotlin Smart Contract');
         }
     }
 
