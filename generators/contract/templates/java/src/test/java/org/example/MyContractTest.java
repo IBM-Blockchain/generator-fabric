@@ -31,7 +31,7 @@ public final class <%= assetPascalCase %>ContractTest {
             Context ctx = mock(Context.class);
             ChaincodeStub stub = mock(ChaincodeStub.class);
             when(ctx.getStub()).thenReturn(stub);
-            
+
             when(stub.getState("10001")).thenReturn(new byte[] {});
             boolean result = contract.<%= assetCamelCase %>Exists(ctx,"10001");
 
@@ -45,7 +45,7 @@ public final class <%= assetPascalCase %>ContractTest {
             Context ctx = mock(Context.class);
             ChaincodeStub stub = mock(ChaincodeStub.class);
             when(ctx.getStub()).thenReturn(stub);
-            
+
             when(stub.getState("10001")).thenReturn(new byte[] {42});
             boolean result = contract.<%= assetCamelCase %>Exists(ctx,"10001");
 
@@ -58,8 +58,8 @@ public final class <%= assetPascalCase %>ContractTest {
             <%= assetPascalCase %>Contract contract = new  <%= assetPascalCase %>Contract();
             Context ctx = mock(Context.class);
             ChaincodeStub stub = mock(ChaincodeStub.class);
-            when(ctx.getStub()).thenReturn(stub);           
-            
+            when(ctx.getStub()).thenReturn(stub);
+
             when(stub.getState("10002")).thenReturn(null);
             boolean result = contract.<%= assetCamelCase %>Exists(ctx,"10002");
 
@@ -79,9 +79,9 @@ public final class <%= assetPascalCase %>ContractTest {
             ChaincodeStub stub = mock(ChaincodeStub.class);
             when(ctx.getStub()).thenReturn(stub);
 
-            String json = "{\"value\":\"TheAsset\"}";
+            String json = "{\"value\":\"The<%= assetPascalCase %>\"}";
 
-            contract.create<%= assetPascalCase %>(ctx, "10001", "TheAsset");
+            contract.create<%= assetPascalCase %>(ctx, "10001", "The<%= assetPascalCase %>");
 
             verify(stub).putState("10001", json.getBytes(UTF_8));
         }
@@ -96,7 +96,7 @@ public final class <%= assetPascalCase %>ContractTest {
             when(stub.getState("10002")).thenReturn(new byte[] { 42 });
 
             Exception thrown = assertThrows(RuntimeException.class, () -> {
-                contract.create<%= assetPascalCase %>(ctx, "10002", "TheAsset");
+                contract.create<%= assetPascalCase %>(ctx, "10002", "The<%= assetPascalCase %>");
             });
 
             assertEquals(thrown.getMessage(), "The asset 10002 already exists");
@@ -148,7 +148,7 @@ public final class <%= assetPascalCase %>ContractTest {
             when(stub.getState("10001")).thenReturn(null);
 
             Exception thrown = assertThrows(RuntimeException.class, () -> {
-                contract.update<%= assetPascalCase %>(ctx, "10001", "TheAsset");
+                contract.update<%= assetPascalCase %>(ctx, "10001", "The<%= assetPascalCase %>");
             });
 
             assertEquals(thrown.getMessage(), "The asset 10001 does not exist");

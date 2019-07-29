@@ -49,6 +49,8 @@ describe('Contract (Java)', () => {
                 asset: 'conga'
             });
         assert.file([
+            '.vscode/extensions.json',
+            '.vscode/launch.json',
             'build.gradle',
             'gradle/wrapper/gradle-wrapper.jar',
             'gradle/wrapper/gradle-wrapper.properties',
