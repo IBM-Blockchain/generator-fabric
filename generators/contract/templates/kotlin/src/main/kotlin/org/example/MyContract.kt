@@ -13,16 +13,16 @@ import org.hyperledger.fabric.contract.annotation.Info
 import org.hyperledger.fabric.contract.annotation.License
 import org.hyperledger.fabric.contract.annotation.Transaction
 
-@Contract(name = "<%= assetPascalCase %>Contract", 
-    info = Info(title = "<%= assetPascalCase %> contract", 
-                description = "", 
-                version = "0.0.1", 
-                license = 
-                        License(name = "Apache-2.0", 
-                                url = ""), 
-                                contact = Contact(email = "kotlin-contract@example.com", 
-                                                  name = "kotlin-contract", 
-                                                  url = "http://kotlin-contract.me")))
+@Contract(name = "<%= assetPascalCase %>Contract",
+    info = Info(title = "<%= assetPascalCase %> contract",
+                description = "<%= description %>",
+                version = "<%= version %>",
+                license =
+                        License(name = "<%= license %>",
+                                url = ""),
+                                contact = Contact(email = "<%= name %>@example.com",
+                                                  name = "<%= name %>",
+                                                  url = "http://<%= name %>.me")))
 @Default
 class <%= assetPascalCase %>Contract : ContractInterface {
 
@@ -63,7 +63,7 @@ class <%= assetPascalCase %>Contract : ContractInterface {
         val exists = <%= assetCamelCase %>Exists(ctx, <%= assetCamelCase %>Id)
         if (!exists) {
             throw RuntimeException("The <%= assetSpaceSeparator %> $<%= assetCamelCase %>Id does not exist")
-        }      
+        }
         ctx.stub.delState(<%= assetCamelCase %>Id)
     }
 
