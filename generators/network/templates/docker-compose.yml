@@ -17,7 +17,7 @@ networks:
 services:
   orderer.example.com:
     container_name: <%= dockerName %>_orderer.example.com
-    image: hyperledger/fabric-orderer:1.4.1
+    image: hyperledger/fabric-orderer:1.4.2
     environment:
       - ORDERER_GENERAL_LOGLEVEL=info
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
@@ -39,7 +39,7 @@ services:
       - basic
   peer0.org1.example.com:
     container_name: <%= dockerName %>_peer0.org1.example.com
-    image: hyperledger/fabric-peer:1.4.1
+    image: hyperledger/fabric-peer:1.4.2
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - CORE_PEER_ID=peer0.org1.example.com
@@ -59,9 +59,9 @@ services:
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:<%= peerChaincode %>
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:<%= peerRequest %>
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:<%= peerRequest %>
-      - CORE_CHAINCODE_BUILDER=hyperledger/fabric-ccenv:1.4.1
+      - CORE_CHAINCODE_BUILDER=hyperledger/fabric-ccenv:1.4.2
       - CORE_CHAINCODE_GOLANG_RUNTIME=hyperledger/fabric-baseos:0.4.15
-      - CORE_CHAINCODE_JAVA_RUNTIME=hyperledger/fabric-javaenv:1.4.1
+      - CORE_CHAINCODE_JAVA_RUNTIME=hyperledger/fabric-javaenv:1.4.2
       - CORE_CHAINCODE_NODE_RUNTIME=hyperledger/fabric-baseimage:0.4.15
       - CORE_CHAINCODE_EXECUTETIMEOUT=${CORE_CHAINCODE_EXECUTETIMEOUT:-30s}
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
@@ -81,7 +81,7 @@ services:
     networks:
       - basic
   ca.org1.example.com:
-    image: hyperledger/fabric-ca:1.4.1
+    image: hyperledger/fabric-ca:1.4.2
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.org1.example.com
