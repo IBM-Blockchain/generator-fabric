@@ -13,15 +13,15 @@ import org.hyperledger.fabric.contract.annotation.Info;
 import org.hyperledger.fabric.contract.annotation.License;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@Contract(name = "<%= assetPascalCase %>Contract", 
-    info = @Info(title = "<%= assetPascalCase %> contract", 
-                description = "<%= description %>", 
-                version = "<%= version %>", 
-                license = 
-                        @License(name = "<%= spdxAndLicense // SPDX-License-Identifier: Apache-2.0 %>", 
-                                url = ""), 
-                                contact =  @Contact(email = "<%= name %>@example.com", 
-                                                name = "<%= name %>", 
+@Contract(name = "<%= assetPascalCase %>Contract",
+    info = @Info(title = "<%= assetPascalCase %> contract",
+                description = "<%= description %>",
+                version = "<%= version %>",
+                license =
+                        @License(name = "<%= license %>",
+                                url = ""),
+                                contact =  @Contact(email = "<%= name %>@example.com",
+                                                name = "<%= name %>",
                                                 url = "http://<%= name %>.me")))
 @Default
 public class <%= assetPascalCase %>Contract implements ContractInterface {
@@ -64,7 +64,7 @@ public class <%= assetPascalCase %>Contract implements ContractInterface {
         }
         <%= assetPascalCase %> asset = new <%= assetPascalCase %>();
         asset.setValue(newValue);
-        
+
         ctx.getStub().putState(<%= assetCamelCase %>Id, asset.toJSONString().getBytes(UTF_8));
     }
 
@@ -76,5 +76,5 @@ public class <%= assetPascalCase %>Contract implements ContractInterface {
         }
         ctx.getStub().delState(<%= assetCamelCase %>Id);
     }
-    
+
 }

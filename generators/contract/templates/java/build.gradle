@@ -1,3 +1,6 @@
+/*
+ * <%= spdxAndLicense // SPDX-License-Identifier: Apache-2.0 %>
+ */
 plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.3'
     id 'java'
@@ -10,8 +13,8 @@ sourceCompatibility = 1.8
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { 
-        url 'https://jitpack.io' 
+    maven {
+        url 'https://jitpack.io'
     }
     maven {
         url "https://nexus.hyperledger.org/content/repositories/snapshots/"
