@@ -3,6 +3,7 @@
 #
 
 /.classpath
+/.git/
 /.gradle/
 /.project
 /.settings/
