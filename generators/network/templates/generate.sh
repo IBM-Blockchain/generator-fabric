@@ -16,11 +16,11 @@ CHANNEL_NAME=mychannel
 ./teardown.sh
 
 fix_permissions () {
-  docker run --rm -v $PWD:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.2 chown -R $(id -u):$(id -g) ./configtx ./crypto-config ./admin-msp
+  docker run --rm -v $PWD:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.3 chown -R $(id -u):$(id -g) ./configtx ./crypto-config ./admin-msp
 }
 
 # generate crypto material
-docker run --rm -v $PWD:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.2 cryptogen generate --config=./crypto-config.yaml
+docker run --rm -v $PWD:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.3 cryptogen generate --config=./crypto-config.yaml
 fix_permissions
 
 # rename the certificate authority private key
@@ -30,7 +30,7 @@ mv ./crypto-config/peerOrganizations/org1.example.com/ca/*_sk ./crypto-config/pe
 docker-compose -f docker-compose.yml up -d ca.org1.example.com
 
 # enroll the admin identity
-docker run --network <%= dockerName %>_basic --rm -v $PWD:/etc/hyperledger/fabric hyperledger/fabric-ca:1.4.2 fabric-ca-client enroll -u http://admin:adminpw@ca.org1.example.com:<%= certificateAuthority %> -M /etc/hyperledger/fabric/admin-msp
+docker run --network <%= dockerName %>_basic --rm -v $PWD:/etc/hyperledger/fabric hyperledger/fabric-ca:1.4.3 fabric-ca-client enroll -u http://admin:adminpw@ca.org1.example.com:<%= certificateAuthority %> -M /etc/hyperledger/fabric/admin-msp
 fix_permissions
 cp -f admin-msp/signcerts/cert.pem crypto-config/peerOrganizations/org1.example.com/msp/admincerts/
 cp -f admin-msp/signcerts/cert.pem crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp/admincerts/
@@ -39,13 +39,13 @@ cp -f admin-msp/signcerts/cert.pem crypto-config/peerOrganizations/org1.example.
 docker-compose -f docker-compose.yml stop ca.org1.example.com
 
 # generate genesis block for orderer
-docker run --rm -v $PWD:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.2 configtxgen -profile OneOrgOrdererGenesis -outputBlock ./configtx/genesis.block
+docker run --rm -v $PWD:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.3 configtxgen -profile OneOrgOrdererGenesis -outputBlock ./configtx/genesis.block
 
 # generate channel configuration transaction
-docker run --rm -v $PWD:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.2 configtxgen -profile OneOrgChannel -outputCreateChannelTx ./configtx/channel.tx -channelID $CHANNEL_NAME
+docker run --rm -v $PWD:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.3 configtxgen -profile OneOrgChannel -outputCreateChannelTx ./configtx/channel.tx -channelID $CHANNEL_NAME
 
 # generate anchor peer transaction
-docker run --rm -v $PWD:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.2 configtxgen -profile OneOrgChannel -outputAnchorPeersUpdate ./configtx/Org1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
+docker run --rm -v $PWD:/etc/hyperledger/fabric -w /etc/hyperledger/fabric hyperledger/fabric-tools:1.4.3 configtxgen -profile OneOrgChannel -outputAnchorPeersUpdate ./configtx/Org1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
 
 # fix the ownership of all of the generated configuration
 fix_permissions
