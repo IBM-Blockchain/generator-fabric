@@ -88,10 +88,10 @@ describe('Chaincode (JavaScript)', () => {
             },
             devDependencies: {
                 chai: '^4.2.0',
-                eslint: '^5.9.0',
-                mocha: '^5.2.0',
-                nyc: '^14.0.0',
-                sinon: '^7.1.1',
+                eslint: '^6.3.0',
+                mocha: '^6.2.0',
+                nyc: '^14.1.1',
+                sinon: '^7.4.1',
                 'sinon-chai': '^3.3.0'
             },
             nyc: {
@@ -175,10 +175,10 @@ describe('Chaincode (JavaScript)', () => {
             },
             devDependencies: {
                 chai: '^4.2.0',
-                eslint: '^5.9.0',
-                mocha: '^5.2.0',
-                nyc: '^14.0.0',
-                sinon: '^7.1.1',
+                eslint: '^6.3.0',
+                mocha: '^6.2.0',
+                nyc: '^14.1.1',
+                sinon: '^7.4.1',
                 'sinon-chai': '^3.3.0'
             },
             nyc: {
@@ -265,10 +265,10 @@ describe('Chaincode (JavaScript)', () => {
             },
             devDependencies: {
                 chai: '^4.2.0',
-                eslint: '^5.9.0',
-                mocha: '^5.2.0',
-                nyc: '^14.0.0',
-                sinon: '^7.1.1',
+                eslint: '^6.3.0',
+                mocha: '^6.2.0',
+                nyc: '^14.1.1',
+                sinon: '^7.4.1',
                 'sinon-chai': '^3.3.0'
             },
             nyc: {
@@ -351,10 +351,10 @@ describe('Chaincode (JavaScript)', () => {
             },
             devDependencies: {
                 chai: '^4.2.0',
-                eslint: '^5.9.0',
-                mocha: '^5.2.0',
-                nyc: '^14.0.0',
-                sinon: '^7.1.1',
+                eslint: '^6.3.0',
+                mocha: '^6.2.0',
+                nyc: '^14.1.1',
+                sinon: '^7.4.1',
                 'sinon-chai': '^3.3.0'
             },
             nyc: {
