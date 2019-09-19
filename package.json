@@ -7,7 +7,7 @@
         "lint": "eslint .",
         "pretest": "npm run lint",
         "test": "nyc mocha --recursive",
-        "prepublishOnly": "npm prune --production && rimraf package-lock.json && npm shrinkwrap"
+        "prepublishOnly": "rimraf package-lock.json && npm prune --production && npm shrinkwrap"
     },
     "files": [
         "generators",
