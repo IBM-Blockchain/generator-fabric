@@ -66,8 +66,6 @@ jobs:
             stage: deploy
             os: linux
             node_js: '8'
-            install: |
-                set -ex
             script: |
                 set -ex
             deploy:
