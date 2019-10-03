@@ -46,6 +46,7 @@ describe('Network', () => {
         assert.fileContent('configtx.yaml', /- orderer.example.com:17050/);
         assert.fileContent('docker-compose.yml', /- ORDERER_GENERAL_LISTENPORT=17050/);
         assert.fileContent('docker-compose.yml', /- 17050:17050/);
+        assert.fileContent('docker-compose.yml', /- CORE_VM_ENDPOINT=unix:\/\/\/host\/var\/run\/docker.sock/);
         assert.fileContent('docker-compose.yml', /- CORE_PEER_ADDRESS=peer0.org1.example.com:17051/);
         assert.fileContent('docker-compose.yml', /- CORE_PEER_LISTENADDRESS=0.0.0.0:17051/);
         assert.fileContent('docker-compose.yml', /- CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:17052/);
@@ -81,6 +82,14 @@ describe('Network', () => {
         assert.fileContent('teardown.sh', /rm -fr admin-msp\/\* configtx\/\* crypto-config\/\* wallets\/local_fabric_wallet\/\*/);
         assert.fileContent('teardown.sh', /docker ps -aq --filter "name=localfabric-*" | xargs docker rm -f/);
     }
+
+    beforeEach(() => {
+        delete process.env.DOCKER_HOST;
+    });
+
+    afterEach(() => {
+        delete process.env.DOCKER_HOST;
+    });
 
     it('should generate a network using prompts into a test directory', async () => {
         await helpers.run(path.join(__dirname, '../generators/app'))
@@ -121,6 +130,23 @@ describe('Network', () => {
         } finally {
             process.chdir(cwd);
         }
+    }).timeout(os.platform === 'win32' ? 60 * 1000 : undefined);
+
+    it('should generate a network using prompts and the DOCKER_HOST environment variable into a test directory', async () => {
+        process.env.DOCKER_HOST = 'tcp://dind.somewhere.someplace.com:2375';
+        await helpers.run(path.join(__dirname, '../generators/app'))
+            .withPrompts({
+                subgenerator: 'network',
+                name: 'local_fabric',
+                dockerName: 'localfabric',
+                orderer: '17050',
+                peerRequest: '17051',
+                peerChaincode: '17052',
+                certificateAuthority: '17054',
+                couchDB: '17055',
+                logspout: '17056'
+            });
+        assert.fileContent('docker-compose.yml', /- CORE_VM_ENDPOINT=tcp:\/\/dind.somewhere.someplace.com:2375/);
     }).timeout(os.platform === 'win32' ? 60 * 1000 : undefined);
 
 });

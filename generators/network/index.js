@@ -71,6 +71,7 @@ module.exports = class extends Generator {
         }];
         const answers = await this.prompt(questions);
         Object.assign(this.options, answers);
+        this.options.dockerHost = process.env.DOCKER_HOST || 'unix:///host/var/run/docker.sock';
     }
 
     async writing() {
