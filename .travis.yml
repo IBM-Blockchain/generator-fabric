@@ -66,11 +66,10 @@ jobs:
             stage: deploy
             os: linux
             node_js: '8'
-            install: |
-                set -ex
             script: |
                 set -ex
             deploy:
+                skip_cleanup: true
                 provider: npm
                 email: sstone1@uk.ibm.com
                 api_key:
