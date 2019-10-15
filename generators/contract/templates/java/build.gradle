@@ -19,7 +19,9 @@ repositories {
     maven {
         url "https://nexus.hyperledger.org/content/repositories/snapshots/"
     }
-
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
 }
 
 dependencies {
@@ -28,6 +30,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
     testImplementation 'org.assertj:assertj-core:3.11.1'
     testImplementation 'org.mockito:mockito-core:2.+'
+    testImplementation 'org.hyperledger.fabric:fabric-gateway-java:1.4.0'
+    testImplementation 'org.assertj:assertj-core:3.13.2'
 }
 
 shadowJar {
