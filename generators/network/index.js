@@ -127,7 +127,6 @@ module.exports = class extends Generator {
         this.fs.writeJSON(this.destinationPath(`gateways/${this.options.name}.json`), {
             name: this.options.name,
             version: '1.0.0',
-            wallet: `${this.options.name}_wallet`,
             client: {
                 organization: 'Org1',
                 connection: {
