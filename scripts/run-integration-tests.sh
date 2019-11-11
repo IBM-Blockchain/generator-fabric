@@ -197,7 +197,7 @@ common_chaincode_test() {
 
 contract_tests() {
     if [ -z "$1" ]; then
-        LANGUAGES="java javascript kotlin typescript"
+        LANGUAGES="go javascript typescript java kotlin"
     else
         LANGUAGES="$1"
     fi
@@ -215,6 +215,30 @@ contract_test() {
     common_contract_deploy
     common_contract_test
     popd
+}
+
+go_contract_package() {
+    export GOPATH=$PWD
+    mkdir -p src/contract
+    pushd src/contract
+    yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
+    GO111MODULE=on go mod vendor
+    go test
+    go build
+    popd
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "$(pwd)":/opt/gopath \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode package -n ${LANGUAGE}-contract -v 0.0.1 -p contract -l golang /opt/gopath/contract.cds
+    date
 }
 
 java_contract_package() {

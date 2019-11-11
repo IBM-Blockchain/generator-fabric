@@ -21,6 +21,7 @@ module.exports = class extends Generator {
                 {name : 'JavaScript', value : 'javascript'},
                 {name : 'TypeScript', value : 'typescript'},
                 {name : 'Java', value : 'java'},
+                {name : 'Go', value : 'go'},
                 {name : 'Kotlin', value : 'kotlin'}
             ],
             when : () => !this.options.language
@@ -108,6 +109,11 @@ module.exports = class extends Generator {
             this._rename(this.destinationPath(`${root}/MyContract.kt`), this.destinationPath(`${root}/${this.options.assetPascalCase}Contract.kt`));
             root = 'src/test/kotlin/org/example';
             this._rename(this.destinationPath(`${root}/MyContractTest.kt`), this.destinationPath(`${root}/${this.options.assetPascalCase}ContractTest.kt`));
+        } else if (this.options.language === 'go') {
+            this.fs.copyTpl(this.templatePath(`public/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+            this._rename(this.destinationPath('my-contract.go'), this.destinationPath(`${this.options.assetDashSeparator}-contract.go`));
+            this._rename(this.destinationPath('my-contract_test.go'), this.destinationPath(`${this.options.assetDashSeparator}-contract_test.go`));
+            this._rename(this.destinationPath('my-asset.go'), this.destinationPath(`${this.options.assetDashSeparator}.go`));
         } else {
             // language not understood
             console.log(`Sorry ${this.options.language} is not recognized`);
@@ -120,6 +126,8 @@ module.exports = class extends Generator {
             if (this.options['skip-install'] !== true) {
                 this.installDependencies({bower : false, npm : true});
             }
+        } else if (this.options.language.startsWith('go')) {
+            console.log('Please run  \'go mod vendor\' to get the required go modules prior to installing on your peer');
         } else {
             console.log('Please run  \'./gradlew clean build shadowJar\' to build the Java/Kotlin Smart Contract');
         }

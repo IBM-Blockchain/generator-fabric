@@ -58,9 +58,10 @@
         "lines": 100
     },
     "contractLanguages": [
+        "Go",
+        "Java",
         "JavaScript",
-        "TypeScript",
-        "Java"
+        "TypeScript"
     ],
     "chaincodeLanguages": [
         "Go",
