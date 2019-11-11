@@ -221,20 +221,7 @@ go_chaincode_package() {
     go test
     go build
     go mod vendor
-    date
-    ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
-        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
-        -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
-        -v "$(pwd)":/opt/gopath/src/chaincode \
-        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
-        --network yofn \
-        --rm \
-        hyperledger/fabric-tools \
-        peer lifecycle chaincode package /opt/gopath/src/chaincode/chaincode.tar.gz --path /opt/gopath/src/chaincode --lang golang --label ${LANGUAGE}-${CONTRACT}-chaincode
-    date
+    common_package "golang" "chaincode"
 }
 
 java_chaincode_package() {
@@ -302,7 +289,7 @@ contract_tests() {
     CONTRACT="default"
 
     if [ -z "$1" ]; then
-        LANGUAGES="typescript"
+        LANGUAGES="go java javascript typescript kotlin"
     else
         LANGUAGES="$1"
     fi
@@ -315,7 +302,8 @@ private_contract_tests() {
     CONTRACT="private"
 
     if [ -z "$1" ]; then
-        LANGUAGES="java javascript typescript"
+        LANGUAGES="go java javascript typescript"
+
     else
         LANGUAGES="$1"
     fi
@@ -358,6 +346,19 @@ kotlin_default_contract_package() {
     popd
 }
 
+go_default_contract_package() {
+    export GOPATH=$PWD
+    mkdir -p src/contract
+    pushd src/contract
+    yo fabric:contract -- --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
+    GO111MODULE=on go mod vendor
+    go test
+    go build
+    common_package "golang" "contract"
+    mv contract.tar.gz ../../
+    popd
+}
+
 javascript_default_contract_package() {
     yo fabric:contract -- --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
     npm audit --audit-level=moderate
@@ -392,6 +393,20 @@ typescript_private_contract_package() {
     npm test
     npm run build
     common_package "node" "contract"
+}
+
+go_private_contract_package() {
+    export GOPATH=$PWD
+    mkdir -p src/contract
+    pushd src/contract
+    yo fabric:contract -- --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
+    cp collections.json ../../collections.json
+    GO111MODULE=on go mod vendor
+    go test
+    go build
+    common_package "golang" "contract"
+    mv contract.tar.gz ../../
+    popd
 }
 
 common_contract_test() {
@@ -519,6 +534,10 @@ common_contract_test() {
 
 private_contract_test() {
     date
+    priVal="privateValue"
+    if [ ${LANGUAGE} == "go" ]; then
+        priVal="PrivateValue"
+    fi
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
@@ -548,7 +567,7 @@ private_contract_test() {
         --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["createPrivateConga","1001"]}' --transient "{\"privateValue\":\"${TRANSIENT}\"}" --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
+        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["createPrivateConga","1001"]}' --transient "{\""${priVal}"\":\""${TRANSIENT}"\"}" --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
@@ -593,7 +612,7 @@ private_contract_test() {
         --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["updatePrivateConga","1001"]}' --transient "{\"privateValue\":\"${TRANSIENT}\"}" --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
+        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["updatePrivateConga","1001"]}' --transient "{\""${priVal}"\":\""${TRANSIENT}"\"}" --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
