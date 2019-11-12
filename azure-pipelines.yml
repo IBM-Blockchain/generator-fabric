@@ -3,19 +3,76 @@
 #
 ---
 trigger:
-- master
+  branches:
+    include:
+      - master
+  tags:
+    include:
+      - "*"
 
-pool:
-  vmImage: "ubuntu-latest"
-
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: "12.x"
-  displayName: Use Node.js 12.x
-- script: npm ci
-  displayName: Install dependencies
-- script: npm audit
-  displayName: Audit dependencies
-- script: npm test
-  displayName: Run unit tests
+stages:
+  - stage: unit_tests
+    displayName: Unit tests
+    jobs:
+      - job: unit_tests
+        displayName: Unit tests
+        strategy:
+          matrix:
+            Linux:
+              imageName: "ubuntu-latest"
+              nodeVersion: "10.x"
+            macOS:
+              imageName: "macOS-latest"
+              nodeVersion: "12.x"
+            Windows:
+              imageName: "windows-latest"
+              nodeVersion: "12.x"
+        pool:
+          vmImage: $(imageName)
+        steps:
+          - template: azure-templates/unit-tests.yml
+            parameters:
+              nodeVersion: $(nodeVersion)
+  - stage: integration_tests
+    displayName: Integration tests
+    dependsOn: unit_tests
+    jobs:
+      - job: chaincode_integration_tests
+        displayName: Integration tests
+        strategy:
+          matrix:
+            Chaincode_Linux:
+              tests: chaincode_tests
+              imageName: "ubuntu-latest"
+            Contract_Linux:
+              tests: contract_tests
+              imageName: "ubuntu-latest"
+            Network_Linux:
+              tests: network_test
+              imageName: "ubuntu-latest"
+        pool:
+          vmImage: $(imageName)
+        steps:
+          - template: azure-templates/integration-tests.yml
+            parameters:
+              tests: $(tests)
+  - stage: publish
+    displayName: Publish to npm
+    dependsOn: integration_tests
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags'))
+    jobs:
+      - job: publish
+        displayName: Publish to npm
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: "10.x"
+            displayName: Use Node.js 10.x
+          - script: npm ci
+            displayName: Install dependencies
+          - script: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
+            displayName: Login to npm
+          - script: npm publish
+            displayName: Publish to npm

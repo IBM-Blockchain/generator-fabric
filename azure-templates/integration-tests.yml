@@ -1,0 +1,16 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+---
+parameters:
+  nodeVersion: '10.x'
+  tests: ''
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: ${{ parameters.nodeVersion }}
+    displayName: Use Node.js ${{ parameters.nodeVersion }}
+  - script: npm ci
+    displayName: Install dependencies
+  - script: scripts/run-integration-tests.sh ${{ parameters.tests }}
+    displayName: Run integration tests
