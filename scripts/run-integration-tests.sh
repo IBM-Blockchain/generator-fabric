@@ -11,6 +11,10 @@ then
     RETRY="retry -t 10 -m 10 -x 60 --"
     sudo sh -c "curl https://raw.githubusercontent.com/travis-ci/gimme/master/gimme -o /usr/local/bin/gimme && chmod +x /usr/local/bin/gimme"
     eval "$(gimme 1.10)"
+elif [ -n "${TF_BUILD}" ]
+then
+    sudo sh -c "curl https://raw.githubusercontent.com/kadwanev/retry/master/retry -o /usr/local/bin/retry && chmod +x /usr/local/bin/retry"
+    RETRY="retry -t 10 -m 10 -x 60 --"
 else
     RETRY=""
 fi
@@ -39,7 +43,7 @@ npm install -g yo generator-fabric-*.tgz
 rm -f generator-fabric-*.tgz
 
 chaincode_tests() {
-    LANGUAGES="go java javascript kotlin typescript"
+    LANGUAGES="go javascript typescript"
     for LANGUAGE in ${LANGUAGES}
     do
         chaincode_test ${LANGUAGE}
@@ -60,7 +64,7 @@ go_chaincode_package() {
     export GOPATH=$PWD
     mkdir -p src/chaincode
     pushd src/chaincode
-    yo fabric:chaincode -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Chaincode" --name=${LANGUAGE}-chaincode --version=0.0.1 --license=Apache-2.0
+    yo fabric:chaincode -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Chaincode" --name=${LANGUAGE}-chaincode --version=0.0.1 --license=Apache-2.0
     go get
     go test
     go build
@@ -199,7 +203,7 @@ common_chaincode_test() {
 
 contract_tests() {
     if [ -z "$1" ]; then
-        LANGUAGES="javascript typescript java kotlin"
+        LANGUAGES="javascript typescript"
     else
         LANGUAGES="$1"
     fi
