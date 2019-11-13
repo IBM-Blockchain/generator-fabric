@@ -43,7 +43,7 @@ npm install -g yo generator-fabric-*.tgz
 rm -f generator-fabric-*.tgz
 
 chaincode_tests() {
-    LANGUAGES="go javascript typescript"
+    LANGUAGES="go java javascript kotlin typescript"
     for LANGUAGE in ${LANGUAGES}
     do
         chaincode_test ${LANGUAGE}
@@ -203,7 +203,7 @@ common_chaincode_test() {
 
 contract_tests() {
     if [ -z "$1" ]; then
-        LANGUAGES="javascript typescript"
+        LANGUAGES="java javascript kotlin typescript"
     else
         LANGUAGES="$1"
     fi
