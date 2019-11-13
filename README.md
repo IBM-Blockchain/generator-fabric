@@ -1,5 +1,7 @@
 # generator-fabric
 
+[![Build Status](https://dev.azure.com/IBM-Blockchain/generator-fabric/_apis/build/status/IBM-Blockchain.generator-fabric?branchName=master)](https://dev.azure.com/IBM-Blockchain/generator-fabric/_build/latest?definitionId=3&branchName=master)
+
 Yeoman generator for Hyperledger Fabric.
 
 This Yeoman generator can be used to generate chaincodes, or smart contracts, for Hyperledger Fabric. Chaincodes can be generated that are written in either Go or JavaScript, with experimental TypeScript support available as well.
