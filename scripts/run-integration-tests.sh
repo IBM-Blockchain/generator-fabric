@@ -5,13 +5,7 @@
 
 set -ex
 
-if [ "${TRAVIS}" = "true" ]
-then
-    sudo sh -c "curl https://raw.githubusercontent.com/kadwanev/retry/master/retry -o /usr/local/bin/retry && chmod +x /usr/local/bin/retry"
-    RETRY="retry -t 10 -m 10 -x 60 --"
-    sudo sh -c "curl https://raw.githubusercontent.com/travis-ci/gimme/master/gimme -o /usr/local/bin/gimme && chmod +x /usr/local/bin/gimme"
-    eval "$(gimme 1.10)"
-elif [ -n "${TF_BUILD}" ]
+if [ -n "${TF_BUILD}" ]
 then
     sudo sh -c "curl https://raw.githubusercontent.com/kadwanev/retry/master/retry -o /usr/local/bin/retry && chmod +x /usr/local/bin/retry"
     RETRY="retry -t 10 -m 10 -x 60 --"
@@ -61,26 +55,23 @@ chaincode_test() {
 }
 
 go_chaincode_package() {
-    export GOPATH=$PWD
-    mkdir -p src/chaincode
-    pushd src/chaincode
     yo fabric:chaincode -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Chaincode" --name=${LANGUAGE}-chaincode --version=0.0.1 --license=Apache-2.0
     go get
     go test
     go build
-    popd
+    go mod vendor
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
         -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -v "$(pwd)":/opt/gopath \
+        -v "$(pwd)":/opt/gopath/src/chaincode \
         -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
         -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode package -n ${LANGUAGE}-chaincode -v 0.0.1 -p chaincode -l golang /opt/gopath/chaincode.cds
+        peer chaincode package -n ${LANGUAGE}-chaincode -v 0.0.1 -p chaincode -l golang /opt/gopath/src/chaincode/chaincode.cds
     date
 }
 

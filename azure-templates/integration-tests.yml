@@ -3,9 +3,13 @@
 #
 ---
 parameters:
+  goVersion: '1.12'
   nodeVersion: '10.x'
   tests: ''
 steps:
+  - task: GoTool@0
+    inputs:
+      version: ${{ parameters.goVersion }}
   - task: NodeTool@0
     inputs:
       versionSpec: ${{ parameters.nodeVersion }}
