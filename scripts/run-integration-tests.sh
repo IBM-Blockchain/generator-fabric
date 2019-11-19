@@ -24,7 +24,7 @@ else
 fi
 
 pushd tmp
-curl -sSL http://bit.ly/2ysbOFE | bash -s 1.4.3
+curl -sSL http://bit.ly/2ysbOFE | bash -s 1.4.4
 pushd fabric-samples/basic-network
 export FABRIC_DIR="$(pwd)"
 ./start.sh

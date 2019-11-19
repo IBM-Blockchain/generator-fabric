@@ -17,7 +17,7 @@ version '0.0.1'
 sourceCompatibility = 1.8
 
 dependencies {
-    implementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:1.4.2'
+    implementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:1.4.4'
     implementation 'org.json:json:20180813'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
@@ -25,9 +25,11 @@ dependencies {
 }
 
 repositories {
+    mavenLocal()
+    mavenCentral()
     jcenter()
-    maven { 
-        url 'https://jitpack.io' 
+    maven {
+        url 'https://jitpack.io'
     }
     maven {
         url "https://nexus.hyperledger.org/content/repositories/snapshots/"
