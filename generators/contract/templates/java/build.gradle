@@ -19,7 +19,6 @@ repositories {
     maven {
         url "https://nexus.hyperledger.org/content/repositories/snapshots/"
     }
-
 }
 
 dependencies {
