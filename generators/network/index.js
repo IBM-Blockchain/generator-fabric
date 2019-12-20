@@ -11,15 +11,9 @@ const path = require('path');
 module.exports = class extends Generator {
 
     async prompting() {
-        const [
-            orderer,
-            peerRequest,
-            peerChaincode,
-            ,
-            certificateAuthority,
-            couchDB,
-            logspout
-        ] = await findFreePort(17050, null, null, 7);
+        const ports = await findFreePort(17050, null, null, 20);
+        let startPort = ports[0];
+        let endPort = ports[ports.length - 1];
         const questions = [{
             type : 'input',
             name : 'name',
@@ -34,134 +28,42 @@ module.exports = class extends Generator {
             when : () => !this.options.dockerName
         }, {
             type : 'input',
-            name : 'orderer',
-            message : 'Please specify the orderer port:',
-            default : orderer,
-            when : () => !this.options.orderer
+            name : 'numOrganizations',
+            message : 'Please specify the number of organizations:',
+            default : 1,
+            when : () => !this.options.numOrganizations
         }, {
             type : 'input',
-            name : 'peerRequest',
-            message : 'Please specify the peer request port:',
-            default : peerRequest,
-            when : () => !this.options.peerRequest
+            name : 'startPort',
+            message : 'Please specify the start port:',
+            default : startPort,
+            when : () => !this.options.startPort
         }, {
             type : 'input',
-            name : 'peerChaincode',
-            message : 'Please specify the peer chaincode port:',
-            default : peerChaincode,
-            when : () => !this.options.peerChaincode
-        }, {
-            type : 'input',
-            name : 'certificateAuthority',
-            message : 'Please specify the certificate authority port:',
-            default : certificateAuthority,
-            when : () => !this.options.certificateAuthority
-        }, {
-            type : 'input',
-            name : 'couchDB',
-            message : 'Please specify the CouchDB port:',
-            default : couchDB,
-            when : () => !this.options.couchDB
-        }, {
-            type : 'input',
-            name : 'logspout',
-            message : 'Please specify the Logspout port:',
-            default : logspout,
-            when : () => !this.options.logspout
+            name : 'endPort',
+            message : 'Please specify the end port:',
+            default : endPort,
+            when : () => !this.options.endPort
         }];
         const answers = await this.prompt(questions);
         Object.assign(this.options, answers);
-        this.options.dockerHost = process.env.DOCKER_HOST || 'unix:///host/var/run/docker.sock';
+        this.options.currentPort = null;
+        this.options.allocatePort = () => {
+            if (!this.options.currentPort) {
+                this.options.currentPort = this.options.startPort;
+                return this.options.currentPort;
+            }
+            this.options.currentPort++;
+            if (this.options.currentPort > this.options.endPort) {
+                throw new Error(`Could not allocate port as port range ${this.options.startPort}-${this.options.endPort} exceeded`);
+            }
+            return this.options.currentPort;
+        };
     }
 
     async writing() {
         console.log('Generating files...');
         this.fs.copyTpl(this.templatePath(), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
-        this.fs.write(this.destinationPath(`wallets/${this.options.name}_wallet/.gitkeep`), '');
-        this.fs.writeJSON(this.destinationPath('nodes/orderer.example.com.json'), {
-            short_name: 'orderer.example.com',
-            name: 'orderer.example.com',
-            api_url: `grpc://localhost:${this.options.orderer}`,
-            type: 'fabric-orderer',
-            wallet: `${this.options.name}_wallet`,
-            identity: 'admin',
-            msp_id: 'OrdererMSP',
-            container_name: `${this.options.dockerName}_orderer.example.com`
-        }, null, 4);
-        this.fs.writeJSON(this.destinationPath('nodes/peer0.org1.example.com.json'), {
-            short_name: 'peer0.org1.example.com',
-            name: 'peer0.org1.example.com',
-            api_url: `grpc://localhost:${this.options.peerRequest}`,
-            chaincode_url: `grpc://localhost:${this.options.peerChaincode}`,
-            type: 'fabric-peer',
-            wallet: `${this.options.name}_wallet`,
-            identity: 'admin',
-            msp_id: 'Org1MSP',
-            container_name: `${this.options.dockerName}_peer0.org1.example.com`
-        }, null, 4);
-        this.fs.writeJSON(this.destinationPath('nodes/ca.org1.example.com.json'), {
-            short_name: 'ca.org1.example.com',
-            name: 'ca.org1.example.com',
-            api_url: `http://localhost:${this.options.certificateAuthority}`,
-            type: 'fabric-ca',
-            ca_name: 'ca.org1.example.com',
-            wallet: `${this.options.name}_wallet`,
-            identity: 'admin',
-            msp_id: 'Org1MSP',
-            container_name: `${this.options.dockerName}_ca.org1.example.com`
-        }, null, 4);
-        this.fs.writeJSON(this.destinationPath('nodes/couchdb.json'), {
-            short_name: 'couchdb',
-            name: 'couchdb',
-            api_url: `http://localhost:${this.options.couchDB}`,
-            type: 'couchdb',
-            container_name: `${this.options.dockerName}_couchdb`
-        }, null, 4);
-        this.fs.writeJSON(this.destinationPath('nodes/logspout.json'), {
-            short_name: 'logspout',
-            name: 'logspout',
-            api_url: `http://localhost:${this.options.logspout}`,
-            type: 'logspout',
-            container_name: `${this.options.dockerName}_logspout`
-        }, null, 4);
-        this.fs.writeJSON(this.destinationPath(`gateways/${this.options.name}.json`), {
-            name: this.options.name,
-            version: '1.0.0',
-            wallet: `${this.options.name}_wallet`,
-            client: {
-                organization: 'Org1',
-                connection: {
-                    timeout: {
-                        peer: {
-                            endorser: '300'
-                        },
-                        orderer: '300'
-                    }
-                }
-            },
-            organizations: {
-                Org1: {
-                    mspid: 'Org1MSP',
-                    peers: [
-                        'peer0.org1.example.com'
-                    ],
-                    certificateAuthorities: [
-                        'ca.org1.example.com'
-                    ]
-                }
-            },
-            peers: {
-                'peer0.org1.example.com': {
-                    url: `grpc://localhost:${this.options.peerRequest}`
-                }
-            },
-            certificateAuthorities: {
-                'ca.org1.example.com': {
-                    url: `http://localhost:${this.options.certificateAuthority}`,
-                    caName: 'ca.org1.example.com'
-                }
-            }
-        }, null, 4);
     }
 
     async install() {

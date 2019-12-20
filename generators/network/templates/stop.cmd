@@ -4,6 +4,11 @@ rem Copyright IBM Corp All Rights Reserved
 rem
 rem SPDX-License-Identifier: Apache-2.0
 rem
-
-rem Shut down the Docker containers that might be currently running.
-docker-compose -f docker-compose.yml stop
+setlocal enabledelayedexpansion
+for /f "usebackq tokens=*" %%c in (`docker ps -f label^=fabric-environment-name^="<%= name %>" -q`) do (
+    docker stop %%c
+    if !errorlevel! neq 0 (
+        exit /b !errorlevel!
+    )
+)
+exit /b 0

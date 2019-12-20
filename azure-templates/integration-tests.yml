@@ -14,6 +14,11 @@ steps:
     inputs:
       versionSpec: ${{ parameters.nodeVersion }}
     displayName: Use Node.js ${{ parameters.nodeVersion }}
+  - script: |
+      set -ex
+      docker pull sstone1/ansible
+      docker tag sstone1/ansible ibmblockchain/ansible
+    displayName: Pull and tag Docker image for Ansible
   - script: npm ci
     displayName: Install dependencies
   - script: scripts/run-integration-tests.sh ${{ parameters.tests }}
