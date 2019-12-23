@@ -86,7 +86,7 @@ describe('Chaincode (TypeScript)', () => {
             author: 'James Conga',
             license: 'WTFPL',
             dependencies: {
-                'fabric-shim': '1.4.2'
+                'fabric-shim': '^1.4.4'
             },
             devDependencies: {
                 '@types/chai': '^4.2.0',
@@ -207,7 +207,7 @@ describe('Chaincode (TypeScript)', () => {
             author: 'James Conga',
             license: 'Apache-2.0',
             dependencies: {
-                'fabric-shim': '1.4.2'
+                'fabric-shim': '^1.4.4'
             },
             devDependencies: {
                 '@types/chai': '^4.2.0',

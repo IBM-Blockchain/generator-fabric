@@ -37,8 +37,8 @@ describe('Contract (JavaScript)', () => {
         author: 'James Conga',
         license: 'WTFPL',
         dependencies: {
-            'fabric-contract-api': '1.4.2',
-            'fabric-shim': '1.4.2'
+            'fabric-contract-api': '^1.4.4',
+            'fabric-shim': '^1.4.4'
         },
         devDependencies: {
             chai: '^4.2.0',
