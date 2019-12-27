@@ -6,16 +6,15 @@
 #
 # Exit on first error, print all commands.
 set -ev
-
-# Shut down the Docker containers for the system tests.
-docker-compose -f docker-compose.yml kill && docker-compose -f docker-compose.yml down -v
-
-# remove chaincode docker images
-(docker ps -aq --filter "name=<%= dockerName %>-*" | xargs docker rm -f) || true
-(docker images -aq "<%= dockerName %>-*" | xargs docker rmi -f) || true
-
-# remove previous crypto material and config transactions
-rm -fr admin-msp/* configtx/* crypto-config/* wallets/<%= name %>_wallet/*
-
-# Your system is now clean
-rm -f generate.complete
+for CONTAINER in $(docker ps -f label=fabric-environment-name="<%= name %>" -q -a); do
+    docker rm -f ${CONTAINER}
+done
+for VOLUME in $(docker volume ls -f label=fabric-environment-name="<%= name %>" -q); do
+    docker volume rm -f ${VOLUME}
+done
+if [ -d wallets ]; then
+    for WALLET in $(ls wallets); do
+        rm -rf wallets/${WALLET}/*
+    done
+fi
+exit 0

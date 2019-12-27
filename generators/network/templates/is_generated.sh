@@ -6,12 +6,12 @@
 #
 # Exit on first error, print all commands.
 set +ev
-for volume in <%= dockerName %>_orderer.example.com <%= dockerName %>_ca.org1.example.com <%= dockerName %>_peer0.org1.example.com <%= dockerName %>_couchdb; do
-  if ! docker volume inspect $volume > /dev/null 2>&1; then 
-    exit 1
-  fi
-done
-if [ ! -f generate.complete ]; then
+NUM_CONTAINERS=$(docker ps -f label=fabric-environment-name="<%= name %>" -q -a | wc -l | tr -d ' ')
+if [ "${NUM_CONTAINERS}" -eq 0 ]; then
+  exit 1
+fi
+NUM_VOLUMES=$(docker volume ls -f label=fabric-environment-name="<%= name %>" -q | wc -l | tr -d ' ')
+if [ "${NUM_VOLUMES}" -eq 0 ]; then
   exit 1
 fi
 exit 0

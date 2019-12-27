@@ -23,13 +23,16 @@ else
     mkdir tmp
 fi
 
-pushd tmp
-curl -sSL http://bit.ly/2ysbOFE | bash -s 1.4.4
-pushd fabric-samples/basic-network
-export FABRIC_DIR="$(pwd)"
-./start.sh
-popd
-popd
+if [ "$1" != "network_test" ]
+then
+    pushd tmp
+    curl -sSL http://bit.ly/2ysbOFE | bash -s 1.4.4
+    pushd fabric-samples/basic-network
+    export FABRIC_DIR="$(pwd)"
+    ./start.sh
+    popd
+    popd
+fi
 
 rm -f generator-fabric-*.tgz
 npm pack
@@ -412,34 +415,41 @@ network_test() {
     date
     mkdir yofn
     pushd yofn
-    yo fabric:network -- --name yofn --dockerName yofn --orderer 17050 --peerRequest 17051 --peerChaincode 17052 --certificateAuthority 17054 --couchDB 17055 --logspout 17056
-    if ./is_generated.sh; then
+    yo fabric:network -- --name yofn --dockerName yofn --startPort 17050 --endPort 17069 --numOrganizations 2
+    if ./is_generated.sh
+    then
         echo is_generated.sh should not return 0 before generate.sh is run
         exit 1
     fi
     ./generate.sh
-    if ! ./is_generated.sh; then
+    if ! ./is_generated.sh
+    then
         echo is_generated.sh should return 0 after generate.sh is run
         exit 1
-    elif ./is_running.sh; then
-        echo is_running.sh should not return 0 before start.sh is run
-        exit 1
-    fi
-    ./start.sh
-    if ! ./is_running.sh; then
-        echo is_running.sh should return 0 after start.sh is run
+    elif ! ./is_running.sh
+    then
+        echo is_running.sh should return 0 after generate.sh is run
         exit 1
     fi
     ./stop.sh
-    if ./is_running.sh; then
+    if ./is_running.sh
+    then
         echo is_running.sh should not return 0 after stop.sh is run
         exit 1
     fi
+    ./start.sh
+    if ! ./is_running.sh
+    then
+        echo is_running.sh should return 0 after start.sh is run
+        exit 1
+    fi
     ./teardown.sh
-    if ./is_running.sh; then
+    if ./is_running.sh
+    then
         echo is_running.sh should not return 0 after stop.sh is run
         exit 1
-    elif ./is_generated.sh; then
+    elif ./is_generated.sh
+    then
         echo is_generated.sh should not return 0 after teardown.sh is run
         exit 1
     fi
@@ -457,9 +467,12 @@ else
 fi
 popd
 
-pushd tmp/fabric-samples/basic-network
-# Don't really care if these stop/teardown scripts fail
-set +e
-./stop.sh
-./teardown.sh
-popd
+if [ "$1" != "network_test" ]
+then
+    pushd tmp/fabric-samples/basic-network
+    # Don't really care if these stop/teardown scripts fail
+    set +e
+    ./stop.sh
+    ./teardown.sh
+    popd
+fi
