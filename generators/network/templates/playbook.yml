@@ -39,6 +39,7 @@
             docker:
               name: "<%= dockerName %>_peer0.org<%= i %>.example.com"
               port: <%= allocatePort() %>
+              chaincode_name_prefix: "<%= dockerName %>"
               chaincode_port: <%= allocatePort() %>
               operations_port: <%= allocatePort() %>
               couchdb:
