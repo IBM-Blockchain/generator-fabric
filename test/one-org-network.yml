@@ -38,6 +38,7 @@
             docker:
               name: "localfabric_peer0.org1.example.com"
               port: 17051
+              chaincode_name_prefix: localfabric
               chaincode_port: 17052
               operations_port: 17053
               couchdb:
