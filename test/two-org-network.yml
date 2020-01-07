@@ -114,9 +114,19 @@
         nodes: "{{ playbook_dir }}/nodes/Orderer"
         wallet: "{{ playbook_dir }}/wallets/Orderer"
         gateways: "{{ playbook_dir }}/gateways/Orderer"
+    gateways:
+      - name: Org1
+        organization:
+          <<: *Org1
+          gateway_peers:
+            - *Org1Peer1
+      - name: Org2
+        organization:
+          <<: *Org2
+          gateway_peers:
+            - *Org2Peer1
     channels:
-      - &MyChannel
-        name: mychannel
+      - name: mychannel
         orderer: *Orderer
         members:
           - <<: *Org1
