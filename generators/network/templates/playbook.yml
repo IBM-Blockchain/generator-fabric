@@ -82,9 +82,16 @@
         nodes: "{{ playbook_dir }}/nodes/Orderer"
         wallet: "{{ playbook_dir }}/wallets/Orderer"
         gateways: "{{ playbook_dir }}/gateways/Orderer"
+    gateways:
+      <%_ for (let i = 1; i <= numOrganizations; i++) { _%>
+      - name: Org<%= i %>
+        organization:
+          <<: *Org<%= i %>
+          gateway_peers:
+            - *Org<%= i %>Peer1
+      <%_ } _%>
     channels:
-      - &MyChannel
-        name: mychannel
+      - name: mychannel
         orderer: *Orderer
         members:
           <%_ for (let i = 1; i <= numOrganizations; i++) { _%>
