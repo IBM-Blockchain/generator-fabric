@@ -27,6 +27,7 @@
             enabled: false
           docker:
             name: "<%= dockerName %>_ca.org<%= i %>.example.com"
+            hostname: "ca.org<%= i %>.example.com"
             port: <%= allocatePort() %>
         peers:
           - &Org<%= i %>Peer1
@@ -38,12 +39,14 @@
               enabled: false
             docker:
               name: "<%= dockerName %>_peer0.org<%= i %>.example.com"
+              hostname: "peer0.org<%= i %>.example.com"
               port: <%= allocatePort() %>
               chaincode_name_prefix: "<%= dockerName %>"
               chaincode_port: <%= allocatePort() %>
               operations_port: <%= allocatePort() %>
               couchdb:
                 name: "<%= dockerName %>_couchdb0.org<%= i %>.example.com"
+                hostname: "couchdb0.org<%= i %>.example.com"
                 port: <%= allocatePort() %>
         nodes: "{{ playbook_dir }}/nodes/Org<%= i %>"
         wallet: "{{ playbook_dir }}/wallets/Org<%= i %>"
@@ -63,6 +66,7 @@
             enabled: false
           docker:
             name: "<%= dockerName %>_ca.orderer.example.com"
+            hostname: "ca.orderer.example.com"
             port: <%= allocatePort() %>
         orderer: &Orderer
           id: "Orderer"
@@ -77,6 +81,7 @@
               <%_ } _%>
           docker:
             name: "<%= dockerName %>_orderer.example.com"
+            hostname: "orderer.example.com"
             port: <%= allocatePort() %>
             operations_port: <%= allocatePort() %>
         nodes: "{{ playbook_dir }}/nodes/Orderer"
