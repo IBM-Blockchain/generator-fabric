@@ -9,7 +9,7 @@ const helpers = require('yeoman-test');
 const path = require('path');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
-const generator = require(path.join(__dirname, '../../generators/contract/index'));
+const generator = require(path.join(__dirname, '../../../generators/contract/index'));
 const os = require('os');
 const crypto = require('crypto');
 const chai = require('chai');
@@ -71,7 +71,7 @@ describe('Contract (JavaScript)', () => {
 
     it('should generate a JavaScript project using prompts', async () => {
         let dir;
-        await helpers.run(path.join(__dirname, '../../generators/app'))
+        await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })
@@ -111,7 +111,7 @@ describe('Contract (JavaScript)', () => {
 
     it('should generate a JavaScript project given options', async () => {
         let dir;
-        await helpers.run(path.join(__dirname, '../../generators/contract'))
+        await helpers.run(path.join(__dirname, '../../../generators/contract'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })
@@ -161,7 +161,7 @@ describe('Contract (JavaScript)', () => {
 
         options['skip-install'] = false;
 
-        await helpers.run(path.join(__dirname, '../../generators/contract'))
+        await helpers.run(path.join(__dirname, '../../../generators/contract'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })
@@ -195,7 +195,7 @@ describe('Contract (JavaScript)', () => {
         let tmpdir = path.join(os.tmpdir(), crypto.randomBytes(20).toString('hex'));
 
 
-        await helpers.run(path.join(__dirname, '../../generators/contract'))
+        await helpers.run(path.join(__dirname, '../../../generators/contract'))
             .withOptions({
                 language: 'javascript',
                 name: 'my-javascript-contract',
