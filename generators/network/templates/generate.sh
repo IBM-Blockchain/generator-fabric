@@ -6,6 +6,6 @@
 #
 # Exit on first error, print all commands.
 set -ev
-docker run --rm -v "$PWD":/network -v /var/run/docker.sock:/var/run/docker.sock --network host ibmblockchain/ansible:latest ansible-playbook /network/playbook.yml
-docker run --rm -v "$PWD":/network ibmblockchain/ansible:latest chown -R $(id -u):$(id -g) /network
+docker run --rm -v "$PWD":/network -v /var/run/docker.sock:/var/run/docker.sock --network host ibmblockchain/vscode-prereqs:0.0.7 ansible-playbook /network/playbook.yml
+docker run --rm -v "$PWD":/network ibmblockchain/vscode-prereqs:0.0.7 chown -R $(id -u):$(id -g) /network
 exit 0
