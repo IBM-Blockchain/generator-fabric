@@ -79,7 +79,7 @@ module.exports = class extends Generator {
         console.log('Generating files...');
 
         if (this.options.language.endsWith('script') ){
-            this.fs.copyTpl(this.templatePath(this.options.language), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+            this.fs.copyTpl(this.templatePath(`public/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
             if (this.options.language === 'javascript') {
                 this._rename(this.destinationPath('lib/my-contract.js'), this.destinationPath(`lib/${this.options.assetDashSeparator}-contract.js`));
                 this._rename(this.destinationPath('test/my-contract.js'), this.destinationPath(`test/${this.options.assetDashSeparator}-contract.js`));
@@ -93,7 +93,7 @@ module.exports = class extends Generator {
             this._rename(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
             this._rename(this.destinationPath('.npmignore-hidefromnpm'), this.destinationPath('.npmignore'));
         } else if (this.options.language === 'java'){
-            this.fs.copyTpl(this.templatePath(this.options.language), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+            this.fs.copyTpl(this.templatePath(`public/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
             this._rename(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
             let root = 'src/main/java/org/example';
             this._rename(this.destinationPath(`${root}/MyAsset.java`), this.destinationPath(`${root}/${this.options.assetPascalCase}.java`));
@@ -101,7 +101,7 @@ module.exports = class extends Generator {
             root = 'src/test/java/org/example';
             this._rename(this.destinationPath(`${root}/MyContractTest.java`), this.destinationPath(`${root}/${this.options.assetPascalCase}ContractTest.java`));
         } else if (this.options.language === 'kotlin'){
-            this.fs.copyTpl(this.templatePath(this.options.language), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+            this.fs.copyTpl(this.templatePath(`public/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
             this._rename(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
             let root = 'src/main/kotlin/org/example';
             this._rename(this.destinationPath(`${root}/MyAsset.kt`), this.destinationPath(`${root}/${this.options.assetPascalCase}.kt`));

@@ -14,7 +14,7 @@ describe('Contract (TypeScript)', () => {
 
     it('should generate a TypeScript project using prompts (custom asset)', async () => {
         let dir;
-        await helpers.run(path.join(__dirname, '../../generators/app'))
+        await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })
@@ -140,7 +140,7 @@ describe('Contract (TypeScript)', () => {
 
     it('should generate a TypeScript project using prompts (default asset)', async () => {
         let dir;
-        await helpers.run(path.join(__dirname, '../../generators/app'))
+        await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })

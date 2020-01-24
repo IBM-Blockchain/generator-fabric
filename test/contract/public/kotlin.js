@@ -18,7 +18,7 @@ describe('Contract (Kotlin)', () => {
     it('should not create a rockstart project',async () => {
 
 
-        await helpers.run(path.join(__dirname, '../../generators/app'))
+        await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir(() => {
             }).withPrompts({
                 subgenerator: 'contract',
@@ -34,7 +34,7 @@ describe('Contract (Kotlin)', () => {
     });
     it('should generate a Kotlin project using prompts (custom asset)', async () => {
         let dir;
-        await helpers.run(path.join(__dirname, '../../generators/app'))
+        await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })
@@ -80,7 +80,7 @@ describe('Contract (Kotlin)', () => {
 
     it('should generate a Kotlin project using prompts (default asset)', async () => {
         let dir;
-        await helpers.run(path.join(__dirname, '../../generators/app'))
+        await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })
