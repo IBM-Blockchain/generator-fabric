@@ -70,7 +70,7 @@ stages:
             inputs:
               versionSpec: "10.x"
             displayName: Use Node.js 10.x
-          - script: npm ci
+          - script: npm install --no-optional
             displayName: Install dependencies
           - script: npm install -g npm-cli-login
             displayName: Install npm login tool
