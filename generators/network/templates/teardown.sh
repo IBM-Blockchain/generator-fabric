@@ -14,7 +14,17 @@ for VOLUME in $(docker volume ls -f label=fabric-environment-name="<%= name %>" 
 done
 if [ -d wallets ]; then
     for WALLET in $(ls wallets); do
-        rm -rf wallets/${WALLET}/*
+        rm -rf wallets/${WALLET}
+    done
+fi
+if [ -d gateways ]; then
+    for GATEWAY in $(ls gateways); do
+        rm -rf gateways/${GATEWAY}
+    done
+fi
+if [ -d nodes ]; then
+    for NODE in $(ls nodes); do
+        rm -rf nodes/${NODE}
     done
 fi
 exit 0

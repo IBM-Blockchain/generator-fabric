@@ -19,11 +19,17 @@ for /f "usebackq tokens=*" %%v in (`docker volume ls -f label^=fabric-environmen
 )
 if exist wallets (
     pushd wallets
-    for /f "usebackq tokens=*" %%w in (`dir /b`) do (
-        pushd %%w
-        rmdir /q/s .
-        popd
-    )
+    rmdir /q/s .
+    popd
+)
+if exist gateways (
+    pushd gateways
+    rmdir /q/s .
+    popd
+)
+if exist nodes (
+    pushd nodes
+    rmdir /q/s .
     popd
 )
 exit /b 0
