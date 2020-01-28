@@ -17,4 +17,14 @@ if [ -d wallets ]; then
         rm -rf wallets/${WALLET}/*
     done
 fi
+if [ -d gateways ]; then
+    for GATEWAY in $(ls gateways); do
+        rm -rf gateways/${GATEWAY}/*
+    done
+fi
+if [ -d nodes ]; then
+    for NODE in $(ls nodes); do
+        rm -rf nodes/${NODE}/*
+    done
+fi
 exit 0

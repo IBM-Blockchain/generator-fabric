@@ -26,4 +26,22 @@ if exist wallets (
     )
     popd
 )
+if exist gateways (
+    pushd gateways
+    for /f "usebackq tokens=*" %%w in (`dir /b`) do (
+        pushd %%w
+        rmdir /q/s .
+        popd
+    )
+    popd
+)
+if exist nodes (
+    pushd nodes
+    for /f "usebackq tokens=*" %%w in (`dir /b`) do (
+        pushd %%w
+        rmdir /q/s .
+        popd
+    )
+    popd
+)
 exit /b 0
