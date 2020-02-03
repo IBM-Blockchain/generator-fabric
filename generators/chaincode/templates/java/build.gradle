@@ -9,7 +9,7 @@ plugins {
 }
 
 dependencies {
-    implementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:1.4.4'
+    implementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:1.4.5'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.+'
 }
@@ -19,9 +19,6 @@ repositories {
     mavenCentral()
     maven {
         url 'https://jitpack.io'
-    }
-    maven {
-        url "https://nexus.hyperledger.org/content/repositories/snapshots/"
     }
 }
 
