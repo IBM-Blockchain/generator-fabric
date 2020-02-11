@@ -12,6 +12,7 @@ done
 for VOLUME in $(docker volume ls -f label=fabric-environment-name="<%= name %>" -q); do
     docker volume rm -f ${VOLUME}
 done
+docker run --rm -v "$PWD":/network ibmblockchain/vscode-prereqs:0.0.10 chown -R $(id -u):$(id -g) /network
 if [ -d wallets ]; then
     for WALLET in $(ls wallets); do
         rm -rf wallets/${WALLET}
