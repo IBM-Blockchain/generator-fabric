@@ -17,11 +17,11 @@ chai.use(require('chai-as-promised'));
 describe('Contract (Kotlin)', () => {
     it('should not create a rockstart project',async () => {
 
-
         await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir(() => {
             }).withPrompts({
                 subgenerator: 'contract',
+                contractType: 'default',
                 language: 'rockstar',
                 name: 'JamesKotlinContract',
                 version: '0.0.1',
@@ -32,7 +32,9 @@ describe('Contract (Kotlin)', () => {
             }).then();
 
     });
+
     it('should generate a Kotlin project using prompts (custom asset)', async () => {
+
         let dir;
         await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir((dir_) => {
@@ -40,6 +42,7 @@ describe('Contract (Kotlin)', () => {
             })
             .withPrompts({
                 subgenerator: 'contract',
+                contractType: 'default',
                 language: 'kotlin',
                 name: 'JamesKotlinContract',
                 version: '0.0.1',
@@ -86,6 +89,7 @@ describe('Contract (Kotlin)', () => {
             })
             .withPrompts({
                 subgenerator: 'contract',
+                contractType: 'default',
                 language: 'kotlin',
                 name: 'JamesKotlinContract',
                 version: '0.0.1',

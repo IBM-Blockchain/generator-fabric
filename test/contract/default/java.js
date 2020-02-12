@@ -17,11 +17,11 @@ chai.use(require('chai-as-promised'));
 describe('Contract (Java)', () => {
     it('should not create a rockstart project',async () => {
 
-
         await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir(() => {
             }).withPrompts({
                 subgenerator: 'contract',
+                contractType: 'default',
                 language: 'rockstar',
                 name: 'JamesJavaContract',
                 version: '0.0.1',
@@ -32,7 +32,9 @@ describe('Contract (Java)', () => {
             }).then();
 
     });
+
     it('should generate a Java project using prompts (custom asset)', async () => {
+
         let dir;
         await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir((dir_) => {
@@ -40,6 +42,7 @@ describe('Contract (Java)', () => {
             })
             .withPrompts({
                 subgenerator: 'contract',
+                contractType: 'default',
                 language: 'java',
                 name: 'JamesJavaContract',
                 version: '0.0.1',
@@ -88,6 +91,7 @@ describe('Contract (Java)', () => {
             })
             .withPrompts({
                 subgenerator: 'contract',
+                contractType: 'default',
                 language: 'java',
                 name: 'JamesJavaContract',
                 version: '0.0.1',
