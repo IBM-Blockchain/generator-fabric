@@ -59,7 +59,8 @@ describe('Contract (Kotlin)', () => {
             '.gitignore',
             'src/main/kotlin/org/example/Conga.kt',
             'src/main/kotlin/org/example/CongaContract.kt',
-            'src/test/kotlin/org/example/CongaContractTest.kt'
+            'src/test/kotlin/org/example/CongaContractTest.kt',
+            'transaction_data/conga-transactions.txdata'
 
         ]);
         let contractFile = 'src/main/kotlin/org/example/CongaContract.kt';
@@ -72,6 +73,11 @@ describe('Contract (Kotlin)', () => {
         assert.fileContent(contractFile, /fun readConga\(ctx: Context, congaId: String\): Conga {/);
         assert.fileContent(contractFile, /fun updateConga\(ctx: Context, congaId: String, newValue: String\) {/);
         assert.fileContent(contractFile, /fun deleteConga\(ctx: Context, congaId: String\) {/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
         let str = fs.readFileSync(path.join(dir, 'build.gradle'),'utf8');
         let gradleBuildFile = await g2js.parseText(str.replace(/\r\n/g,'\n'));
         gradleBuildFile.version.should.equal('0.0.1');
@@ -106,7 +112,8 @@ describe('Contract (Kotlin)', () => {
             '.gitignore',
             'src/main/kotlin/org/example/MyAsset.kt',
             'src/main/kotlin/org/example/MyAssetContract.kt',
-            'src/test/kotlin/org/example/MyAssetContractTest.kt'
+            'src/test/kotlin/org/example/MyAssetContractTest.kt',
+            'transaction_data/my-asset-transactions.txdata'
 
         ]);
         let contractFile = 'src/main/kotlin/org/example/MyAssetContract.kt';
@@ -119,6 +126,11 @@ describe('Contract (Kotlin)', () => {
         assert.fileContent(contractFile, /fun readMyAsset\(ctx: Context, myAssetId: String\): MyAsset {/);
         assert.fileContent(contractFile, /fun updateMyAsset\(ctx: Context, myAssetId: String, newValue: String\) {/);
         assert.fileContent(contractFile, /fun deleteMyAsset\(ctx: Context, myAssetId: String\) {/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "myAssetExists",/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "createMyAsset",/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "readMyAsset",/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "updateMyAsset",/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "deleteMyAsset",/);
         let str = fs.readFileSync(path.join(dir, 'build.gradle'),'utf8');
         let gradleBuildFile = await g2js.parseText(str.replace(/\r\n/g,'\n'));
         gradleBuildFile.version.should.equal('0.0.1');

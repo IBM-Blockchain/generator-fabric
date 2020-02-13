@@ -40,7 +40,8 @@ describe('Contract (TypeScript)', () => {
             '.npmignore',
             'package.json',
             'tsconfig.json',
-            'tslint.json'
+            'tslint.json',
+            'transaction_data/conga-transactions.txdata'
         ]);
         assert.fileContent('src/conga.ts', /SPDX-License-Identifier: WTFPL/);
         assert.fileContent('src/conga.ts', /export class Conga {/);
@@ -51,6 +52,11 @@ describe('Contract (TypeScript)', () => {
         assert.fileContent('src/conga-contract.ts', /public async readConga\(ctx: Context, congaId: string\): Promise<Conga> {/);
         assert.fileContent('src/conga-contract.ts', /public async updateConga\(ctx: Context, congaId: string, newValue: string\): Promise<void> {/);
         assert.fileContent('src/conga-contract.ts', /public async deleteConga\(ctx: Context, congaId: string\): Promise<void> {/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.deep.equal({
             name: 'my-typescript-contract',
@@ -166,7 +172,8 @@ describe('Contract (TypeScript)', () => {
             '.npmignore',
             'package.json',
             'tsconfig.json',
-            'tslint.json'
+            'tslint.json',
+            'transaction_data/my-asset-transactions.txdata'
         ]);
         assert.fileContent('src/my-asset.ts', /SPDX-License-Identifier: WTFPL/);
         assert.fileContent('src/my-asset.ts', /export class MyAsset {/);
@@ -177,6 +184,11 @@ describe('Contract (TypeScript)', () => {
         assert.fileContent('src/my-asset-contract.ts', /public async readMyAsset\(ctx: Context, myAssetId: string\): Promise<MyAsset> {/);
         assert.fileContent('src/my-asset-contract.ts', /public async updateMyAsset\(ctx: Context, myAssetId: string, newValue: string\): Promise<void> {/);
         assert.fileContent('src/my-asset-contract.ts', /public async deleteMyAsset\(ctx: Context, myAssetId: string\): Promise<void> {/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "myAssetExists",/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "createMyAsset",/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "readMyAsset",/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "updateMyAsset",/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "deleteMyAsset",/);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.deep.equal({
             name: 'my-typescript-contract',

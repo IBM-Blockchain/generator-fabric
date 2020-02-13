@@ -83,11 +83,13 @@ module.exports = class extends Generator {
             if (this.options.language === 'javascript') {
                 this._rename(this.destinationPath('lib/my-contract.js'), this.destinationPath(`lib/${this.options.assetDashSeparator}-contract.js`));
                 this._rename(this.destinationPath('test/my-contract.js'), this.destinationPath(`test/${this.options.assetDashSeparator}-contract.js`));
+                this._rename(this.destinationPath('transaction_data/my-transactions.txdata'), this.destinationPath((`transaction_data/${this.options.assetDashSeparator}-transactions.txdata`)));
             }
             if (this.options.language === 'typescript') {
                 this._rename(this.destinationPath('src/my-asset.ts'), this.destinationPath(`src/${this.options.assetDashSeparator}.ts`));
                 this._rename(this.destinationPath('src/my-contract.ts'), this.destinationPath(`src/${this.options.assetDashSeparator}-contract.ts`));
                 this._rename(this.destinationPath('src/my-contract.spec.ts'), this.destinationPath(`src/${this.options.assetDashSeparator}-contract.spec.ts`));
+                this._rename(this.destinationPath('transaction_data/my-transactions.txdata'), this.destinationPath((`transaction_data/${this.options.assetDashSeparator}-transactions.txdata`)));
             }
             // npm install does dumb stuff and renames our gitignore to npmignore, so rename it back!
             this._rename(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
@@ -100,6 +102,7 @@ module.exports = class extends Generator {
             this._rename(this.destinationPath(`${root}/MyContract.java`), this.destinationPath(`${root}/${this.options.assetPascalCase}Contract.java`));
             root = 'src/test/java/org/example';
             this._rename(this.destinationPath(`${root}/MyContractTest.java`), this.destinationPath(`${root}/${this.options.assetPascalCase}ContractTest.java`));
+            this._rename(this.destinationPath('transaction_data/my-transactions.txdata'), this.destinationPath((`transaction_data/${this.options.assetDashSeparator}-transactions.txdata`)));
         } else if (this.options.language === 'kotlin'){
             this.fs.copyTpl(this.templatePath(`public/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
             this._rename(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
@@ -108,6 +111,7 @@ module.exports = class extends Generator {
             this._rename(this.destinationPath(`${root}/MyContract.kt`), this.destinationPath(`${root}/${this.options.assetPascalCase}Contract.kt`));
             root = 'src/test/kotlin/org/example';
             this._rename(this.destinationPath(`${root}/MyContractTest.kt`), this.destinationPath(`${root}/${this.options.assetPascalCase}ContractTest.kt`));
+            this._rename(this.destinationPath('transaction_data/my-transactions.txdata'), this.destinationPath((`transaction_data/${this.options.assetDashSeparator}-transactions.txdata`)));
         } else {
             // language not understood
             console.log(`Sorry ${this.options.language} is not recognized`);

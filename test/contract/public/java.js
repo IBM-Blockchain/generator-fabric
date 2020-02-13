@@ -61,7 +61,8 @@ describe('Contract (Java)', () => {
             '.gitignore',
             'src/main/java/org/example/Conga.java',
             'src/main/java/org/example/CongaContract.java',
-            'src/test/java/org/example/CongaContractTest.java'
+            'src/test/java/org/example/CongaContractTest.java',
+            'transaction_data/conga-transactions.txdata'
 
         ]);
         let contractFile = 'src/main/java/org/example/CongaContract.java';
@@ -74,6 +75,11 @@ describe('Contract (Java)', () => {
         assert.fileContent(contractFile, /public Conga readConga\(Context ctx, String congaId\) {/);
         assert.fileContent(contractFile, /public void updateConga\(Context ctx, String congaId, String newValue\) {/);
         assert.fileContent(contractFile, /public void deleteConga\(Context ctx, String congaId\) {/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
         let str = fs.readFileSync(path.join(dir, 'build.gradle'),'utf8');
         let gradleBuildFile = await g2js.parseText(str.replace(/\r\n/g,'\n'));
         gradleBuildFile.version.should.equal('0.0.1');
@@ -108,7 +114,8 @@ describe('Contract (Java)', () => {
             '.gitignore',
             'src/main/java/org/example/MyAsset.java',
             'src/main/java/org/example/MyAssetContract.java',
-            'src/test/java/org/example/MyAssetContractTest.java'
+            'src/test/java/org/example/MyAssetContractTest.java',
+            'transaction_data/my-asset-transactions.txdata'
 
         ]);
         let contractFile = 'src/main/java/org/example/MyAssetContract.java';
@@ -121,6 +128,11 @@ describe('Contract (Java)', () => {
         assert.fileContent(contractFile, /public MyAsset readMyAsset\(Context ctx, String myAssetId\) {/);
         assert.fileContent(contractFile, /public void updateMyAsset\(Context ctx, String myAssetId, String newValue\) {/);
         assert.fileContent(contractFile, /public void deleteMyAsset\(Context ctx, String myAssetId\) {/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "myAssetExists",/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "createMyAsset",/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "readMyAsset",/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "updateMyAsset",/);
+        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "deleteMyAsset",/);
         let str = fs.readFileSync(path.join(dir, 'build.gradle'),'utf8');
         let gradleBuildFile = await g2js.parseText(str.replace(/\r\n/g,'\n'));
         gradleBuildFile.version.should.equal('0.0.1');
