@@ -96,7 +96,8 @@ describe('Contract (JavaScript)', () => {
             '.gitignore',
             '.npmignore',
             'index.js',
-            'package.json'
+            'package.json',
+            'transaction_data/conga-transactions.txdata'
         ]);
         assert.fileContent('lib/conga-contract.js', /SPDX-License-Identifier: WTFPL/);
         assert.fileContent('lib/conga-contract.js', /class CongaContract extends Contract {/);
@@ -105,6 +106,11 @@ describe('Contract (JavaScript)', () => {
         assert.fileContent('lib/conga-contract.js', /async readConga\(ctx, congaId\) {/);
         assert.fileContent('lib/conga-contract.js', /async updateConga\(ctx, congaId, newValue\) {/);
         assert.fileContent('lib/conga-contract.js', /async deleteConga\(ctx, congaId\) {/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.deep.equal(genericPackage);
     });
@@ -132,7 +138,8 @@ describe('Contract (JavaScript)', () => {
             '.gitignore',
             '.npmignore',
             'index.js',
-            'package.json'
+            'package.json',
+            'transaction_data/conga-transactions.txdata'
         ]);
         assert.fileContent('lib/conga-contract.js', /class CongaContract extends Contract {/);
         assert.fileContent('lib/conga-contract.js', /async congaExists\(ctx, congaId\) {/);
@@ -140,6 +147,12 @@ describe('Contract (JavaScript)', () => {
         assert.fileContent('lib/conga-contract.js', /async readConga\(ctx, congaId\) {/);
         assert.fileContent('lib/conga-contract.js', /async updateConga\(ctx, congaId, newValue\) {/);
         assert.fileContent('lib/conga-contract.js', /async deleteConga\(ctx, congaId\) {/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
+
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.deep.equal(genericPackage);
     });
@@ -175,7 +188,8 @@ describe('Contract (JavaScript)', () => {
             '.gitignore',
             '.npmignore',
             'index.js',
-            'package.json'
+            'package.json',
+            'transaction_data/conga-transactions.txdata'
         ]);
 
         assert.fileContent('lib/conga-contract.js', /class CongaContract extends Contract {/);
@@ -184,6 +198,11 @@ describe('Contract (JavaScript)', () => {
         assert.fileContent('lib/conga-contract.js', /async readConga\(ctx, congaId\) {/);
         assert.fileContent('lib/conga-contract.js', /async updateConga\(ctx, congaId, newValue\) {/);
         assert.fileContent('lib/conga-contract.js', /async deleteConga\(ctx, congaId\) {/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.deep.equal(genericPackage);
 
@@ -219,7 +238,8 @@ describe('Contract (JavaScript)', () => {
             '.gitignore',
             '.npmignore',
             'index.js',
-            'package.json'
+            'package.json',
+            'transaction_data/conga-transactions.txdata'
         ]);
         assert.fileContent('lib/conga-contract.js', /class CongaContract extends Contract {/);
         assert.fileContent('lib/conga-contract.js', /async congaExists\(ctx, congaId\) {/);
@@ -227,6 +247,11 @@ describe('Contract (JavaScript)', () => {
         assert.fileContent('lib/conga-contract.js', /async readConga\(ctx, congaId\) {/);
         assert.fileContent('lib/conga-contract.js', /async updateConga\(ctx, congaId, newValue\) {/);
         assert.fileContent('lib/conga-contract.js', /async deleteConga\(ctx, congaId\) {/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
         const packageJSON = require(path.join(tmpdir, 'package.json'));
         packageJSON.should.deep.equal(genericPackage);
     });
