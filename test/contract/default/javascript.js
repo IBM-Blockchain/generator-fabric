@@ -7,6 +7,7 @@
 const assert = require('yeoman-assert');
 const helpers = require('yeoman-test');
 const path = require('path');
+const Mocha = require('mocha');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const generator = require(path.join(__dirname, '../../../generators/contract/index'));
@@ -17,6 +18,12 @@ chai.should();
 chai.use(sinonChai);
 
 describe('Contract (JavaScript)', () => {
+    let dir;
+
+    const sandbox = sinon.createSandbox();
+    afterEach(() => {
+        sandbox.restore();
+    });
 
     let genericPackage = {
         name: 'my-javascript-contract',
@@ -70,13 +77,13 @@ describe('Contract (JavaScript)', () => {
     };
 
     it('should generate a JavaScript project using prompts', async () => {
-        let dir;
         await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })
             .withPrompts({
                 subgenerator: 'contract',
+                contractType: 'default',
                 language: 'javascript',
                 name: 'my-javascript-contract',
                 version: '0.0.1',
@@ -116,12 +123,12 @@ describe('Contract (JavaScript)', () => {
     });
 
     it('should generate a JavaScript project given options', async () => {
-        let dir;
         await helpers.run(path.join(__dirname, '../../../generators/contract'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })
-            .withOptions({language: 'javascript',
+            .withOptions({contractType: 'default',
+                language: 'javascript',
                 name: 'my-javascript-contract',
                 version: '0.0.1',
                 description: 'My JavaScript Contract',
@@ -152,17 +159,15 @@ describe('Contract (JavaScript)', () => {
         assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
         assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
         assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
-
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.deep.equal(genericPackage);
     });
 
     it('should detect if no skip-install option is passed', async () => {
-        let dir;
-
         let installStub = sinon.stub(generator.prototype,'installDependencies');
 
         let options = {
+            contractType: 'default',
             language: 'javascript',
             name: 'my-javascript-contract',
             version: '0.0.1',
@@ -213,9 +218,9 @@ describe('Contract (JavaScript)', () => {
     it('should detect if given a destination option', async () => {
         let tmpdir = path.join(os.tmpdir(), crypto.randomBytes(20).toString('hex'));
 
-
         await helpers.run(path.join(__dirname, '../../../generators/contract'))
             .withOptions({
+                contractType: 'default',
                 language: 'javascript',
                 name: 'my-javascript-contract',
                 version: '0.0.1',
@@ -254,5 +259,59 @@ describe('Contract (JavaScript)', () => {
         assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
         const packageJSON = require(path.join(tmpdir, 'package.json'));
         packageJSON.should.deep.equal(genericPackage);
+    });
+
+    it('should throw an error if an incorrect contract type is provided', async () => {
+        const errorStub = sandbox.stub(Mocha.Runner.prototype, 'uncaught');
+        const promise = new Promise((resolve) => {
+            errorStub.callsFake(resolve);
+        });
+        helpers.run(path.join(__dirname, '../../../generators/app'))
+            .inTmpDir((dir_) => {
+                dir = dir_;
+            })
+            .withPrompts({
+                subgenerator: 'contract',
+                contractType: 'penguin',
+                language: 'typescript',
+                name: 'my-typescript-contract',
+                version: '0.0.1',
+                description: 'My Typescript Contract',
+                author: 'James Conga',
+                license: 'WTFPL',
+                asset: 'myPrivateConga',
+                mspId: 'Org1MSP'
+            });
+        await promise;
+        errorStub.should.have.been.calledOnceWithExactly(sinon.match.instanceOf(Error));
+        const error = errorStub.args[0][0];
+        error.message.should.match(/Sorry the contract type 'penguin' does not exist./);
+    });
+
+    it('should throw error if language is not recognised', async () => {
+        const errorStub = sandbox.stub(Mocha.Runner.prototype, 'uncaught');
+        const promise = new Promise((resolve) => {
+            errorStub.callsFake(resolve);
+        });
+        helpers.run(path.join(__dirname, '../../../generators/app'))
+            .inTmpDir((dir_) => {
+                dir = dir_;
+            })
+            .withPrompts({
+                subgenerator: 'contract',
+                contractType: 'private',
+                language: 'penguin',
+                name: 'my-typescript-contract',
+                version: '0.0.1',
+                description: 'My Typescript Contract',
+                author: 'James Conga',
+                license: 'WTFPL',
+                asset: 'myPrivateConga',
+                mspId: 'Org1MSP'
+            });
+        await promise;
+        errorStub.should.have.been.calledOnceWithExactly(sinon.match.instanceOf(Error));
+        const error = errorStub.args[0][0];
+        error.message.should.match(/Sorry the language 'penguin' is not recognized/);
     });
 });
