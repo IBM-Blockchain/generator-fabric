@@ -316,6 +316,7 @@ typescript_default_contract_package() {
 
 java_private_contract_package() {
     yo fabric:contract -- --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
+    jq ".[0].policy = \"OR('Org1MSP.member')\"" collections.json > collections-cli.json
     ./gradlew clean build shadowJar
     date
     ${RETRY} docker run \
@@ -334,6 +335,7 @@ java_private_contract_package() {
 
 javascript_private_contract_package() {
     yo fabric:contract -- --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
+    jq ".[0].policy = \"OR('Org1MSP.member')\"" collections.json > collections-cli.json
     npm audit
     npm test
     date
@@ -353,6 +355,7 @@ javascript_private_contract_package() {
 
 typescript_private_contract_package() {
     yo fabric:contract -- --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
+    jq ".[0].policy = \"OR('Org1MSP.member')\"" collections.json > collections-cli.json
     npm audit
     npm test
     npm run build
@@ -416,12 +419,13 @@ private_contract_deploy() {
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
         -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "$(pwd)":/tmp/contract \
         -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
         -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel --collections-config ./collections.json -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -c '{"Args":[]}'
+        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel --collections-config /tmp/contract/collections-cli.json -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -c '{"Args":[]}'
     date
 }
 
@@ -670,7 +674,7 @@ if [ -z "$1" ]
 then
     chaincode_tests
     contract_tests
-    private_contract_tests
+    # private_contract_tests
     network_test
 else
     $1 $2
