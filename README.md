@@ -58,3 +58,7 @@ If everything is installed successfully, then you should see prompts similar to 
 Alternatively, you can run the generator non-interactively, by specifying additional command line options:
 
     yo fabric:chaincode -- --language javascript --name my-smart-contract --version 0.0.1 --description "My Smart Contract" --author "Simon Stone" --license Apache-2.0
+
+If you are running the contract generator non-interactively, you will also need to specify the `contractType` (either `default` or `private`) and the `asset` command line options, in addition to the above options. Please note that if you decide on generating a contract which makes use of private data, you will also need to specify the `mspId` as a command line option. For example:
+
+    yo fabric:contract -- --contractType private --mspId Org1MSP --language javascript --name my-smart-contract --version 0.0.1 --description "My Smart Contract" --author "Simon Stone" --license Apache-2.0 --asset "MyPrivateAsset"

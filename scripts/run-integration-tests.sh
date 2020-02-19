@@ -196,6 +196,8 @@ common_chaincode_test() {
 }
 
 contract_tests() {
+    CONTRACT="default"
+
     if [ -z "$1" ]; then
         LANGUAGES="java javascript kotlin typescript"
     else
@@ -203,22 +205,42 @@ contract_tests() {
     fi
     for LANGUAGE in ${LANGUAGES}
     do
-        contract_test ${LANGUAGE}
+        contract_test ${LANGUAGE} ${CONTRACT}
+    done
+}
+
+private_contract_tests() {
+    CONTRACT="private"
+
+    if [ -z "$1" ]; then
+        LANGUAGES="javascript typescript"
+    else
+        LANGUAGES="$1"
+    fi
+    for LANGUAGE in ${LANGUAGES}
+    do
+        contract_test ${LANGUAGE} ${CONTRACT}
     done
 }
 
 contract_test() {
+    CONTRACT=$2
     LANGUAGE=$1
-    mkdir ${LANGUAGE}-contract
-    pushd ${LANGUAGE}-contract
-    ${LANGUAGE}_contract_package
-    common_contract_deploy
-    common_contract_test
+    mkdir ${LANGUAGE}-${CONTRACT}-contract
+    pushd ${LANGUAGE}-${CONTRACT}-contract
+    ${LANGUAGE}_${CONTRACT}_contract_package
+    if [ ${CONTRACT} == "default" ]; then
+        common_contract_deploy
+        common_contract_test
+    else [ ${CONTRACT} == "private" ]
+        private_contract_deploy
+        private_contract_test
+    fi
     popd
 }
 
-java_contract_package() {
-    yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
+java_default_contract_package() {
+    yo fabric:contract -- --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
     ./gradlew clean build shadowJar
     date
     ${RETRY} docker run \
@@ -231,12 +253,12 @@ java_contract_package() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode package -n ${LANGUAGE}-contract -v 0.0.1 -p /tmp/contract -l java /tmp/contract/contract.cds
+        peer chaincode package -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -p /tmp/contract -l java /tmp/contract/contract.cds
     date
 }
 
-kotlin_contract_package() {
-    yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
+kotlin_default_contract_package() {
+    yo fabric:contract -- --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
     ./gradlew clean build shadowJar
     date
     ${RETRY} docker run \
@@ -249,12 +271,12 @@ kotlin_contract_package() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode package -n ${LANGUAGE}-contract -v 0.0.1 -p /tmp/contract -l java /tmp/contract/contract.cds
+        peer chaincode package -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -p /tmp/contract -l java /tmp/contract/contract.cds
     date
 }
 
-javascript_contract_package() {
-    yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
+javascript_default_contract_package() {
+    yo fabric:contract -- --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
     npm audit
     npm test
     date
@@ -268,12 +290,12 @@ javascript_contract_package() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode package -n ${LANGUAGE}-contract -v 0.0.1 -p /tmp/contract -l node /tmp/contract/contract.cds
+        peer chaincode package -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -p /tmp/contract -l node /tmp/contract/contract.cds
     date
 }
 
-typescript_contract_package() {
-    yo fabric:contract -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
+typescript_default_contract_package() {
+    yo fabric:contract -- --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
     npm audit
     npm test
     npm run build
@@ -288,7 +310,67 @@ typescript_contract_package() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode package -n ${LANGUAGE}-contract -v 0.0.1 -p /tmp/contract -l node /tmp/contract/contract.cds
+        peer chaincode package -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -p /tmp/contract -l node /tmp/contract/contract.cds
+    date
+}
+
+java_private_contract_package() {
+    yo fabric:contract -- --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
+    jq ".[0].policy = \"OR('Org1MSP.member')\"" collections.json > collections-cli.json
+    ./gradlew clean build shadowJar
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode package -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -p /tmp/contract -l java /tmp/contract/contract.cds
+    date
+}
+
+javascript_private_contract_package() {
+    yo fabric:contract -- --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
+    jq ".[0].policy = \"OR('Org1MSP.member')\"" collections.json > collections-cli.json
+    npm audit
+    npm test
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode package -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -p /tmp/contract -l node /tmp/contract/contract.cds
+    date
+}
+
+typescript_private_contract_package() {
+    yo fabric:contract -- --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
+    jq ".[0].policy = \"OR('Org1MSP.member')\"" collections.json > collections-cli.json
+    npm audit
+    npm test
+    npm run build
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode package -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -p /tmp/contract -l node /tmp/contract/contract.cds
     date
 }
 
@@ -315,7 +397,35 @@ common_contract_deploy() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -v 0.0.1 -c '{"Args":[]}'
+        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -c '{"Args":[]}'
+    date
+}
+
+private_contract_deploy() {
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode install /tmp/contract/contract.cds
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel --collections-config /tmp/contract/collections-cli.json -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -c '{"Args":[]}'
     date
 }
 
@@ -330,7 +440,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["congaExists","1001"]}'
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["congaExists","1001"]}'
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -341,7 +451,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["createConga","1001","conga 1001 value"]}' --waitForEvent
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["createConga","1001","conga 1001 value"]}' --waitForEvent
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -352,7 +462,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["congaExists","1001"]}'
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["congaExists","1001"]}'
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -363,7 +473,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["readConga","1001"]}'
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readConga","1001"]}'
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -374,7 +484,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["updateConga","1001","conga 1001 new value"]}' --waitForEvent
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["updateConga","1001","conga 1001 new value"]}' --waitForEvent
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -385,7 +495,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["readConga","1001"]}'
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readConga","1001"]}'
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -396,7 +506,7 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["deleteConga","1001"]}' --waitForEvent
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["deleteConga","1001"]}' --waitForEvent
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
@@ -407,7 +517,110 @@ common_contract_test() {
         --network net_basic \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-contract -c '{"Args":["congaExists","1001"]}'
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["congaExists","1001"]}'
+    date
+}
+
+private_contract_test() {
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["createPrivateConga","1001"]}' --transient '{"privateValue":"100"}' --waitForEvent
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readPrivateConga","1001"]}'
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["updatePrivateConga","1001"]}'  --transient '{"privateValue":"125"}' --waitForEvent
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readPrivateConga","1001"]}'
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["verifyPrivateConga","1001",{"privateValue":"125"}]}' --waitForEvent
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["deletePrivateConga","1001"]}' --waitForEvent
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
+        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
+        --network net_basic \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
     date
 }
 
@@ -461,6 +674,7 @@ if [ -z "$1" ]
 then
     chaincode_tests
     contract_tests
+    # private_contract_tests
     network_test
 else
     $1 $2

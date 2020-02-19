@@ -47,6 +47,9 @@ stages:
             Contract_Linux:
               tests: contract_tests
               imageName: "ubuntu-latest"
+            # Private_Contract_Linux:
+            #   tests: private_contract_tests
+            #   imageName: "ubuntu-latest"
             Network_Linux:
               tests: network_test
               imageName: "ubuntu-latest"

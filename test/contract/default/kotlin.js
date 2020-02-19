@@ -9,37 +9,53 @@ const helpers = require('yeoman-test');
 const path = require('path');
 const g2js = require('gradle-to-js/lib/parser');
 const fs = require('fs');
-
+const Mocha = require('mocha');
+const sinon = require('sinon');
 const chai = require('chai');
+
 chai.should();
 chai.use(require('chai-as-promised'));
 
 describe('Contract (Kotlin)', () => {
-    it('should not create a rockstart project',async () => {
+    let dir;
 
+    const sandbox = sinon.createSandbox();
+    afterEach(() => {
+        sandbox.restore();
+    });
 
-        await helpers.run(path.join(__dirname, '../../../generators/app'))
+    it('should not create a rockstar project',async () => {
+        const errorStub = sandbox.stub(Mocha.Runner.prototype, 'uncaught');
+        const promise = new Promise((resolve) => {
+            errorStub.callsFake(resolve);
+        });
+        helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir(() => {
             }).withPrompts({
                 subgenerator: 'contract',
+                contractType: 'default',
                 language: 'rockstar',
                 name: 'JamesKotlinContract',
                 version: '0.0.1',
                 description: 'James Kotlin Contract',
                 author: 'James Conga',
                 license: 'WTFPL',
-                asset: 'conga'
+                asset: 'conga',
             }).then();
-
+        await promise;
+        errorStub.should.have.been.calledOnceWithExactly(sinon.match.instanceOf(Error));
+        const error = errorStub.args[0][0];
+        error.message.should.match(/Sorry the language 'rockstar' is not recognized/);
     });
+
     it('should generate a Kotlin project using prompts (custom asset)', async () => {
-        let dir;
         await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })
             .withPrompts({
                 subgenerator: 'contract',
+                contractType: 'default',
                 language: 'kotlin',
                 name: 'JamesKotlinContract',
                 version: '0.0.1',
@@ -85,13 +101,13 @@ describe('Contract (Kotlin)', () => {
     });
 
     it('should generate a Kotlin project using prompts (default asset)', async () => {
-        let dir;
         await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })
             .withPrompts({
                 subgenerator: 'contract',
+                contractType: 'default',
                 language: 'kotlin',
                 name: 'JamesKotlinContract',
                 version: '0.0.1',
@@ -134,6 +150,33 @@ describe('Contract (Kotlin)', () => {
         let str = fs.readFileSync(path.join(dir, 'build.gradle'),'utf8');
         let gradleBuildFile = await g2js.parseText(str.replace(/\r\n/g,'\n'));
         gradleBuildFile.version.should.equal('0.0.1');
+    });
+
+    it('should throw an error if an incorrect contract type is provided', async () => {
+        const errorStub = sandbox.stub(Mocha.Runner.prototype, 'uncaught');
+        const promise = new Promise((resolve) => {
+            errorStub.callsFake(resolve);
+        });
+        helpers.run(path.join(__dirname, '../../../generators/app'))
+            .inTmpDir((dir_) => {
+                dir = dir_;
+            })
+            .withPrompts({
+                subgenerator: 'contract',
+                contractType: 'penguin',
+                language: 'typescript',
+                name: 'my-typescript-contract',
+                version: '0.0.1',
+                description: 'My Typescript Contract',
+                author: 'James Conga',
+                license: 'WTFPL',
+                asset: 'myPrivateConga',
+                mspId: 'Org1MSP'
+            });
+        await promise;
+        errorStub.should.have.been.calledOnceWithExactly(sinon.match.instanceOf(Error));
+        const error = errorStub.args[0][0];
+        error.message.should.match(/Sorry the contract type 'penguin' does not exist./);
     });
 
 });
