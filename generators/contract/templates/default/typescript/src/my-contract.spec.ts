@@ -19,7 +19,7 @@ chai.use(sinonChai);
 class TestContext implements Context {
     public stub: sinon.SinonStubbedInstance<ChaincodeStub> = sinon.createStubInstance(ChaincodeStub);
     public clientIdentity: sinon.SinonStubbedInstance<ClientIdentity> = sinon.createStubInstance(ClientIdentity);
-    public logging = {
+    public logger = {
         getLogger: sinon.stub().returns(sinon.createStubInstance(winston.createLogger().constructor)),
         setLevel: sinon.stub(),
      };

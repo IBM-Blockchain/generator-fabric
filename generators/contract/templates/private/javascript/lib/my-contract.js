@@ -11,8 +11,8 @@ const myCollectionName = 'CollectionOne';
 class <%= assetPascalCase %>Contract extends Contract {
 
     async <%= assetCamelCase %>Exists(ctx, <%= assetCamelCase %>Id) {
-        const buffer = await ctx.stub.getPrivateDataHash(myCollectionName, <%= assetCamelCase %>Id);
-        return (!!buffer && buffer.length > 0);
+        const data = await ctx.stub.getPrivateDataHash(myCollectionName, <%= assetCamelCase %>Id);
+        return (!!data && data.length > 0);
     }
 
     async create<%= assetPascalCase %>(ctx, <%= assetCamelCase %>Id) {
@@ -27,7 +27,7 @@ class <%= assetPascalCase %>Contract extends Contract {
         if (transientData.size === 0 || !transientData.has('privateValue')) {
             throw new Error('The privateValue key was not specified in transient data. Please try again.');
         }
-        privateAsset.privateValue = transientData.get('privateValue').toString('utf8');
+        privateAsset.privateValue = transientData.get('privateValue').toString();
 
         await ctx.stub.putPrivateData(myCollectionName, <%= assetCamelCase %>Id, Buffer.from(JSON.stringify(privateAsset)));
     }
@@ -54,7 +54,7 @@ class <%= assetPascalCase %>Contract extends Contract {
         if (transientData.size === 0 || !transientData.has('privateValue')) {
             throw new Error('The privateValue key was not specified in transient data. Please try again.');
         }
-        privateAsset.privateValue = transientData.get('privateValue').toString('utf8');
+        privateAsset.privateValue = transientData.get('privateValue').toString();
 
         await ctx.stub.putPrivateData(myCollectionName, <%= assetCamelCase %>Id, Buffer.from(JSON.stringify(privateAsset)));
     }
@@ -76,7 +76,7 @@ class <%= assetPascalCase %>Contract extends Contract {
             throw new Error('No private data hash with the key: ' + <%= assetCamelCase %>Id);
         }
 
-        const actualHash = pdHashBytes.toString('hex');
+        const actualHash = Buffer.from(pdHashBytes).toString('hex');
 
         // Compare the hash calculated (from object provided) and the hash stored on public ledger
         if (hashToVerify === actualHash) {
