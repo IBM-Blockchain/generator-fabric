@@ -41,6 +41,8 @@ describe('<%= assetPascalCase %>Contract', () => {
         contract = new <%= assetPascalCase %>Contract();
         ctx = new TestContext();
         ctx.stub.getPrivateData.withArgs(myCollectionName, '001').resolves(Buffer.from('{"privateValue":"150"}'));
+        const hashToVerify = crypto.createHash('sha256').update('{"privateValue":"150"}').digest('hex');
+        ctx.stub.getPrivateDataHash.withArgs(myCollectionName, '001').resolves(Buffer.from(hashToVerify, 'hex'));
     });
 
     describe('#<%= assetCamelCase %>Exists', () => {
@@ -144,23 +146,20 @@ describe('<%= assetPascalCase %>Contract', () => {
         it('should return success message if hash provided matches the hash of the private data', async () => {
             const objectToVerify = '{"privateValue":"125"}';
             const hashToVerify = crypto.createHash('sha256').update(objectToVerify).digest('hex');
-            ctx.stub.getPrivateDataHash.resolves(Buffer.from(hashToVerify, 'hex'));
+            ctx.stub.getPrivateDataHash.withArgs(myCollectionName, '001').resolves(Buffer.from(hashToVerify, 'hex'));
             const result = await contract.verify<%= assetPascalCase %>(ctx, '001', '{"privateValue":"125"}');
             result.should.equal(true);
         });
 
         it('should throw an error if hash provided does not match the hash of the private data', async () => {
-            ctx.stub.getPrivateDataHash.resolves(Buffer.from('someHash'));
+            ctx.stub.getPrivateDataHash.withArgs(myCollectionName, '001').resolves(Buffer.from('someHash'));
             const result = await contract.verify<%= assetPascalCase %>(ctx, '001', 'someObject');
             result.should.equal(false);
         });
 
         it('should throw an error when user tries to verify an asset that doesnt exist', async () => {
-            ctx.stub.getPrivateDataHash.resolves(Buffer.from(''));
+            ctx.stub.getPrivateDataHash.withArgs(myCollectionName, '001').resolves(Buffer.from(''));
             await contract.verify<%= assetPascalCase %>(ctx, '001', 'someObject').should.be.rejectedWith('No private data hash with the key: 001');
         });
-
     });
-
-
 });

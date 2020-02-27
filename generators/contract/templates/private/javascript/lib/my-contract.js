@@ -11,7 +11,7 @@ const myCollectionName = 'CollectionOne';
 class <%= assetPascalCase %>Contract extends Contract {
 
     async <%= assetCamelCase %>Exists(ctx, <%= assetCamelCase %>Id) {
-        const buffer = await ctx.stub.getPrivateData(myCollectionName, <%= assetCamelCase %>Id);
+        const buffer = await ctx.stub.getPrivateDataHash(myCollectionName, <%= assetCamelCase %>Id);
         return (!!buffer && buffer.length > 0);
     }
 
