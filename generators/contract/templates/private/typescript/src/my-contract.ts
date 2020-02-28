@@ -13,7 +13,7 @@ export class <%= assetPascalCase %>Contract extends Contract {
     @Transaction(false)
     @Returns('boolean')
     public async <%= assetCamelCase %>Exists(ctx: Context, <%= assetCamelCase %>Id: string): Promise<boolean> {
-        const buffer: Buffer = await ctx.stub.getPrivateData(myCollectionName, <%= assetCamelCase %>Id);
+        const buffer: Buffer = await ctx.stub.getPrivateDataHash(myCollectionName, <%= assetCamelCase %>Id);
         return (!!buffer && buffer.length > 0);
     }
 
