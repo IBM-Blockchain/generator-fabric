@@ -32,13 +32,13 @@ import java.util.Map;
 @Default
 public class <%= assetPascalCase %>Contract implements ContractInterface {
     String collection = "CollectionOne";
-    
+
     public  <%= assetPascalCase %>Contract() {
 
     }
     @Transaction()
     public boolean <%= assetCamelCase %>Exists(Context ctx, String <%= assetCamelCase %>Id) {
-        byte[] buffer = ctx.getStub().getPrivateData(collection, <%= assetCamelCase %>Id);
+        byte[] buffer = ctx.getStub().getPrivateDataHash(collection, <%= assetCamelCase %>Id);
         return (buffer != null && buffer.length > 0);
     }
 
@@ -101,7 +101,7 @@ public class <%= assetPascalCase %>Contract implements ContractInterface {
 
     @Transaction()
     public boolean verify<%= assetPascalCase %>(Context ctx, String <%= assetCamelCase %>Id, <%= assetPascalCase %> objectToVerify) throws NoSuchAlgorithmException {
-        
+
         // Convert user provided object into hash
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hashByte = digest.digest(objectToVerify.toJSONString().getBytes(StandardCharsets.UTF_8));

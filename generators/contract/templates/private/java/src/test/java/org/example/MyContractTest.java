@@ -44,6 +44,7 @@ public final class <%= assetPascalCase %>ContractTest {
 
         byte[] someAsset = ("{\"privateValue\":\"125\"}").getBytes(StandardCharsets.UTF_8);
         when(stub.getPrivateData(collection, "001")).thenReturn(someAsset);
+        when(stub.getPrivateDataHash(collection, "001")).thenReturn(("someAsset").getBytes(StandardCharsets.UTF_8));
     }
 
     @Nested
@@ -222,7 +223,7 @@ public final class <%= assetPascalCase %>ContractTest {
 
             boolean result = contract.verify<%= assetPascalCase %>(ctx, "001", someAsset);
 
-            assertFalse(result);   
+            assertFalse(result);
         }
 
         @Test
