@@ -23,13 +23,26 @@ else
     mkdir tmp
 fi
 
-if [ "$1" != "network_test" ]
+if [ "$1" == "contract_tests" ] || [ "$1" == "chaincode_tests" ]
 then
     pushd tmp
     curl -sSL http://bit.ly/2ysbOFE | bash -s 1.4.4
     pushd fabric-samples/basic-network
     export FABRIC_DIR="$(pwd)"
     ./start.sh
+    popd
+    popd
+fi
+
+if [ "$1" == "private_contract_tests" ]
+then
+    pushd tmp
+    mkdir yofn
+    pushd yofn
+    cp ../../scripts/network/*.* ./
+    export NETWORK_DIR="$(pwd)"
+    chmod +x *.sh
+    ./generate.sh && ./start.sh
     popd
     popd
 fi
@@ -320,13 +333,14 @@ java_private_contract_package() {
     ./gradlew clean build shadowJar
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
         -v "$(pwd)":/tmp/contract \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
         peer chaincode package -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -p /tmp/contract -l java /tmp/contract/contract.cds
@@ -340,13 +354,14 @@ javascript_private_contract_package() {
     npm test
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
         -v "$(pwd)":/tmp/contract \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
         peer chaincode package -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -p /tmp/contract -l node /tmp/contract/contract.cds
@@ -361,13 +376,14 @@ typescript_private_contract_package() {
     npm run build
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
         -v "$(pwd)":/tmp/contract \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
         peer chaincode package -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -p /tmp/contract -l node /tmp/contract/contract.cds
@@ -404,28 +420,46 @@ common_contract_deploy() {
 private_contract_deploy() {
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
         -v "$(pwd)":/tmp/contract \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
         peer chaincode install /tmp/contract/contract.cds
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
-        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -e "CORE_PEER_ADDRESS=peer0.org2.example.com:17056" \
+        -e "CORE_PEER_LOCALMSPID=Org2MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org2/org2Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org2/ca-tls-root.pem" \
         -v "$(pwd)":/tmp/contract \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode instantiate -o orderer.example.com:7050 -C mychannel --collections-config /tmp/contract/collections-cli.json -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -c '{"Args":[]}'
+        peer chaincode install /tmp/contract/contract.cds
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode instantiate -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel --collections-config /tmp/contract/collections-cli.json -n ${LANGUAGE}-${CONTRACT}-contract -v 0.0.1 -c '{"Args":[]}'
     date
 }
 
@@ -524,103 +558,226 @@ common_contract_test() {
 private_contract_test() {
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
+        peer chaincode query -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
+    date
+    TRANSIENT=$(echo -n "100" | base64 | tr -d \\n)
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -e "TRANSIENT=${TRANSIENT}" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode invoke -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["createPrivateConga","1001"]}' --transient "{\"privateValue\":\"${TRANSIENT}\"}" --waitForEvent
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["createPrivateConga","1001"]}' --transient '{"privateValue":"100"}' --waitForEvent
+        peer chaincode query -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
+        peer chaincode query -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readPrivateConga","1001"]}'
+    date
+    TRANSIENT=$(echo -n "125" | base64 | tr -d \\n)
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
+        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode invoke -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["updatePrivateConga","1001"]}' --transient "{\"privateValue\":\"${TRANSIENT}\"}" --waitForEvent
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readPrivateConga","1001"]}'
+        peer chaincode query -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readPrivateConga","1001"]}'
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["updatePrivateConga","1001"]}'  --transient '{"privateValue":"125"}' --waitForEvent
+        peer chaincode invoke -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["verifyPrivateConga","1001","{\"privateValue\":\"125\"}"]}' --waitForEvent
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readPrivateConga","1001"]}'
+        peer chaincode invoke -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["deletePrivateConga","1001"]}' --waitForEvent
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["verifyPrivateConga","1001",{"privateValue":"125"}]}' --waitForEvent
+        peer chaincode query -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
-        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
+        -e "CORE_PEER_ADDRESS=peer0.org2.example.com:17056" \
+        -e "CORE_PEER_LOCALMSPID=Org2MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org2/org2Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org2/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["deletePrivateConga","1001"]}' --waitForEvent
+        peer chaincode query -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
+    date
+    TRANSIENT=$(echo -n "100" | base64 | tr -d \\n)
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org2.example.com:17056" \
+        -e "CORE_PEER_LOCALMSPID=Org2MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org2/org2Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org2/ca-tls-root.pem" \
+        -e "TRANSIENT=${TRANSIENT}" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode invoke -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["createPrivateConga","1001"]}' --transient "{\"privateValue\":\"${TRANSIENT}\"}" --waitForEvent
+    date
+    set +e
+    docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org2.example.com:17056" \
+        -e "CORE_PEER_LOCALMSPID=Org2MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org2/org2Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org2/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode query -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readPrivateConga","1001"]}'
+    if [ $? == 0 ]; then
+        echo error should have failed
+        exit 1
+    fi
+    set -e 
+    date
+    TRANSIENT=$(echo -n "125" | base64 | tr -d \\n)
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org2.example.com:17056" \
+        -e "CORE_PEER_LOCALMSPID=Org2MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org2/org2Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org2/ca-tls-root.pem" \
+        -e "TRANSIENT=${TRANSIENT}" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode invoke -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["updatePrivateConga","1001"]}'  --transient "{\"privateValue\":\"${TRANSIENT}\"}" --waitForEvent
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
-        -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/crypto-config/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_basic \
+        -e "CORE_PEER_ADDRESS=peer0.org2.example.com:17056" \
+        -e "CORE_PEER_LOCALMSPID=Org2MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org2/org2Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org2/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
+        peer chaincode invoke -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["verifyPrivateConga","1001","{\"privateValue\":\"125\"}"]}' --waitForEvent
+    date
+    ${RETRY} docker run \
+        -e "CORE_PEER_ADDRESS=peer0.org2.example.com:17056" \
+        -e "CORE_PEER_LOCALMSPID=Org2MSP" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org2/org2Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org2/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
+        --rm \
+        hyperledger/fabric-tools \
+        peer chaincode invoke -o orderer.example.com:17061 --cafile Orderer/ca-tls-root.pem --tls true -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["deletePrivateConga","1001"]}' --waitForEvent
     date
 }
 
@@ -674,16 +831,26 @@ if [ -z "$1" ]
 then
     chaincode_tests
     contract_tests
-    # private_contract_tests
+    private_contract_tests
     network_test
 else
     $1 $2
 fi
 popd
 
-if [ "$1" != "network_test" ]
+if [ "$1" == "contract_tests" ]
 then
     pushd tmp/fabric-samples/basic-network
+    # Don't really care if these stop/teardown scripts fail
+    set +e
+    ./stop.sh
+    ./teardown.sh
+    popd
+fi
+
+if [ "$1" == "private_contract_tests" ]
+then
+    pushd tmp/yofn
     # Don't really care if these stop/teardown scripts fail
     set +e
     ./stop.sh

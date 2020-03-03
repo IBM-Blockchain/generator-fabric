@@ -1,0 +1,167 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+---
+- name: Deploy blockchain infrastructure and smart contracts
+  hosts: localhost
+  vars:
+    infrastructure:
+      type: docker
+      docker:
+        network: "yofn"
+        labels:
+          fabric-environment-name: "yofn"
+    organizations:
+      - &Org1
+        msp:
+          id: "Org1MSP"
+          admin:
+            identity: "org1Admin"
+            secret: "org1Adminpw"
+        ca: &Org1CA
+          id: "Org1CA"
+          admin_identity: "admin"
+          admin_secret: "adminpw"
+          tls:
+            enabled: true
+          docker:
+            name: ca.org1.example.com
+            hostname: ca.org1.example.com
+            port: 17050
+        peers:
+          - &Org1Peer1
+            id: "Org1Peer1"
+            identity: "org1peer1"
+            secret: "org1peer1pw"
+            database_type: couchdb
+            tls:
+              enabled: true
+              identity: "org1peer1tls"
+              secret: "org1peer1tlspw"
+            docker:
+              name: peer0.org1.example.com
+              hostname: peer0.org1.example.com
+              port: 17051
+              chaincode_port: 17052
+              operations_port: 17053
+              couchdb:
+                name: couchdb0.org1.example.com
+                hostname: couchdb0.org1.example.com
+                port: 17054
+        nodes: "{{ playbook_dir }}/nodes/Org1"
+        wallet: "{{ playbook_dir }}/wallets/Org1"
+        gateways: "{{ playbook_dir }}/gateways/Org1"
+      - &Org2
+        msp:
+          id: "Org2MSP"
+          admin:
+            identity: "org2Admin"
+            secret: "org2Adminpw"
+        ca: &Org2CA
+          id: "Org2CA"
+          admin_identity: "admin"
+          admin_secret: "adminpw"
+          tls:
+            enabled: true
+          docker:
+            name: ca.org2.example.com
+            hostname: ca.org2.example.com
+            port: 17055
+        peers:
+          - &Org2Peer1
+            id: "Org2Peer1"
+            identity: "org2peer1"
+            secret: "org2peer1pw"
+            database_type: leveldb
+            tls:
+              enabled: true
+              identity: "org2peer1tls"
+              secret: "org2peer1tlspw"
+            docker:
+              name: peer0.org2.example.com
+              hostname: peer0.org2.example.com
+              port: 17056
+              chaincode_port: 17057
+              operations_port: 17058
+              couchdb:
+                name: couchdb0.org2.example.com
+                hostname: couchdb0.org2.example.com
+                port: 17059
+        nodes: "{{ playbook_dir }}/nodes/Org2"
+        wallet: "{{ playbook_dir }}/wallets/Org2"
+        gateways: "{{ playbook_dir }}/gateways/Org2"
+      - &OrdererOrg
+        msp:
+          id: "OrdererMSP"
+          admin:
+            identity: "ordererAdmin"
+            secret: "ordererAdminpw"
+        ca: &OrdererCA
+          id: "OrdererCA"
+          admin_identity: "admin"
+          admin_secret: "adminpw"
+          tls:
+            enabled: true
+          docker:
+            name: ca.orderer.example.com
+            hostname: ca.orderer.example.com
+            port: 17060
+        orderer: &Orderer
+          id: "Orderer1"
+          identity: "orderer1"
+          secret: "orderer1pw"
+          tls:
+            enabled: true
+            identity: "orderer1tls"
+            secret: "orderer1tlspw"
+          consortium:
+            members:
+              - *Org1
+              - *Org2
+          docker:
+            name: orderer.example.com
+            hostname: orderer.example.com
+            port: 17061
+            operations_port: 17062
+        nodes: "{{ playbook_dir }}/nodes/Orderer"
+        wallet: "{{ playbook_dir }}/wallets/Orderer"
+        gateways: "{{ playbook_dir }}/gateways/Orderer"
+    channels:
+      - &MyChannel
+        name: mychannel
+        orderer: *Orderer
+        members:
+          - <<: *Org1
+            committing_peers:
+              - *Org1Peer1
+            anchor_peers:
+              - *Org1Peer1
+          - <<: *Org2
+            committing_peers:
+              - *Org2Peer1
+            anchor_peers:
+              - *Org2Peer1
+    contracts:
+      - channels:
+          - <<: *MyChannel
+            endorsement_policy: "AND('Org1MSP.member','Org2MSP.member')"
+            endorsing_members:
+              - <<: *Org1
+                endorsing_peers:
+                  - <<: *Org1Peer1
+              - <<: *Org2
+                endorsing_peers:
+                  - <<: *Org2Peer1
+    gateways:
+      - name: Org1_gw
+        organization:
+          <<: *Org1
+          gateway_peers:
+            - <<: *Org1Peer1
+      - name: Org2_gw
+        organization:
+          <<: *Org2
+          gateway_peers:
+            - <<: *Org2Peer1
+  roles:
+    - ibm.blockchain_platform_manager
