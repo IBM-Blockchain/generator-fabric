@@ -21,57 +21,6 @@ describe('Contract (JavaScript)', () => {
         sandbox.restore();
     });
 
-    let genericPackage = {
-        name: 'my-javascript-contract',
-        version: '0.0.1',
-        description: 'My JavaScript Contract',
-        main: 'index.js',
-        engines: {
-            node: '>=8',
-            npm: '>=5'
-        },
-        scripts: {
-            lint: 'eslint .',
-            pretest: 'npm run lint',
-            test: 'nyc mocha --recursive',
-            start: 'fabric-chaincode-node start'
-        },
-        engineStrict: true,
-        author: 'James Conga',
-        license: 'WTFPL',
-        dependencies: {
-            'fabric-contract-api': '^1.4.5',
-            'fabric-shim': '^1.4.5'
-        },
-        devDependencies: {
-            chai: '^4.2.0',
-            'chai-as-promised': '^7.1.1',
-            eslint: '^6.3.0',
-            mocha: '^6.2.0',
-            nyc: '^14.1.1',
-            sinon: '^7.4.1',
-            'sinon-chai': '^3.3.0',
-            winston: '^3.2.1'
-        },
-        nyc: {
-            exclude: [
-                '.eslintrc.js',
-                'coverage/**',
-                'test/**'
-            ],
-            reporter: [
-                'text-summary',
-                'html'
-            ],
-            all: true,
-            'check-coverage': true,
-            statements: 100,
-            branches: 100,
-            functions: 100,
-            lines: 100
-        }
-    };
-
     let genericPDC = [
         {
             name: 'CollectionOne',
@@ -203,7 +152,13 @@ describe('Contract (JavaScript)', () => {
                 mspId: 'Org1MSP'
             });
         const packageJSON = require(path.join(dir, 'package.json'));
-        packageJSON.should.deep.equal(genericPackage);
+        packageJSON.should.containSubset({
+            name: 'my-javascript-contract',
+            version: '0.0.1',
+            description: 'My JavaScript Contract',
+            author: 'James Conga',
+            license: 'WTFPL'
+        });
     });
 
     it('should generate a private data contract', async () => {
