@@ -16,6 +16,7 @@ const generator = require(path.join(__dirname, '../../generators/chaincode/index
 
 chai.should();
 chai.use(sinonChai);
+chai.use(require('chai-subset'));
 
 describe('Chaincode (JavaScript)', () => {
 
@@ -65,52 +66,12 @@ describe('Chaincode (JavaScript)', () => {
         assert.fileContent('lib/chaincode.js', /async Invoke\(stub\) {/);
         assert.fileContent('lib/start.js', /Shim\.start\(new Chaincode\(\)\);/);
         const packageJSON = require(path.join(dir, 'package.json'));
-        packageJSON.should.deep.equal({
+        packageJSON.should.containSubset({
             name: 'my-javascript-chaincode',
             version: '0.0.1',
             description: 'My JavaScript Chaincode',
-            main: 'index.js',
-            engines: {
-                node: '>=8',
-                npm: '>=5'
-            },
-            scripts: {
-                lint: 'eslint .',
-                pretest: 'npm run lint',
-                test: 'nyc mocha --recursive',
-                start: 'node lib/start.js'
-            },
-            engineStrict: true,
             author: 'James Conga',
-            license: 'WTFPL',
-            dependencies: {
-                'fabric-shim': '^1.4.5'
-            },
-            devDependencies: {
-                chai: '^4.2.0',
-                eslint: '^6.3.0',
-                mocha: '^6.2.0',
-                nyc: '^14.1.1',
-                sinon: '^7.4.1',
-                'sinon-chai': '^3.3.0'
-            },
-            nyc: {
-                exclude: [
-                    '.eslintrc.js',
-                    'coverage/**',
-                    'test/**'
-                ],
-                reporter: [
-                    'text-summary',
-                    'html'
-                ],
-                all: true,
-                'check-coverage': true,
-                statements: 100,
-                branches: 100,
-                functions: 100,
-                lines: 100
-            }
+            license: 'WTFPL'
         });
     });
 
@@ -152,52 +113,12 @@ describe('Chaincode (JavaScript)', () => {
         assert.fileContent('lib/chaincode.js', /async Invoke\(stub\) {/);
         assert.fileContent('lib/start.js', /Shim\.start\(new Chaincode\(\)\);/);
         const packageJSON = require(path.join(tmpdir, 'package.json'));
-        packageJSON.should.deep.equal({
+        packageJSON.should.containSubset({
             name: 'my-javascript-chaincode',
             version: '0.0.1',
             description: 'My JavaScript Chaincode',
-            main: 'index.js',
-            engines: {
-                node: '>=8',
-                npm: '>=5'
-            },
-            scripts: {
-                lint: 'eslint .',
-                pretest: 'npm run lint',
-                test: 'nyc mocha --recursive',
-                start: 'node lib/start.js'
-            },
-            engineStrict: true,
             author: 'James Conga',
-            license: 'Apache-2.0',
-            dependencies: {
-                'fabric-shim': '^1.4.5'
-            },
-            devDependencies: {
-                chai: '^4.2.0',
-                eslint: '^6.3.0',
-                mocha: '^6.2.0',
-                nyc: '^14.1.1',
-                sinon: '^7.4.1',
-                'sinon-chai': '^3.3.0'
-            },
-            nyc: {
-                exclude: [
-                    '.eslintrc.js',
-                    'coverage/**',
-                    'test/**'
-                ],
-                reporter: [
-                    'text-summary',
-                    'html'
-                ],
-                all: true,
-                'check-coverage': true,
-                statements: 100,
-                branches: 100,
-                functions: 100,
-                lines: 100
-            }
+            license: 'Apache-2.0'
         });
     });
 
@@ -242,52 +163,12 @@ describe('Chaincode (JavaScript)', () => {
         assert.fileContent('lib/chaincode.js', /async Invoke\(stub\) {/);
         assert.fileContent('lib/start.js', /Shim\.start\(new Chaincode\(\)\);/);
         const packageJSON = require(path.join(dir, 'package.json'));
-        packageJSON.should.deep.equal({
+        packageJSON.should.containSubset({
             name: 'my-javascript-chaincode',
             version: '0.0.1',
             description: 'My JavaScript Chaincode',
-            main: 'index.js',
-            engines: {
-                node: '>=8',
-                npm: '>=5'
-            },
-            scripts: {
-                lint: 'eslint .',
-                pretest: 'npm run lint',
-                test: 'nyc mocha --recursive',
-                start: 'node lib/start.js'
-            },
-            engineStrict: true,
             author: 'James Conga',
-            license: 'Apache-2.0',
-            dependencies: {
-                'fabric-shim': '^1.4.5'
-            },
-            devDependencies: {
-                chai: '^4.2.0',
-                eslint: '^6.3.0',
-                mocha: '^6.2.0',
-                nyc: '^14.1.1',
-                sinon: '^7.4.1',
-                'sinon-chai': '^3.3.0'
-            },
-            nyc: {
-                exclude: [
-                    '.eslintrc.js',
-                    'coverage/**',
-                    'test/**'
-                ],
-                reporter: [
-                    'text-summary',
-                    'html'
-                ],
-                all: true,
-                'check-coverage': true,
-                statements: 100,
-                branches: 100,
-                functions: 100,
-                lines: 100
-            }
+            license: 'Apache-2.0'
         });
 
         installStub.should.have.been.called;
@@ -328,52 +209,12 @@ describe('Chaincode (JavaScript)', () => {
         assert.fileContent('lib/chaincode.js', /async Invoke\(stub\) {/);
         assert.fileContent('lib/start.js', /Shim\.start\(new Chaincode\(\)\);/);
         const packageJSON = require(path.join(dir, 'package.json'));
-        packageJSON.should.deep.equal({
+        packageJSON.should.containSubset({
             name: 'my-javascript-chaincode',
             version: '0.0.1',
             description: 'My JavaScript Chaincode',
-            main: 'index.js',
-            engines: {
-                node: '>=8',
-                npm: '>=5'
-            },
-            scripts: {
-                lint: 'eslint .',
-                pretest: 'npm run lint',
-                test: 'nyc mocha --recursive',
-                start: 'node lib/start.js'
-            },
-            engineStrict: true,
             author: 'James Conga',
-            license: 'Apache-2.0',
-            dependencies: {
-                'fabric-shim': '^1.4.5'
-            },
-            devDependencies: {
-                chai: '^4.2.0',
-                eslint: '^6.3.0',
-                mocha: '^6.2.0',
-                nyc: '^14.1.1',
-                sinon: '^7.4.1',
-                'sinon-chai': '^3.3.0'
-            },
-            nyc: {
-                exclude: [
-                    '.eslintrc.js',
-                    'coverage/**',
-                    'test/**'
-                ],
-                reporter: [
-                    'text-summary',
-                    'html'
-                ],
-                all: true,
-                'check-coverage': true,
-                statements: 100,
-                branches: 100,
-                functions: 100,
-                lines: 100
-            }
+            license: 'Apache-2.0'
         });
     });
 

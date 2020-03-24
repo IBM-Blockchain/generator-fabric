@@ -98,7 +98,7 @@ java_chaincode_package() {
 
 javascript_chaincode_package() {
     yo fabric:chaincode -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Chaincode" --name=${LANGUAGE}-chaincode --version=0.0.1 --license=Apache-2.0
-    npm audit
+    npm audit --audit-level=moderate
     npm test
     date
     ${RETRY} docker run \
@@ -135,7 +135,7 @@ kotlin_chaincode_package() {
 
 typescript_chaincode_package() {
     yo fabric:chaincode -- --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Chaincode" --name=${LANGUAGE}-chaincode --version=0.0.1 --license=Apache-2.0
-    npm audit
+    npm audit --audit-level=moderate
     npm test
     npm run build
     date
@@ -277,7 +277,7 @@ kotlin_default_contract_package() {
 
 javascript_default_contract_package() {
     yo fabric:contract -- --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
-    npm audit
+    npm audit --audit-level=moderate
     npm test
     date
     ${RETRY} docker run \
@@ -296,7 +296,7 @@ javascript_default_contract_package() {
 
 typescript_default_contract_package() {
     yo fabric:contract -- --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
-    npm audit
+    npm audit --audit-level=moderate
     npm test
     npm run build
     date
@@ -336,7 +336,7 @@ java_private_contract_package() {
 javascript_private_contract_package() {
     yo fabric:contract -- --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
     jq ".[0].policy = \"OR('Org1MSP.member')\"" collections.json > collections-cli.json
-    npm audit
+    npm audit --audit-level=moderate
     npm test
     date
     ${RETRY} docker run \
@@ -356,7 +356,7 @@ javascript_private_contract_package() {
 typescript_private_contract_package() {
     yo fabric:contract -- --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
     jq ".[0].policy = \"OR('Org1MSP.member')\"" collections.json > collections-cli.json
-    npm audit
+    npm audit --audit-level=moderate
     npm test
     npm run build
     date
