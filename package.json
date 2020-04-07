@@ -19,7 +19,7 @@
     "author": "Simon Stone",
     "license": "Apache-2.0",
     "dependencies": {
-        "camelcase": "^5.3.1",
+        "camelcase": "^6.0.0",
         "decamelize": "^4.0.0",
         "find-free-port": "^2.0.0",
         "gradle-to-js": "^2.0.0",
