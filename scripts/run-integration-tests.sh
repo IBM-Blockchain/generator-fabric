@@ -733,7 +733,7 @@ private_contract_test() {
         echo error should have failed
         exit 1
     fi
-    set -e 
+    set -e
     date
     TRANSIENT=$(echo -n "125" | base64 | tr -d \\n)
     ${RETRY} docker run \
