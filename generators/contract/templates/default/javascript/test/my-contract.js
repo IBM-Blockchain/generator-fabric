@@ -22,7 +22,7 @@ class TestContext {
     constructor() {
         this.stub = sinon.createStubInstance(ChaincodeStub);
         this.clientIdentity = sinon.createStubInstance(ClientIdentity);
-        this.logging = {
+        this.logger = {
             getLogger: sinon.stub().returns(sinon.createStubInstance(winston.createLogger().constructor)),
             setLevel: sinon.stub(),
         };

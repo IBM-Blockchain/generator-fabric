@@ -2,7 +2,7 @@
  * <%= spdxAndLicense // SPDX-License-Identifier: Apache-2.0 %>
  */
 plugins {
-    id 'com.github.johnrengelman.shadow' version '2.0.3'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
     id 'java'
 }
 
@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.hyperledger.fabric-chaincode-java', name: 'fabric-chaincode-shim', version: '1.4.5'
+    compile group: 'org.hyperledger.fabric-chaincode-java', name: 'fabric-chaincode-shim', version: '2.0.0'
     compile group: 'org.json', name: 'json', version: '20180813'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
     testImplementation 'org.assertj:assertj-core:3.11.1'

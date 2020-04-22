@@ -7,12 +7,13 @@ package main
 import (
 	"testing"
 
-	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/hyperledger/fabric-chaincode-go/shim"
+	"github.com/hyperledger/fabric-chaincode-go/shimtest"
 )
 
 func TestInit(t *testing.T) {
 	cc := new(Chaincode)
-	stub := shim.NewMockStub("chaincode", cc)
+	stub := shimtest.NewMockStub("chaincode", cc)
 	res := stub.MockInit("1", [][]byte{[]byte("initFunc")})
 	if res.Status != shim.OK {
 		t.Error("Init failed", res.Status, res.Message)
@@ -21,7 +22,7 @@ func TestInit(t *testing.T) {
 
 func TestInvoke(t *testing.T) {
 	cc := new(Chaincode)
-	stub := shim.NewMockStub("chaincode", cc)
+	stub := shimtest.NewMockStub("chaincode", cc)
 	res := stub.MockInit("1", [][]byte{[]byte("initFunc")})
 	if res.Status != shim.OK {
 		t.Error("Init failed", res.Status, res.Message)

@@ -13,8 +13,8 @@ export class <%= assetPascalCase %>Contract extends Contract {
     @Transaction(false)
     @Returns('boolean')
     public async <%= assetCamelCase %>Exists(ctx: Context, <%= assetCamelCase %>Id: string): Promise<boolean> {
-        const buffer: Buffer = await ctx.stub.getPrivateDataHash(myCollectionName, <%= assetCamelCase %>Id);
-        return (!!buffer && buffer.length > 0);
+        const data: Uint8Array = await ctx.stub.getPrivateDataHash(myCollectionName, <%= assetCamelCase %>Id);
+        return (!!data && data.length > 0);
     }
 
     @Transaction()
@@ -26,11 +26,11 @@ export class <%= assetPascalCase %>Contract extends Contract {
 
         const privateAsset: <%= assetPascalCase %> = new <%= assetPascalCase %>();
 
-        const transientData: Map<string, Buffer> = ctx.stub.getTransient();
+        const transientData: Map<string, Uint8Array> = ctx.stub.getTransient();
         if (transientData.size === 0 || !transientData.has('privateValue')) {
             throw new Error('The privateValue key was not specified in transient data. Please try again.');
         }
-        privateAsset.privateValue = transientData.get('privateValue').toString('utf8');
+        privateAsset.privateValue = transientData.get('privateValue').toString();
 
         await ctx.stub.putPrivateData(myCollectionName, <%= assetCamelCase %>Id, Buffer.from(JSON.stringify(privateAsset)));
     }
@@ -44,7 +44,7 @@ export class <%= assetPascalCase %>Contract extends Contract {
         }
 
         let privateDataString: string;
-        const privateData: Buffer = await ctx.stub.getPrivateData(myCollectionName, <%= assetCamelCase %>Id);
+        const privateData: Uint8Array = await ctx.stub.getPrivateData(myCollectionName, <%= assetCamelCase %>Id);
 
         privateDataString = JSON.parse(privateData.toString());
         return privateDataString;
@@ -59,11 +59,11 @@ export class <%= assetPascalCase %>Contract extends Contract {
 
         const privateAsset: <%= assetPascalCase %> = new <%= assetPascalCase %>();
 
-        const transientData: Map<string, Buffer> = ctx.stub.getTransient();
+        const transientData: Map<string, Uint8Array> = ctx.stub.getTransient();
         if (transientData.size === 0 || !transientData.has('privateValue')) {
             throw new Error('The privateValue key was not specified in transient data. Please try again.');
         }
-        privateAsset.privateValue = transientData.get('privateValue').toString('utf8');
+        privateAsset.privateValue = transientData.get('privateValue').toString();
 
         await ctx.stub.putPrivateData(myCollectionName, <%= assetCamelCase %>Id, Buffer.from(JSON.stringify(privateAsset)));
     }
@@ -81,12 +81,12 @@ export class <%= assetPascalCase %>Contract extends Contract {
     public async verify<%= assetPascalCase %>(ctx: Context, <%= assetCamelCase %>Id: string, objectToVerify: <%= assetPascalCase %>): Promise<boolean> {
         // Convert user provided object into a hash
         const hashToVerify: string = crypto.createHash('sha256').update(JSON.stringify(objectToVerify)).digest('hex');
-        const pdHashBytes: Buffer = await ctx.stub.getPrivateDataHash(myCollectionName, <%= assetCamelCase %>Id);
+        const pdHashBytes: Uint8Array = await ctx.stub.getPrivateDataHash(myCollectionName, <%= assetCamelCase %>Id);
         if (pdHashBytes.length === 0) {
             throw new Error(`No private data hash with the Key: ${<%= assetCamelCase %>Id}`);
         }
 
-        const actualHash: string = pdHashBytes.toString('hex');
+        const actualHash: string = Buffer.from(pdHashBytes).toString('hex');
 
         // Compare the hash calculated (from object provided) and the hash stored on public ledger
         if (hashToVerify === actualHash) {
