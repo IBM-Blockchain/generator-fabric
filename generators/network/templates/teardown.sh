@@ -12,7 +12,11 @@ done
 for VOLUME in $(docker volume ls -f label=fabric-environment-name="<%= name %>" -q); do
     docker volume rm -f ${VOLUME}
 done
+<<<<<<< HEAD
 docker run --rm -v "$PWD":/network ibmblockchain/vscode-prereqs:issue-94 chown -R $(id -u):$(id -g) /network
+=======
+docker run --rm -v "$PWD":/network ibmblockchain/vscode-prereqs:0.0.16 chown -R $(id -u):$(id -g) /network
+>>>>>>> 55114ff... Make pre-req Docker image version consistent
 if [ -d wallets ]; then
     for WALLET in $(ls wallets); do
         rm -rf wallets/${WALLET}
