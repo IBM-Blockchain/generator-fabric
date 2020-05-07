@@ -141,17 +141,6 @@
               - *Org2Peer1
             anchor_peers:
               - *Org2Peer1
-    contracts:
-      - channels:
-          - <<: *MyChannel
-            endorsement_policy: "AND('Org1MSP.member','Org2MSP.member')"
-            endorsing_members:
-              - <<: *Org1
-                endorsing_peers:
-                  - <<: *Org1Peer1
-              - <<: *Org2
-                endorsing_peers:
-                  - <<: *Org2Peer1
     gateways:
       - name: Org1_gw
         organization:
