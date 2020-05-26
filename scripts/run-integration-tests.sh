@@ -14,8 +14,7 @@ fi
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${ROOT_DIR}"
-if [ ! -d tmp ]
-then
+if [ ! -d tmp ]; then
     mkdir tmp
 else
     rm -rf tmp
@@ -25,10 +24,12 @@ fi
 if [ "$1" != "network_test" ]; then
     pushd tmp
     curl -sSL http://bit.ly/2ysbOFE | bash -s 2.0.0
-    pushd fabric-samples/test-network
-    export FABRIC_DIR="$(pwd)"
-    ./network.sh down
-    ./network.sh up createChannel -ca -s couchdb
+    mkdir yofn
+    pushd yofn
+    cp ../../scripts/network/*.* ./
+    export NETWORK_DIR="$(pwd)"
+    chmod +x *.sh
+    ./generate.sh && ./start.sh
     popd
     popd
 fi
@@ -43,13 +44,14 @@ common_package() {
     TYPE=$2
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
         -v "$(pwd)":/tmp/${TYPE} \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        --network net_test \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
         peer lifecycle chaincode package /tmp/${TYPE}/${TYPE}.tar.gz --path /tmp/${TYPE} --lang ${CHAINCODE_LANGUAGE} --label ${LANGUAGE}-${CONTRACT}-${TYPE}
@@ -60,46 +62,43 @@ common_deploy() {
     TYPE=$1
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
         -v "$(pwd)":/tmp/${TYPE} \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/msp/tls \
-        --network net_test \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
         peer lifecycle chaincode install /tmp/${TYPE}/${TYPE}.tar.gz
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org2.example.com:9051" \
+        -e "CORE_PEER_ADDRESS=peer0.org2.example.com:17056" \
         -e "CORE_PEER_LOCALMSPID=Org2MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org2.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org2/org2Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org2/ca-tls-root.pem" \
         -v "$(pwd)":/tmp/${TYPE} \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/msp/tls \
-        --network net_test \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
         peer lifecycle chaincode install /tmp/${TYPE}/${TYPE}.tar.gz
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -v "$(pwd)":/tmp/${TYPE} \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/msp/tls \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
         peer lifecycle chaincode queryinstalled >&log.txt
@@ -109,106 +108,91 @@ common_deploy() {
 
     if [ ${CONTRACT} == "default" ]; then
         ${RETRY} docker run \
-            -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+            -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
             -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-            -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-            -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/tls/ca.crt" \
+            -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
             -e "CORE_PEER_TLS_ENABLED=true" \
-            -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/msp/tls \
-            -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-            --network net_test \
+            -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+            -v "$(pwd)":/tmp/${TYPE} \
+            -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+            -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+            --network yofn \
             --rm \
             hyperledger/fabric-tools \
-            peer lifecycle chaincode approveformyorg -o orderer.example.com:7050 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --version 0.0.1 --package-id ${PACKAGE_ID} --sequence 1 --waitForEvent
+            peer lifecycle chaincode approveformyorg -o orderer.example.com:17061 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --version 0.0.1 --package-id ${PACKAGE_ID} --sequence 1 --waitForEvent
         date
         ${RETRY} docker run \
-            -e "CORE_PEER_ADDRESS=peer0.org2.example.com:9051" \
+            -e "CORE_PEER_ADDRESS=peer0.org2.example.com:17056" \
             -e "CORE_PEER_LOCALMSPID=Org2MSP" \
-            -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org2.example.com/msp" \
-            -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/tls/ca.crt" \
+            -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org2/org2Admin" \
             -e "CORE_PEER_TLS_ENABLED=true" \
-            -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp":/etc/hyperledger/msp/peer \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/users":/etc/hyperledger/msp/users \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/msp/tls \
-            -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-            --network net_test \
+            -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org2/ca-tls-root.pem" \
+            -v "$(pwd)":/tmp/${TYPE} \
+            -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+            -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+            --network yofn \
             --rm \
             hyperledger/fabric-tools \
-            peer lifecycle chaincode approveformyorg -o orderer.example.com:7050 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --version 0.0.1 --package-id ${PACKAGE_ID} --sequence 1 --waitForEvent
+            peer lifecycle chaincode approveformyorg -o orderer.example.com:17061 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org2/ca-tls-root.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --version 0.0.1 --package-id ${PACKAGE_ID} --sequence 1 --waitForEvent
         date
         ${RETRY} docker run \
-            -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+            -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
             -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-            -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-            -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+            -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
             -e "CORE_PEER_TLS_ENABLED=true" \
-            -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-            -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-            --network net_test \
+            -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+            -v "$(pwd)":/tmp/${TYPE} \
+            -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+            -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+            -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+            --network yofn \
             --rm \
             hyperledger/fabric-tools \
-            peer lifecycle chaincode commit -o orderer.example.com:7050 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --version 0.0.1 --sequence 1 --peerAddresses peer0.org1.example.com:7051 --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /etc/hyperledger/org1/msp/tls/ca.crt --tlsRootCertFiles /etc/hyperledger/org2/msp/tls/ca.crt
+            peer lifecycle chaincode commit -o orderer.example.com:17061 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --version 0.0.1 --sequence 1 --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
         date
     else
         ${RETRY} docker run \
-            -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+            -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
             -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-            -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-            -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/tls/ca.crt" \
+            -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
             -e "CORE_PEER_TLS_ENABLED=true" \
-            -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
+            -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
             -v "$(pwd)":/tmp/${TYPE} \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/msp/tls \
-            -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-            --network net_test \
+            -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+            -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+            --network yofn \
             --rm \
             hyperledger/fabric-tools \
-            peer lifecycle chaincode approveformyorg -o orderer.example.com:7050 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --collections-config /tmp/contract/collections-cli.json --version 0.0.1 --package-id ${PACKAGE_ID} --sequence 1 --waitForEvent
+            peer lifecycle chaincode approveformyorg -o orderer.example.com:17061 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --collections-config /tmp/contract/collections-cli.json --version 0.0.1 --package-id ${PACKAGE_ID} --sequence 1 --waitForEvent
         date
         ${RETRY} docker run \
-            -e "CORE_PEER_ADDRESS=peer0.org2.example.com:9051" \
+            -e "CORE_PEER_ADDRESS=peer0.org2.example.com:17056" \
             -e "CORE_PEER_LOCALMSPID=Org2MSP" \
-            -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org2.example.com/msp" \
-            -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/tls/ca.crt" \
+            -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org2/org2Admin" \
             -e "CORE_PEER_TLS_ENABLED=true" \
-            -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
+            -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org2/ca-tls-root.pem" \
             -v "$(pwd)":/tmp/${TYPE} \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp":/etc/hyperledger/msp/peer \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/users":/etc/hyperledger/msp/users \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/msp/tls \
-            -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-            --network net_test \
+            -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+            -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+            --network yofn \
             --rm \
             hyperledger/fabric-tools \
-            peer lifecycle chaincode approveformyorg -o orderer.example.com:7050 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --collections-config /tmp/contract/collections-cli.json --version 0.0.1 --package-id ${PACKAGE_ID} --sequence 1 --waitForEvent
+            peer lifecycle chaincode approveformyorg -o orderer.example.com:17061 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org2/ca-tls-root.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --collections-config /tmp/contract/collections-cli.json --version 0.0.1 --package-id ${PACKAGE_ID} --sequence 1 --waitForEvent
         date
         ${RETRY} docker run \
-            -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+            -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
             -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-            -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-            -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+            -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
             -e "CORE_PEER_TLS_ENABLED=true" \
-            -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-            -v "$(pwd)":/tmp/${TYPE} \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-            -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-            -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-            --network net_test \
+            -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+            -v "$(pwd)":/tmp/contract \
+            -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+            -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+            -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+            --network yofn \
             --rm \
             hyperledger/fabric-tools \
-            peer lifecycle chaincode commit -o orderer.example.com:7050 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --collections-config /tmp/contract/collections-cli.json --version 0.0.1 --sequence 1 --peerAddresses peer0.org1.example.com:7051 --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /etc/hyperledger/org1/msp/tls/ca.crt --tlsRootCertFiles /etc/hyperledger/org2/msp/tls/ca.crt
+            peer lifecycle chaincode commit -o orderer.example.com:17061 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --collections-config /tmp/contract/collections-cli.json --version 0.0.1 --sequence 1 --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
         date
     fi
 }
@@ -239,14 +223,14 @@ go_chaincode_package() {
     go mod vendor
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
+        -e "CORE_PEER_TLS_ENABLED=true" \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
         -v "$(pwd)":/opt/gopath/src/chaincode \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -w "/opt/gopath/src/chaincode" \
-        --network net_test \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
         peer lifecycle chaincode package /opt/gopath/src/chaincode/chaincode.tar.gz --path /opt/gopath/src/chaincode --lang golang --label ${LANGUAGE}-${CONTRACT}-chaincode
@@ -283,38 +267,34 @@ typescript_chaincode_package() {
 common_chaincode_test() {
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-chaincode -c '{"Args":["init","a","100","b","200"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --waitForEvent --peerAddresses peer0.org1.example.com:7051 --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /etc/hyperledger/org1/msp/tls/ca.crt --tlsRootCertFiles /etc/hyperledger/org2/msp/tls/ca.crt
+        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-chaincode -c '{"Args":["init","a","100","b","200"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-chaincode -c '{"Args":["invoke","a","b","10"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --waitForEvent --peerAddresses peer0.org1.example.com:7051 --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /etc/hyperledger/org1/msp/tls/ca.crt --tlsRootCertFiles /etc/hyperledger/org2/msp/tls/ca.crt
+        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-chaincode -c '{"Args":["invoke","a","b","10"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
     date
 }
 
@@ -420,305 +400,262 @@ typescript_private_contract_package() {
 common_contract_test() {
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["congaExists","1001"]}'
+        peer chaincode query -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["congaExists","1001"]}'
 
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["createConga","1001","conga 1001 value"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --waitForEvent --peerAddresses peer0.org1.example.com:7051 --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /etc/hyperledger/org1/msp/tls/ca.crt --tlsRootCertFiles /etc/hyperledger/org2/msp/tls/ca.crt
+        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["createConga","1001","conga 1001 value"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
 
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["congaExists","1001"]}'
+        peer chaincode query -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["congaExists","1001"]}'
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readConga","1001"]}'
+        peer chaincode query -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readConga","1001"]}'
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["updateConga","1001","conga 1001 new value"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --waitForEvent --peerAddresses peer0.org1.example.com:7051 --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /etc/hyperledger/org1/msp/tls/ca.crt --tlsRootCertFiles /etc/hyperledger/org2/msp/tls/ca.crt
+        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["updateConga","1001","conga 1001 new value"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
 
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readConga","1001"]}'
+        peer chaincode query -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readConga","1001"]}'
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["deleteConga","1001"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --waitForEvent --peerAddresses peer0.org1.example.com:7051 --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /etc/hyperledger/org1/msp/tls/ca.crt --tlsRootCertFiles /etc/hyperledger/org2/msp/tls/ca.crt
+        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["deleteConga","1001"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
 
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["congaExists","1001"]}'
+        peer chaincode query -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["congaExists","1001"]}'
     date
 }
 
 private_contract_test() {
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
+        peer chaincode query -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
     date
     TRANSIENT=$(echo -n "100" | base64 | tr -d \\n)
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "TRANSIENT=${TRANSIENT}" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["createPrivateConga","1001"]}' --transient "{\"privateValue\":\"${TRANSIENT}\"}" --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --waitForEvent --peerAddresses peer0.org1.example.com:7051 --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /etc/hyperledger/org1/msp/tls/ca.crt --tlsRootCertFiles /etc/hyperledger/org2/msp/tls/ca.crt
+        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["createPrivateConga","1001"]}' --transient "{\"privateValue\":\"${TRANSIENT}\"}" --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
+        peer chaincode query -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readPrivateConga","1001"]}'
+        peer chaincode query -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readPrivateConga","1001"]}'
     date
     TRANSIENT=$(echo -n "125" | base64 | tr -d \\n)
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -e "TRANSIENT=${TRANSIENT}" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["updatePrivateConga","1001"]}' --transient "{\"privateValue\":\"${TRANSIENT}\"}" --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --waitForEvent --peerAddresses peer0.org1.example.com:7051 --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /etc/hyperledger/org1/msp/tls/ca.crt --tlsRootCertFiles /etc/hyperledger/org2/msp/tls/ca.crt
+        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["updatePrivateConga","1001"]}' --transient "{\"privateValue\":\"${TRANSIENT}\"}" --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readPrivateConga","1001"]}'
+        peer chaincode query -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["readPrivateConga","1001"]}'
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["verifyPrivateConga","1001","{\"privateValue\":\"125\"}"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --waitForEvent --peerAddresses peer0.org1.example.com:7051 --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /etc/hyperledger/org1/msp/tls/ca.crt --tlsRootCertFiles /etc/hyperledger/org2/msp/tls/ca.crt
+        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["verifyPrivateConga","1001","{\"privateValue\":\"125\"}"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Org2":/etc/hyperledger/fabric/Org2 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["deletePrivateConga","1001"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem --waitForEvent --peerAddresses peer0.org1.example.com:7051 --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /etc/hyperledger/org1/msp/tls/ca.crt --tlsRootCertFiles /etc/hyperledger/org2/msp/tls/ca.crt
+        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["deletePrivateConga","1001"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
     date
     ${RETRY} docker run \
-        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:7051" \
+        -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
-        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" \
-        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/org1/msp/tls/ca.crt" \
+        -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/Org1/org1Admin" \
         -e "CORE_PEER_TLS_ENABLED=true" \
-        -e "ORDERER_CA=/etc/hyperledger/msp/tlscacerts/tlsca.example.com-cert.pem" \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp":/etc/hyperledger/msp/peer \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/users":/etc/hyperledger/msp/users \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls":/etc/hyperledger/org1/msp/tls \
-        -v "${FABRIC_DIR}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls":/etc/hyperledger/org2/msp/tls \
-        -v "${FABRIC_DIR}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts":/etc/hyperledger/msp/tlscacerts \
-        --network net_test \
+        -e "CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/Org1/ca-tls-root.pem" \
+        -v "$(pwd)":/tmp/contract \
+        -v "${NETWORK_DIR}/wallets/Org1":/etc/hyperledger/fabric/Org1 \
+        -v "${NETWORK_DIR}/wallets/Orderer":/etc/hyperledger/fabric/Orderer \
+        --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode query -o orderer.example.com:7050 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
+        peer chaincode query -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["privateCongaExists","1001"]}'
     date
 }
 
@@ -772,7 +709,7 @@ fi
 popd
 
 if [ "$1" != "network_test" ]; then
-    pushd tmp/fabric-samples/test-network
+    pushd tmp/yofn
     # Don't care if this script fails
     set +e
     ./network.sh down

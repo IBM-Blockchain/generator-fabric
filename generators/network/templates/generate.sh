@@ -7,7 +7,7 @@
 # Exit on first error, print all commands.
 set -ev
 fix_permissions () {
-    docker run --rm -v "$PWD":/network ibmblockchain/vscode-prereqs:0.0.16 chown -R $(id -u):$(id -g) /network
+    docker run --rm -v "$PWD":/network ibmblockchain/vscode-prereqs:issue-94 chown -R $(id -u):$(id -g) /network
 }
 trap fix_permissions EXIT
-docker run --rm -v "$PWD":/network -v /var/run/docker.sock:/var/run/docker.sock --network host ibmblockchain/vscode-prereqs:0.0.16 ansible-playbook /network/playbook.yml
+docker run --rm -v "$PWD":/network -v /var/run/docker.sock:/var/run/docker.sock --network host ibmblockchain/vscode-prereqs:issue-94 ansible-playbook /network/playbook.yml
