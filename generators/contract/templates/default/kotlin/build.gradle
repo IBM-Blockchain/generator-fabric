@@ -12,12 +12,16 @@ jacoco {
     toolVersion = "0.8.4"
 }
 
-version '0.0.1'
+version '<%= version %>'
 
 sourceCompatibility = 1.8
 
 dependencies {
+<<<<<<< HEAD
     implementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:2.0.0'
+=======
+    implementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:1.4.6'
+>>>>>>> 2d7d9e8... Use Gradle v4.10.3 and Java chaincode shim v1.4.6 (resolves #308) (#309)
     implementation 'org.json:json:20180813'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
