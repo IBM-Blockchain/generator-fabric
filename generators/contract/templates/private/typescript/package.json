@@ -22,7 +22,7 @@
   "license": "<%= license %>",
   "dependencies": {
     "fabric-contract-api": "^2.1.1",
-    "fabric-shim": "^2.1.1"
+    "fabric-shim": "^2.1.2"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",
