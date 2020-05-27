@@ -9,7 +9,7 @@ plugins {
 }
 
 dependencies {
-    implementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:1.4.5'
+    implementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:1.4.6'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     testImplementation 'junit:junit:4.12'
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.0.0-RC2'
