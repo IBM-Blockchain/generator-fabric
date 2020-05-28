@@ -27,23 +27,7 @@ describe('Contract (Java)', () => {
     let genericPDC = [
         {
             name: 'CollectionOne',
-            policy: {
-                identities: [
-                    {
-                        role: {
-                            name: 'member',
-                            mspId: 'Org1MSP'
-                        }
-                    }
-                ],
-                policy: {
-                    '1-of': [
-                        {
-                            'signed-by': 0
-                        }
-                    ]
-                }
-            },
+            policy: 'OR(\'Org1MSP.member\')',
             requiredPeerCount: 1,
             maxPeerCount: 1,
             blockToLive: 0,
