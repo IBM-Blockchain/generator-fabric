@@ -163,7 +163,7 @@ common_deploy() {
             --network yofn \
             --rm \
             hyperledger/fabric-tools \
-            peer lifecycle chaincode approveformyorg -o orderer.example.com:17061 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --collections-config /tmp/contract/collections-cli.json --version 0.0.1 --package-id ${PACKAGE_ID} --sequence 1 --waitForEvent
+            peer lifecycle chaincode approveformyorg -o orderer.example.com:17061 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --collections-config /tmp/contract/collections.json --version 0.0.1 --package-id ${PACKAGE_ID} --sequence 1 --waitForEvent
         date
         ${RETRY} docker run \
             -e "CORE_PEER_ADDRESS=peer0.org2.example.com:17056" \
@@ -177,7 +177,7 @@ common_deploy() {
             --network yofn \
             --rm \
             hyperledger/fabric-tools \
-            peer lifecycle chaincode approveformyorg -o orderer.example.com:17061 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org2/ca-tls-root.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --collections-config /tmp/contract/collections-cli.json --version 0.0.1 --package-id ${PACKAGE_ID} --sequence 1 --waitForEvent
+            peer lifecycle chaincode approveformyorg -o orderer.example.com:17061 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org2/ca-tls-root.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --collections-config /tmp/contract/collections.json --version 0.0.1 --package-id ${PACKAGE_ID} --sequence 1 --waitForEvent
         date
         ${RETRY} docker run \
             -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
@@ -192,7 +192,7 @@ common_deploy() {
             --network yofn \
             --rm \
             hyperledger/fabric-tools \
-            peer lifecycle chaincode commit -o orderer.example.com:17061 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --collections-config /tmp/contract/collections-cli.json --version 0.0.1 --sequence 1 --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
+            peer lifecycle chaincode commit -o orderer.example.com:17061 --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --channelID mychannel --name ${LANGUAGE}-${CONTRACT}-${TYPE} --collections-config /tmp/contract/collections.json --version 0.0.1 --sequence 1 --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
         date
     fi
 }
@@ -375,14 +375,12 @@ typescript_default_contract_package() {
 
 java_private_contract_package() {
     yo fabric:contract -- --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
-    jq ".[0].policy = \"OR('Org1MSP.member')\"" collections.json >collections-cli.json
     ./gradlew clean build shadowJar
     common_package "java" "contract"
 }
 
 javascript_private_contract_package() {
     yo fabric:contract -- --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
-    jq ".[0].policy = \"OR('Org1MSP.member')\"" collections.json >collections-cli.json
     npm audit --audit-level=moderate
     npm test
     common_package "node" "contract"
@@ -390,7 +388,6 @@ javascript_private_contract_package() {
 
 typescript_private_contract_package() {
     yo fabric:contract -- --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
-    jq ".[0].policy = \"OR('Org1MSP.member')\"" collections.json >collections-cli.json
     npm audit --audit-level=moderate
     npm test
     npm run build
