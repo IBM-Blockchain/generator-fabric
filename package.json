@@ -1,12 +1,12 @@
 {
     "name": "generator-fabric",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "Yeoman generator for Hyperledger Fabric",
     "main": "generators/app/index.js",
     "scripts": {
         "lint": "eslint .",
         "pretest": "npm run lint",
-        "test": "nyc mocha --recursive",
+        "test": "nyc mocha -t 3000 --recursive",
         "prepublishOnly": "rimraf package-lock.json && npm prune --production && npm shrinkwrap"
     },
     "files": [
@@ -59,9 +59,10 @@
         "lines": 100
     },
     "contractLanguages": [
+        "Go",
+        "Java",
         "JavaScript",
-        "TypeScript",
-        "Java"
+        "TypeScript"
     ],
     "chaincodeLanguages": [
         "Go",
