@@ -14,7 +14,7 @@
             "001"
         ],
         "transientData": {
-            "privateValue": "some value"
+            "PrivateValue": "some value"
         }
     },
     {
@@ -32,7 +32,7 @@
             "001"
         ],
         "transientData": {
-            "privateValue": "some other value"
+            "PrivateValue": "some other value"
         }
     },
     {
