@@ -23,7 +23,7 @@ fi
 
 if [ "$1" != "network_test" ]; then
     pushd tmp
-    curl -sSL http://bit.ly/2ysbOFE | bash -s 2.0.0
+    curl -sSL http://bit.ly/2ysbOFE | bash -s 2.2.0
     mkdir yofn
     pushd yofn
     cp ../../scripts/network/*.* ./
