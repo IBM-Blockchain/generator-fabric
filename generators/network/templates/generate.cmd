@@ -4,7 +4,7 @@ rem Copyright IBM Corp All Rights Reserved
 rem
 rem SPDX-License-Identifier: Apache-2.0
 rem
-docker run --rm -v "%CD%":/network -v /var/run/docker.sock:/var/run/docker.sock --network host ibmblockchain/vscode-prereqs:issue-94 ansible-playbook /network/playbook.yml
+docker run --rm -v "%CD%":/network -v /var/run/docker.sock:/var/run/docker.sock --network host ibmblockchain/vscode-prereqs:fabric-v2.2 ansible-playbook /network/playbook.yml
 if %errorlevel% neq 0 (
     exit /b %errorlevel%
 )

@@ -1,0 +1,57 @@
+[
+    {
+        "transactionName": "<%= assetPascalCase %>Exists",
+        "transactionLabel": "A test <%= assetPascalCase %>Exists transaction",
+        "arguments": [
+            "001"
+        ],
+        "transientData": {}
+    },
+    {
+        "transactionName": "Create<%= assetPascalCase %>",
+        "transactionLabel": "A test create<%= assetPascalCase %> transaction",
+        "arguments": [
+            "001"
+        ],
+        "transientData": {
+            "PrivateValue": "some value"
+        }
+    },
+    {
+        "transactionName": "Read<%= assetPascalCase %>",
+        "transactionLabel": "A test Read<%= assetPascalCase %> transaction",
+        "arguments": [
+            "001"
+        ],
+        "transientData": {}
+    },
+    {
+        "transactionName": "Update<%= assetPascalCase %>",
+        "transactionLabel": "A test Update<%= assetPascalCase %> transaction",
+        "arguments": [
+            "001"
+        ],
+        "transientData": {
+            "PrivateValue": "some other value"
+        }
+    },
+    {
+        "transactionName": "Delete<%= assetPascalCase %>",
+        "transactionLabel": "A test Delete<%= assetPascalCase %> transaction",
+        "arguments": [
+            "001"
+        ],
+        "transientData": {}
+    },
+    {
+        "transactionName": "Verify<%= assetPascalCase %>",
+        "transactionLabel": "A test Verify<%= assetPascalCase %> transaction",
+        "arguments":[
+            "001",
+            {
+                "privateValue": "some other value"
+            }
+        ],
+        "transientData": {}
+    }
+]

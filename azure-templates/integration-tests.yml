@@ -3,7 +3,7 @@
 #
 ---
 parameters:
-  goVersion: '1.12'
+  goVersion: '1.13'
   nodeVersion: '10.x'
   tests: ''
 steps:
