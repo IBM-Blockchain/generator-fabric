@@ -19,7 +19,7 @@ describe('Contract (Go)', () => {
         {
             name: 'CollectionOne',
             policy: 'OR(\'Org1MSP.member\')',
-            requiredPeerCount: 1,
+            requiredPeerCount: 0,
             maxPeerCount: 1,
             blockToLive: 0,
             memberOnlyRead: true
