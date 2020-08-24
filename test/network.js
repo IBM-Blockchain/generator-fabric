@@ -58,8 +58,10 @@ describe('Network', () => {
         assert.fileContent('stop.sh', /docker ps -f label=fabric-environment-name="local_fabric" -q/);
         assert.fileContent('teardown.cmd', /docker ps -f label\^=fabric-environment-name\^="local_fabric" -q -a/);
         assert.fileContent('teardown.cmd', /docker volume ls -f label\^=fabric-environment-name\^="local_fabric" -q/);
+        assert.fileContent('teardown.cmd', /docker images "local_fabric-\*" -a -q/);
         assert.fileContent('teardown.sh', /docker ps -f label=fabric-environment-name="local_fabric" -q -a/);
         assert.fileContent('teardown.sh', /docker volume ls -f label=fabric-environment-name="local_fabric" -q/);
+        assert.fileContent('teardown.sh', /docker images "local_fabric-\*" -a -q/);
     }
 
     it('should generate a one organization network using prompts into a test directory', async () => {

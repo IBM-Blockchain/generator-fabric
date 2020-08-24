@@ -17,6 +17,12 @@ for /f "usebackq tokens=*" %%v in (`docker volume ls -f label^=fabric-environmen
         exit /b !errorlevel!
     )
 )
+for /f "usebackq tokens=*" %%b in (`docker images "<%= name %>-*" -a -q`) do (
+    docker volume rm -f %%b
+    if !errorlevel! neq 0 (
+        exit /b !errorlevel!
+    )
+)
 if exist wallets (
     pushd wallets
     rmdir /q/s .
