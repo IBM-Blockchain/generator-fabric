@@ -18,7 +18,8 @@
   "license": "<%= license %>",
   "dependencies": {
     "fabric-contract-api": "^1.4.5",
-    "fabric-shim": "^1.4.5"
+    "fabric-shim": "^1.4.5",
+    "jsrsasign": "^8.0.17"
   },
   "devDependencies": {
     "chai": "^4.2.0",

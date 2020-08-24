@@ -37,6 +37,7 @@ fi
 if [ "$1" == "private_contract_tests" ]
 then
     pushd tmp
+    curl -sSL http://bit.ly/2ysbOFE | bash -s 1.4.4
     mkdir yofn
     pushd yofn
     cp ../../scripts/network/*.* ./
