@@ -25,13 +25,14 @@ describe('Contract (JavaScript)', () => {
         sandbox.restore();
     });
 
-    it('should generate a JavaScript project using prompts', async () => {
+    it('should generate a v1 JavaScript project using prompts', async () => {
         await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })
             .withPrompts({
                 subgenerator: 'contract',
+                fabricVersion: 'v1',
                 contractType: 'default',
                 language: 'javascript',
                 name: 'my-javascript-contract',
@@ -75,14 +76,22 @@ describe('Contract (JavaScript)', () => {
             author: 'James Conga',
             license: 'WTFPL'
         });
+        packageJSON.should.containSubset({
+            dependencies: {
+                'fabric-contract-api': '^1.4.5',
+                'fabric-shim': '^1.4.5'
+            }
+        });
     });
 
-    it('should generate a JavaScript project given options', async () => {
+    it('should generate a v1 JavaScript project given options', async () => {
         await helpers.run(path.join(__dirname, '../../../generators/contract'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })
-            .withOptions({contractType: 'default',
+            .withOptions({
+                fabricVersion: 'v1',
+                contractType: 'default',
                 language: 'javascript',
                 name: 'my-javascript-contract',
                 version: '0.0.1',
@@ -122,12 +131,133 @@ describe('Contract (JavaScript)', () => {
             author: 'James Conga',
             license: 'WTFPL'
         });
+        packageJSON.should.containSubset({
+            dependencies: {
+                'fabric-contract-api': '^1.4.5',
+                'fabric-shim': '^1.4.5'
+            }
+        });
+    });
+
+    it('should generate a v2 JavaScript project using prompts', async () => {
+        await helpers.run(path.join(__dirname, '../../../generators/app'))
+            .inTmpDir((dir_) => {
+                dir = dir_;
+            })
+            .withPrompts({
+                subgenerator: 'contract',
+                fabricVersion: 'v2',
+                contractType: 'default',
+                language: 'javascript',
+                name: 'my-javascript-contract',
+                version: '0.0.1',
+                description: 'My JavaScript Contract',
+                author: 'James Conga',
+                license: 'WTFPL',
+                asset: 'conga'
+            });
+        assert.file([
+            '.vscode/extensions.json',
+            '.vscode/launch.json',
+            'lib/conga-contract.js',
+            'test/conga-contract.js',
+            '.editorconfig',
+            '.eslintignore',
+            '.eslintrc.js',
+            '.gitignore',
+            '.npmignore',
+            'index.js',
+            'package.json',
+            'transaction_data/conga-transactions.txdata'
+        ]);
+        assert.fileContent('lib/conga-contract.js', /SPDX-License-Identifier: WTFPL/);
+        assert.fileContent('lib/conga-contract.js', /class CongaContract extends Contract {/);
+        assert.fileContent('lib/conga-contract.js', /async congaExists\(ctx, congaId\) {/);
+        assert.fileContent('lib/conga-contract.js', /async createConga\(ctx, congaId, value\) {/);
+        assert.fileContent('lib/conga-contract.js', /async readConga\(ctx, congaId\) {/);
+        assert.fileContent('lib/conga-contract.js', /async updateConga\(ctx, congaId, newValue\) {/);
+        assert.fileContent('lib/conga-contract.js', /async deleteConga\(ctx, congaId\) {/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
+        const packageJSON = require(path.join(dir, 'package.json'));
+        packageJSON.should.containSubset({
+            name: 'my-javascript-contract',
+            version: '0.0.1',
+            description: 'My JavaScript Contract',
+            author: 'James Conga',
+            license: 'WTFPL'
+        });
+        packageJSON.should.containSubset({
+            dependencies: {
+                'fabric-contract-api': '^2.2.0',
+                'fabric-shim': '^2.2.0'
+            }
+        });
+    });
+
+    it('should generate a v2 JavaScript project given options', async () => {
+        await helpers.run(path.join(__dirname, '../../../generators/contract'))
+            .inTmpDir((dir_) => {
+                dir = dir_;
+            })
+            .withOptions({
+                fabricVersion: 'v2',
+                contractType: 'default',
+                language: 'javascript',
+                name: 'my-javascript-contract',
+                version: '0.0.1',
+                description: 'My JavaScript Contract',
+                author: 'James Conga',
+                license: 'WTFPL',
+                asset: 'conga'
+            });
+        assert.file([
+            'lib/conga-contract.js',
+            'test/conga-contract.js',
+            '.editorconfig',
+            '.eslintignore',
+            '.eslintrc.js',
+            '.gitignore',
+            '.npmignore',
+            'index.js',
+            'package.json',
+            'transaction_data/conga-transactions.txdata'
+        ]);
+        assert.fileContent('lib/conga-contract.js', /class CongaContract extends Contract {/);
+        assert.fileContent('lib/conga-contract.js', /async congaExists\(ctx, congaId\) {/);
+        assert.fileContent('lib/conga-contract.js', /async createConga\(ctx, congaId, value\) {/);
+        assert.fileContent('lib/conga-contract.js', /async readConga\(ctx, congaId\) {/);
+        assert.fileContent('lib/conga-contract.js', /async updateConga\(ctx, congaId, newValue\) {/);
+        assert.fileContent('lib/conga-contract.js', /async deleteConga\(ctx, congaId\) {/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
+        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
+        const packageJSON = require(path.join(dir, 'package.json'));
+        packageJSON.should.containSubset({
+            name: 'my-javascript-contract',
+            version: '0.0.1',
+            description: 'My JavaScript Contract',
+            author: 'James Conga',
+            license: 'WTFPL'
+        });
+        packageJSON.should.containSubset({
+            dependencies: {
+                'fabric-contract-api': '^2.2.0',
+                'fabric-shim': '^2.2.0'
+            }
+        });
     });
 
     it('should detect if no skip-install option is passed', async () => {
         let installStub = sinon.stub(generator.prototype,'installDependencies');
 
         let options = {
+            fabricVersion: 'v2',
             contractType: 'default',
             language: 'javascript',
             name: 'my-javascript-contract',
@@ -187,6 +317,7 @@ describe('Contract (JavaScript)', () => {
 
         await helpers.run(path.join(__dirname, '../../../generators/contract'))
             .withOptions({
+                fabricVersion: 'v2',
                 contractType: 'default',
                 language: 'javascript',
                 name: 'my-javascript-contract',
@@ -245,6 +376,7 @@ describe('Contract (JavaScript)', () => {
             })
             .withPrompts({
                 subgenerator: 'contract',
+                fabricVersion: 'v2',
                 contractType: 'penguin',
                 language: 'typescript',
                 name: 'my-typescript-contract',
@@ -272,6 +404,7 @@ describe('Contract (JavaScript)', () => {
             })
             .withPrompts({
                 subgenerator: 'contract',
+                fabricVersion: 'v2',
                 contractType: 'private',
                 language: 'penguin',
                 name: 'my-typescript-contract',

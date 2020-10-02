@@ -32,13 +32,14 @@ describe('Contract (JavaScript)', () => {
         }
     ];
 
-    it('should generate a JavaScript project using prompts', async () => {
+    it('should generate a v1 JavaScript project using prompts', async () => {
         await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })
             .withPrompts({
                 subgenerator: 'contract',
+                fabricVersion: 'v1',
                 contractType: 'private',
                 language: 'javascript',
                 name: 'my-javascript-contract',
@@ -64,14 +65,23 @@ describe('Contract (JavaScript)', () => {
             'collections.json',
             'transaction_data/my-private-conga-transactions.txdata'
         ]);
+        const packageJSON = require(path.join(dir, 'package.json'));
+        packageJSON.should.containSubset({
+            dependencies: {
+                'fabric-contract-api': '^1.4.5',
+                'fabric-shim': '^1.4.5'
+            }
+        });
     });
 
-    it('should generate a JavaScript project using options', async () => {
+    it('should generate a v1 JavaScript project using options', async () => {
         await helpers.run(path.join(__dirname, '../../../generators/contract'))
             .inTmpDir((dir_) => {
                 dir = dir_;
             })
-            .withOptions({contractType: 'private',
+            .withOptions({
+                fabricVersion: 'v1',
+                contractType: 'private',
                 language: 'javascript',
                 name: 'my-javascript-contract',
                 version: '0.0.1',
@@ -94,6 +104,94 @@ describe('Contract (JavaScript)', () => {
             'collections.json',
             'transaction_data/my-private-conga-transactions.txdata'
         ]);
+        const packageJSON = require(path.join(dir, 'package.json'));
+        packageJSON.should.containSubset({
+            dependencies: {
+                'fabric-contract-api': '^1.4.5',
+                'fabric-shim': '^1.4.5'
+            }
+        });
+    });
+
+    it('should generate a v2 JavaScript project using prompts', async () => {
+        await helpers.run(path.join(__dirname, '../../../generators/app'))
+            .inTmpDir((dir_) => {
+                dir = dir_;
+            })
+            .withPrompts({
+                subgenerator: 'contract',
+                fabricVersion: 'v2',
+                contractType: 'private',
+                language: 'javascript',
+                name: 'my-javascript-contract',
+                version: '0.0.1',
+                description: 'My JavaScript Contract',
+                author: 'James Conga',
+                license: 'WTFPL',
+                asset: 'myPrivateConga',
+                mspId: 'Org1MSP'
+            });
+        assert.file([
+            '.vscode/extensions.json',
+            '.vscode/launch.json',
+            'lib/my-private-conga-contract.js',
+            'test/my-private-conga-contract.js',
+            '.editorconfig',
+            '.eslintignore',
+            '.eslintrc.js',
+            '.gitignore',
+            '.npmignore',
+            'index.js',
+            'package.json',
+            'collections.json',
+            'transaction_data/my-private-conga-transactions.txdata'
+        ]);
+        const packageJSON = require(path.join(dir, 'package.json'));
+        packageJSON.should.containSubset({
+            dependencies: {
+                'fabric-contract-api': '^2.2.0',
+                'fabric-shim': '^2.2.0'
+            }
+        });
+    });
+
+    it('should generate a v2 JavaScript project using options', async () => {
+        await helpers.run(path.join(__dirname, '../../../generators/contract'))
+            .inTmpDir((dir_) => {
+                dir = dir_;
+            })
+            .withOptions({
+                fabricVersion: 'v2',
+                contractType: 'private',
+                language: 'javascript',
+                name: 'my-javascript-contract',
+                version: '0.0.1',
+                description: 'My JavaScript Contract',
+                author: 'James Conga',
+                license: 'WTFPL',
+                asset: 'myPrivateConga',
+                mspId: 'Org1MSP'
+            });
+        assert.file([
+            'lib/my-private-conga-contract.js',
+            'test/my-private-conga-contract.js',
+            '.editorconfig',
+            '.eslintignore',
+            '.eslintrc.js',
+            '.gitignore',
+            '.npmignore',
+            'index.js',
+            'package.json',
+            'collections.json',
+            'transaction_data/my-private-conga-transactions.txdata'
+        ]);
+        const packageJSON = require(path.join(dir, 'package.json'));
+        packageJSON.should.containSubset({
+            dependencies: {
+                'fabric-contract-api': '^2.2.0',
+                'fabric-shim': '^2.2.0'
+            }
+        });
     });
 
     it('should generate a private data collection file', async () => {
@@ -103,6 +201,7 @@ describe('Contract (JavaScript)', () => {
             })
             .withPrompts({
                 subgenerator: 'contract',
+                fabricVersion: 'v2',
                 contractType: 'private',
                 language: 'javascript',
                 name: 'my-javascript-contract',
@@ -125,6 +224,7 @@ describe('Contract (JavaScript)', () => {
             })
             .withPrompts({
                 subgenerator: 'contract',
+                fabricVersion: 'v2',
                 contractType: 'private',
                 language: 'javascript',
                 name: 'my-javascript-contract',
@@ -152,6 +252,7 @@ describe('Contract (JavaScript)', () => {
             })
             .withPrompts({
                 subgenerator: 'contract',
+                fabricVersion: 'v2',
                 contractType: 'private',
                 language: 'javascript',
                 name: 'my-javascript-contract',
@@ -189,6 +290,7 @@ describe('Contract (JavaScript)', () => {
             })
             .withPrompts({
                 subgenerator: 'contract',
+                fabricVersion: 'v2',
                 contractType: 'penguin',
                 language: 'typescript',
                 name: 'my-typescript-contract',
@@ -216,6 +318,7 @@ describe('Contract (JavaScript)', () => {
             })
             .withPrompts({
                 subgenerator: 'contract',
+                fabricVersion: 'v2',
                 contractType: 'private',
                 language: 'penguin',
                 name: 'my-typescript-contract',
