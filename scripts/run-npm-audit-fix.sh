@@ -26,6 +26,7 @@ done
 
 for TYPE in default private; do
     for LANGUAGE in javascript typescript; do
-        fix_it generators/contract/templates/${TYPE}/${LANGUAGE}
+        fix_it generators/contract/templates/v1/${TYPE}/${LANGUAGE}
+        fix_it generators/contract/templates/v2/${TYPE}/${LANGUAGE}
     done
 done

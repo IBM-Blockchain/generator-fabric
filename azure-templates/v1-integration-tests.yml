@@ -1,0 +1,21 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+---
+parameters:
+  goVersion: '1.12'
+  nodeVersion: '10.x'
+  tests: ''
+steps:
+  - task: GoTool@0
+    inputs:
+      version: ${{ parameters.goVersion }}
+  - task: NodeTool@0
+    inputs:
+      versionSpec: ${{ parameters.nodeVersion }}
+    displayName: Use Node.js ${{ parameters.nodeVersion }}
+  - script: npm ci
+    displayName: Install dependencies
+  - script: scripts/run-v1-integration-tests.sh ${{ parameters.tests }}
+    displayName: Run v1 integration tests
+    

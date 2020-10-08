@@ -34,7 +34,7 @@ stages:
             parameters:
               nodeVersion: $(nodeVersion)
   - stage: integration_tests
-    displayName: Integration tests
+    displayName: Integration tests (v2)
     dependsOn: unit_tests
     jobs:
       - job: chaincode_integration_tests
@@ -59,9 +59,31 @@ stages:
           - template: azure-templates/integration-tests.yml
             parameters:
               tests: $(tests)
+  - stage: v1_integration_tests
+    displayName: Integration tests (v1)
+    dependsOn: unit_tests
+    jobs:
+      - job: v1_contract_integration_tests
+        displayName: v1 Integration tests
+        strategy:
+          matrix:
+            V1_Contract_Linux:
+              tests: contract_tests
+              imageName: "ubuntu-latest"
+            V1_Private_Contract_Linux:
+              tests: private_contract_tests
+              imageName: "ubuntu-latest"
+        pool:
+          vmImage: $(imageName)
+        steps:
+          - template: azure-templates/v1-integration-tests.yml
+            parameters:
+              tests: $(tests)
   - stage: publish
     displayName: Publish to npm
-    dependsOn: integration_tests
+    dependsOn: 
+      - integration_tests
+      - v1_integration_tests
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags'))
     jobs:
       - job: publish
