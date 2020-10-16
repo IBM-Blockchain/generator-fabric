@@ -11,9 +11,8 @@ const path = require('path');
 module.exports = class extends Generator {
 
     async prompting() {
-        const ports = await findFreePort(17050, null, null, 20);
-        let startPort = ports[0];
-        let endPort = ports[ports.length - 1];
+        const ports = await findFreePort(8080, null, null, 20);
+        let port = ports[0];
         const questions = [{
             type : 'input',
             name : 'name',
@@ -34,31 +33,21 @@ module.exports = class extends Generator {
             when : () => !this.options.numOrganizations
         }, {
             type : 'input',
-            name : 'startPort',
-            message : 'Please specify the start port:',
-            default : startPort,
-            when : () => !this.options.startPort
-        }, {
-            type : 'input',
-            name : 'endPort',
-            message : 'Please specify the end port:',
-            default : endPort,
-            when : () => !this.options.endPort
+            name : 'port',
+            message : 'Please specify the port:',
+            default : port,
+            when : () => !this.options.port
         }];
         const answers = await this.prompt(questions);
         Object.assign(this.options, answers);
-        this.options.currentPort = null;
-        this.options.allocatePort = () => {
-            if (!this.options.currentPort) {
-                this.options.currentPort = this.options.startPort;
-                return this.options.currentPort;
-            }
-            this.options.currentPort++;
-            if (this.options.currentPort > this.options.endPort) {
-                throw new Error(`Could not allocate port as port range ${this.options.startPort}-${this.options.endPort} exceeded`);
-            }
-            return this.options.currentPort;
-        };
+
+        if(this.options.numOrganizations === 1){
+            this.options.microfabConfig = `{"port":${this.options.port}, "endorsing_organizations": [{"name": "Org1"}],"channels": [{"name": "mychannel","endorsing_organizations": ["Org1"]}]}`;
+        } else {
+            // Only support maximum of 2 orgs for now.
+            this.options.microfabConfig = `{"port":${this.options.port}, "endorsing_organizations": [{"name": "Org1"},{"name": "Org2"}],"channels": [{"name": "mychannel","endorsing_organizations": ["Org1", "Org2"]}]}`;
+        }
+
     }
 
     async writing() {

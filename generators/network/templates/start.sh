@@ -6,7 +6,15 @@
 #
 # Exit on first error, print all commands.
 set -ev
-for CONTAINER in $(docker ps -f label=fabric-environment-name="<%= name %>" -q -a); do
+CONTAINER=$(docker ps -f label=fabric-environment-name="<%= name %>" -q -a)
+if [ -z "$CONTAINER" ]
+then
+    export MICROFAB_CONFIG='<%-microfabConfig%>'
+    docker run -e MICROFAB_CONFIG --label fabric-environment-name="<%= name %>" -d -p <%-port%>:<%-port%> ibmcom/ibp-microfab:0.0.4
+else
     docker start ${CONTAINER}
-done
+fi
+sleep 2
+
+
 exit 0

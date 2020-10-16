@@ -9,4 +9,5 @@ set -ev
 for CONTAINER in $(docker ps -f label=fabric-environment-name="<%= name %>" -q); do
     docker stop ${CONTAINER}
 done
+sleep 2
 exit 0
