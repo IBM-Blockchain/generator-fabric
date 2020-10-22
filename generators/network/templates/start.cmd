@@ -5,10 +5,19 @@ rem
 rem SPDX-License-Identifier: Apache-2.0
 rem
 setlocal enabledelayedexpansion
-for /f "usebackq tokens=*" %%c in (`docker ps -f label^=fabric-environment-name^="<%= name %>" -q -a`) do (
-    docker start %%c
-    if !errorlevel! neq 0 (
+
+
+FOR /F "usebackq tokens=*" %%g IN (`docker ps -f label^=fabric-environment-name^="<%= name %>" -q -a`) do (SET CONTAINER=%%g)
+
+IF DEFINED CONTAINER (
+     docker start %CONTAINER%
+     if !errorlevel! neq 0 (
         exit /b !errorlevel!
     )
+) ELSE (
+    SET MICROFAB_CONFIG=<%-microfabConfig%>
+    docker run -e MICROFAB_CONFIG --label fabric-environment-name="<%= name %>" -d -p <%-port%>:<%-port%> ibmcom/ibp-microfab:0.0.4
 )
+
+
 exit /b 0
