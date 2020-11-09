@@ -37,15 +37,35 @@ module.exports = class extends Generator {
             message : 'Please specify the port:',
             default : port,
             when : () => !this.options.port
+        }, {
+            type: 'list',
+            name: 'fabricCapabilities',
+            message: 'Please select the Fabric channel capabilities version:',
+            choices: [
+                {
+                    name: 'V1_4_2',
+                    value: 'V1_4_2',
+                },{
+                    name: 'V2_0',
+                    value: 'V2_0'
+                }
+            ],
+            default : 'V2_0',
+            when : () => !this.options.fabricCapabilities
         }];
         const answers = await this.prompt(questions);
         Object.assign(this.options, answers);
+        let capabilities = ''; // Microfab will use V2_0 capabilities by default.
+        if(this.options.fabricCapabilities === 'V1_4_2'){
+            capabilities = `"capability_level": "${this.options.fabricCapabilities}",`;
+        }
+
 
         if(this.options.numOrganizations === 1){
-            this.options.microfabConfig = `{"port":${this.options.port}, "endorsing_organizations": [{"name": "Org1"}],"channels": [{"name": "mychannel","endorsing_organizations": ["Org1"]}]}`;
+            this.options.microfabConfig = `{"port":${this.options.port}, ${capabilities} "endorsing_organizations": [{"name": "Org1"}],"channels": [{"name": "mychannel","endorsing_organizations": ["Org1"]}]}`;
         } else {
             // Only support maximum of 2 orgs for now.
-            this.options.microfabConfig = `{"port":${this.options.port}, "endorsing_organizations": [{"name": "Org1"},{"name": "Org2"}],"channels": [{"name": "mychannel","endorsing_organizations": ["Org1", "Org2"]}]}`;
+            this.options.microfabConfig = `{"port":${this.options.port}, ${capabilities} "endorsing_organizations": [{"name": "Org1"},{"name": "Org2"}],"channels": [{"name": "mychannel","endorsing_organizations": ["Org1", "Org2"]}]}`;
         }
 
     }
