@@ -1,24 +1,8 @@
 [
     {
          "name": "CollectionOne",
-         "policy": {
-              "identities": [
-                   {
-                        "role": {
-                             "name": "member",
-                             "mspId": "<%= mspId %>"
-                        }
-                   }
-              ],
-              "policy": {
-                   "1-of": [
-                        {
-                             "signed-by": 0
-                        }
-                   ]
-              }
-         },
-         "requiredPeerCount": 1,
+         "policy": "OR('<%= mspId %>.member')",
+         "requiredPeerCount": 0,
          "maxPeerCount": 1,
          "blockToLive": 0,
          "memberOnlyRead": true
