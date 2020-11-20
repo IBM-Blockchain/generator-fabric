@@ -679,7 +679,7 @@ network_test() {
     date
     mkdir yofn
     pushd yofn
-    yo fabric:network -- --name yofn --dockerName yofn --port 8080 --numOrganizations 2
+    yo fabric:network -- --name yofn --dockerName yofn --port 8080 --numOrganizations 2 --fabricCapabilities V2_0
     ./stop.sh
     if ./is_running.sh; then
         echo is_running.sh should not return 0 after stop.sh is run
