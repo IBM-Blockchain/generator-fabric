@@ -10,21 +10,10 @@ const Generator = require('yeoman-generator');
 const path = require('path');
 const process = require('process');
 
-let versionAnswer, typeAnswer, answers;
+let typeAnswer, answers;
 module.exports = class extends Generator {
 
     async prompting () {
-
-        const versionQuestion = [{
-            type : 'list',
-            name : 'fabricVersion',
-            message : 'Please specify the Fabric version for this contract:',
-            choices : [
-                {name : 'v1.4', value: 'v1'},
-                {name : 'v2.0', value: 'v2'}
-            ],
-            when : () => !this.options.fabricVersion
-        }];
 
         const typeQuestion = [{
             type : 'list',
@@ -89,12 +78,6 @@ module.exports = class extends Generator {
             when: () => !this.options.asset
         }];
 
-        versionAnswer = await this.prompt(versionQuestion);
-        Object.assign(this.options, versionAnswer);
-
-        if (this.options.fabricVersion === 'v1') {
-            questions[1].choices = questions[1].choices.filter(choice => choice.name !== 'Go');
-        }
 
         typeAnswer = await this.prompt(typeQuestion);
         Object.assign(this.options, typeAnswer);
@@ -133,7 +116,7 @@ module.exports = class extends Generator {
 
         if (this.options.contractType === 'default') {
             if (this.options.language.endsWith('script') ){
-                this.fs.copyTpl(this.templatePath(`${this.options.fabricVersion}/default/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+                this.fs.copyTpl(this.templatePath(`v2/default/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
                 if (this.options.language === 'javascript') {
                     this._rename(this.destinationPath('lib/my-contract.js'), this.destinationPath(`lib/${this.options.assetDashSeparator}-contract.js`));
                     this._rename(this.destinationPath('test/my-contract.js'), this.destinationPath(`test/${this.options.assetDashSeparator}-contract.js`));
@@ -149,7 +132,7 @@ module.exports = class extends Generator {
                 this._rename(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
                 this._rename(this.destinationPath('.npmignore-hidefromnpm'), this.destinationPath('.npmignore'));
             } else if (this.options.language === 'java'){
-                this.fs.copyTpl(this.templatePath(`${this.options.fabricVersion}/default/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+                this.fs.copyTpl(this.templatePath(`v2/default/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
                 this._rename(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
                 let root = 'src/main/java/org/example';
                 this._rename(this.destinationPath(`${root}/MyAsset.java`), this.destinationPath(`${root}/${this.options.assetPascalCase}.java`));
@@ -158,7 +141,7 @@ module.exports = class extends Generator {
                 this._rename(this.destinationPath(`${root}/MyContractTest.java`), this.destinationPath(`${root}/${this.options.assetPascalCase}ContractTest.java`));
                 this._rename(this.destinationPath('transaction_data/my-transactions.txdata'), this.destinationPath((`transaction_data/${this.options.assetDashSeparator}-transactions.txdata`)));
             } else if (this.options.language === 'kotlin'){
-                this.fs.copyTpl(this.templatePath(`${this.options.fabricVersion}/default/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+                this.fs.copyTpl(this.templatePath(`v2/default/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
                 this._rename(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
                 let root = 'src/main/kotlin/org/example';
                 this._rename(this.destinationPath(`${root}/MyAsset.kt`), this.destinationPath(`${root}/${this.options.assetPascalCase}.kt`));
@@ -167,7 +150,7 @@ module.exports = class extends Generator {
                 this._rename(this.destinationPath(`${root}/MyContractTest.kt`), this.destinationPath(`${root}/${this.options.assetPascalCase}ContractTest.kt`));
                 this._rename(this.destinationPath('transaction_data/my-transactions.txdata'), this.destinationPath((`transaction_data/${this.options.assetDashSeparator}-transactions.txdata`)));
             } else if (this.options.language === 'go') {
-                this.fs.copyTpl(this.templatePath(`${this.options.fabricVersion}/default/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+                this.fs.copyTpl(this.templatePath(`v2/default/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
                 this._rename(this.destinationPath('my-contract.go'), this.destinationPath(`${this.options.assetDashSeparator}-contract.go`));
                 this._rename(this.destinationPath('my-contract_test.go'), this.destinationPath(`${this.options.assetDashSeparator}-contract_test.go`));
                 this._rename(this.destinationPath('my-asset.go'), this.destinationPath(`${this.options.assetDashSeparator}.go`));
@@ -177,7 +160,7 @@ module.exports = class extends Generator {
             }
         } else {
             if (this.options.language.endsWith('script') ){
-                this.fs.copyTpl(this.templatePath(`${this.options.fabricVersion}/private/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+                this.fs.copyTpl(this.templatePath(`v2/private/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
                 if (this.options.language === 'javascript') {
                     this._rename(this.destinationPath('lib/my-contract.js'), this.destinationPath(`lib/${this.options.assetDashSeparator}-contract.js`));
                     this._rename(this.destinationPath('test/my-contract.js'), this.destinationPath(`test/${this.options.assetDashSeparator}-contract.js`));
@@ -193,7 +176,7 @@ module.exports = class extends Generator {
                 this._rename(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
                 this._rename(this.destinationPath('.npmignore-hidefromnpm'), this.destinationPath('.npmignore'));
             } else if (this.options.language === 'java'){
-                this.fs.copyTpl(this.templatePath(`${this.options.fabricVersion}/private/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+                this.fs.copyTpl(this.templatePath(`v2/private/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
                 this._rename(this.destinationPath('.gitignore-hidefromnpm'), this.destinationPath('.gitignore'));
                 let root = 'src/main/java/org/example';
                 this._rename(this.destinationPath(`${root}/MyAsset.java`), this.destinationPath(`${root}/${this.options.assetPascalCase}.java`));
@@ -202,7 +185,7 @@ module.exports = class extends Generator {
                 this._rename(this.destinationPath(`${root}/MyContractTest.java`), this.destinationPath(`${root}/${this.options.assetPascalCase}ContractTest.java`));
                 this._rename(this.destinationPath('transaction_data/my-transactions.txdata'), this.destinationPath((`transaction_data/${this.options.assetDashSeparator}-transactions.txdata`)));
             } else if (this.options.language === 'go') {
-                this.fs.copyTpl(this.templatePath(`${this.options.fabricVersion}/private/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
+                this.fs.copyTpl(this.templatePath(`v2/private/${this.options.language}`), this._getDestination(), this.options, undefined, {globOptions : {dot : true}});
                 this._rename(this.destinationPath('my-contract.go'), this.destinationPath(`${this.options.assetDashSeparator}-contract.go`));
                 this._rename(this.destinationPath('my-contract_test.go'), this.destinationPath(`${this.options.assetDashSeparator}-contract_test.go`));
                 this._rename(this.destinationPath('my-asset.go'), this.destinationPath(`${this.options.assetDashSeparator}.go`));

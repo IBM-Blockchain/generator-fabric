@@ -19,7 +19,6 @@ describe('Contract (Go)', () => {
             .inTmpDir()
             .withPrompts({
                 subgenerator: 'contract',
-                fabricVersion: 'v2',
                 contractType: 'default',
                 language: 'go',
                 name: 'AndysGoContract',
@@ -72,7 +71,6 @@ describe('Contract (Go)', () => {
             .inTmpDir()
             .withPrompts({
                 subgenerator: 'contract',
-                fabricVersion: 'v2',
                 contractType: 'default',
                 language: 'go',
                 name: 'AndysGoContract',

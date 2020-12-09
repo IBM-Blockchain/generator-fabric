@@ -329,7 +329,7 @@ contract_test() {
 }
 
 java_default_contract_package() {
-    yo fabric:contract -- --fabricVersion="v2" --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
+    yo fabric:contract --  --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
     ./gradlew clean build shadowJar
     pushd build/libs
     common_package "java" "contract"
@@ -338,7 +338,7 @@ java_default_contract_package() {
 }
 
 kotlin_default_contract_package() {
-    yo fabric:contract -- --fabricVersion="v2" --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
+    yo fabric:contract --  --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
     ./gradlew clean build shadowJar
     pushd build/libs
     common_package "java" "contract"
@@ -350,7 +350,7 @@ go_default_contract_package() {
     export GOPATH=$PWD
     mkdir -p src/contract
     pushd src/contract
-    yo fabric:contract -- --fabricVersion="v2" --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
+    yo fabric:contract --  --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
     GO111MODULE=on go mod vendor
     go test
     go build
@@ -360,14 +360,14 @@ go_default_contract_package() {
 }
 
 javascript_default_contract_package() {
-    yo fabric:contract -- --fabricVersion="v2" --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
+    yo fabric:contract --  --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
     npm audit --audit-level=moderate
     npm test
     common_package "node" "contract"
 }
 
 typescript_default_contract_package() {
-    yo fabric:contract -- --fabricVersion="v2" --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
+    yo fabric:contract --  --contractType=${CONTRACT} --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset conga
     npm audit --audit-level=moderate
     npm test
     npm run build
@@ -375,20 +375,20 @@ typescript_default_contract_package() {
 }
 
 java_private_contract_package() {
-    yo fabric:contract -- --fabricVersion="v2" --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
+    yo fabric:contract --  --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
     ./gradlew clean build shadowJar
     common_package "java" "contract"
 }
 
 javascript_private_contract_package() {
-    yo fabric:contract -- --fabricVersion="v2" --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
+    yo fabric:contract --  --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
     npm audit --audit-level=moderate
     npm test
     common_package "node" "contract"
 }
 
 typescript_private_contract_package() {
-    yo fabric:contract -- --fabricVersion="v2" --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
+    yo fabric:contract --  --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
     npm audit --audit-level=moderate
     npm test
     npm run build
@@ -399,7 +399,7 @@ go_private_contract_package() {
     export GOPATH=$PWD
     mkdir -p src/contract
     pushd src/contract
-    yo fabric:contract -- --fabricVersion="v2" --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
+    yo fabric:contract --  --contractType=${CONTRACT} --mspId Org1MSP --language=${LANGUAGE} --author="Lord Conga" --description="Lord Conga's Smart Contract" --name=${LANGUAGE}-${CONTRACT}-contract --version=0.0.1 --license=Apache-2.0 --asset PrivateConga
     cp collections.json ../../collections.json
     GO111MODULE=on go mod vendor
     go test
