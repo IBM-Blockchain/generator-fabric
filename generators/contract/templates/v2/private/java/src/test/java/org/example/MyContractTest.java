@@ -19,6 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,28 +31,35 @@ public final class <%= assetPascalCase %>ContractTest {
 
     Context ctx;
     ChaincodeStub stub;
+    ClientIdentity clientIdentityStub;
     <%= assetPascalCase %>Contract contract;
 
-    String collection = "CollectionOne";
+    String mspid = "one";
+    String collectionName = "_implicit_org_" + mspid;
 
     @BeforeEach
     void beforeEach() {
         ctx = mock(Context.class);
         stub = mock(ChaincodeStub.class);
+        clientIdentityStub = mock(ClientIdentity.class);
+
+        when(clientIdentityStub.getMSPID()).thenReturn(mspid);
+
         when(ctx.getStub()).thenReturn(stub);
+        when(ctx.getClientIdentity()).thenReturn(clientIdentityStub);
 
         contract = new <%= assetPascalCase %>Contract();
 
         byte[] someAsset = ("{\"privateValue\":\"125\"}").getBytes(StandardCharsets.UTF_8);
-        when(stub.getPrivateData(collection, "001")).thenReturn(someAsset);
-        when(stub.getPrivateDataHash(collection, "001")).thenReturn(("someAsset").getBytes(StandardCharsets.UTF_8));
+        when(stub.getPrivateData(collectionName, "001")).thenReturn(someAsset);
+        when(stub.getPrivateDataHash(collectionName, "001")).thenReturn(("someAsset").getBytes(StandardCharsets.UTF_8));
     }
 
     @Nested
     class AssetExists {
         @Test
         public void noProperAsset() {
-            when(stub.getPrivateData(collection, "002")).thenReturn(("").getBytes(StandardCharsets.UTF_8));
+            when(stub.getPrivateData(collectionName, "002")).thenReturn(("").getBytes(StandardCharsets.UTF_8));
             boolean result = contract.<%= assetCamelCase %>Exists(ctx, "002");
             assertFalse(result);
         }
@@ -81,7 +89,7 @@ public final class <%= assetPascalCase %>ContractTest {
             when(stub.getTransient()).thenReturn(transientMap);
             contract.create<%= assetPascalCase %>(ctx, "002");
 
-            verify(stub).putPrivateData(collection, "002",
+            verify(stub).putPrivateData(collectionName, "002",
                     ("{\"privateValue\":\"150\"}").getBytes(StandardCharsets.UTF_8));
         }
 
@@ -129,7 +137,7 @@ public final class <%= assetPascalCase %>ContractTest {
         @Test
         public void privateAssetRead() throws UnsupportedEncodingException {
 
-            when(stub.getPrivateData(collection, "001"))
+            when(stub.getPrivateData(collectionName, "001"))
                     .thenReturn(("{\"privateValue\":\"125\"}").getBytes(StandardCharsets.UTF_8));
             String expectedString = "{\"privateValue\":\"125\"}";
 
@@ -151,7 +159,7 @@ public final class <%= assetPascalCase %>ContractTest {
     class AssetUpdates {
         @Test
         public void updateExisting() throws UnsupportedEncodingException {
-            when(stub.getPrivateData(collection, "001"))
+            when(stub.getPrivateData(collectionName, "001"))
                     .thenReturn(("{\"privateValue\":\"125\"}").getBytes(StandardCharsets.UTF_8));
             Map<String, byte[]> transientMap = new HashMap<>();
 
@@ -161,13 +169,13 @@ public final class <%= assetPascalCase %>ContractTest {
 
             contract.update<%= assetPascalCase %>(ctx, "001");
 
-            verify(stub).putPrivateData(collection, "001",
+            verify(stub).putPrivateData(collectionName, "001",
                     ("{\"privateValue\":\"150\"}").getBytes(StandardCharsets.UTF_8));
         }
 
         @Test
         public void updateMissing() {
-            when(stub.getPrivateData(collection, "002")).thenReturn(null);
+            when(stub.getPrivateData(collectionName, "002")).thenReturn(null);
 
             Exception thrown = assertThrows(RuntimeException.class, () -> {
                 contract.update<%= assetPascalCase %>(ctx, "002");
@@ -183,12 +191,12 @@ public final class <%= assetPascalCase %>ContractTest {
         @Test
         public void deleteExisting() {
             contract.delete<%= assetPascalCase %>(ctx, "001");
-            verify(stub).delPrivateData(collection, "001");
+            verify(stub).delPrivateData(collectionName, "001");
         }
 
         @Test
         public void deleteMissing() {
-            when(stub.getPrivateData(collection, "002")).thenReturn(null);
+            when(stub.getPrivateData(collectionName, "002")).thenReturn(null);
 
             Exception thrown = assertThrows(RuntimeException.class, () -> {
                 contract.delete<%= assetPascalCase %>(ctx, "002");
@@ -207,9 +215,9 @@ public final class <%= assetPascalCase %>ContractTest {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hashByte = digest.digest(someAsset.toJSONString().getBytes(StandardCharsets.UTF_8));
 
-            when(stub.getPrivateDataHash(collection, "001")).thenReturn(hashByte);
+            when(stub.getPrivateDataHash(collectionName, "001")).thenReturn(hashByte);
 
-            boolean result = contract.verify<%= assetPascalCase %>(ctx, "001", someAsset);
+            boolean result = contract.verify<%= assetPascalCase %>(ctx, mspid, "001", someAsset);
 
             assertTrue(result);
         }
@@ -219,9 +227,9 @@ public final class <%= assetPascalCase %>ContractTest {
             <%= assetPascalCase %> someAsset = new <%= assetPascalCase %>();
             someAsset.privateValue = "125";
 
-            when(stub.getPrivateDataHash(collection, "001")).thenReturn(("someAsset").getBytes(StandardCharsets.UTF_8));
+            when(stub.getPrivateDataHash(collectionName, "001")).thenReturn(("someAsset").getBytes(StandardCharsets.UTF_8));
 
-            boolean result = contract.verify<%= assetPascalCase %>(ctx, "001", someAsset);
+            boolean result = contract.verify<%= assetPascalCase %>(ctx, mspid, "001", someAsset);
 
             assertFalse(result);
         }
@@ -230,10 +238,10 @@ public final class <%= assetPascalCase %>ContractTest {
         public void verifyMissing() throws NoSuchAlgorithmException {
             <%= assetPascalCase %> someAsset = new <%= assetPascalCase %>();
 
-            when(stub.getPrivateDataHash(collection, "002")).thenReturn(("").getBytes(StandardCharsets.UTF_8));
+            when(stub.getPrivateDataHash(collectionName, "002")).thenReturn(("").getBytes(StandardCharsets.UTF_8));
 
             Exception thrown = assertThrows(RuntimeException.class, () -> {
-                contract.verify<%= assetPascalCase %>(ctx, "002", someAsset);
+                contract.verify<%= assetPascalCase %>(ctx, mspid, "002", someAsset);
             });
 
             assertEquals(thrown.getMessage(), "No private data hash with the key: 002");

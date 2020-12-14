@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hyperledger/fabric-chaincode-go/pkg/cid"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/stretchr/testify/assert"
@@ -55,6 +56,16 @@ func (ms *MockStub) DelPrivateData(collection string, key string) error {
 	return args.Error(0)
 }
 
+type MockClientIdentity struct {
+	cid.ClientIdentity
+	mock.Mock
+}
+
+func (mci *MockClientIdentity) GetMSPID() (string, error) {
+	args := mci.Called()
+	return args.Get(0).(string), args.Error(1)
+}
+
 type MockContext struct {
 	contractapi.TransactionContextInterface
 	mock.Mock
@@ -66,6 +77,11 @@ func (mc *MockContext) GetStub() shim.ChaincodeStubInterface {
 	return args.Get(0).(*MockStub)
 }
 
+func (mc *MockContext) GetClientIdentity() cid.ClientIdentity {
+	args := mc.Called()
+
+	return args.Get(0).(*MockClientIdentity)
+}
 
 func configureStub() (*MockContext, *MockStub) {
 	var nilBytes []byte
@@ -89,8 +105,12 @@ func configureStub() (*MockContext, *MockStub) {
 	ms.On("GetPrivateDataHash", mock.AnythingOfType("string"), "existingkey").Return([]byte("some hash value"), nil)
 	ms.On("GetPrivateDataHash", mock.AnythingOfType("string"), "<%= assetCamelCase %>key").Return(hashToVerify.Sum(nil), nil)
 
+	mci := new(MockClientIdentity)
+	mci.On("GetMSPID").Return("Org1MSP", nil)
+
 	mc := new(MockContext)
 	mc.On("GetStub").Return(ms)
+	mc.On("GetClientIdentity").Return(mci)
 
 	return mc, ms
 }
@@ -128,12 +148,12 @@ func TestCreate<%= assetPascalCase %>(t *testing.T) {
 	assert.EqualError(t, err, "The asset existingkey already exists", "should error when exists returns true")
 
 	err = c.Create<%= assetPascalCase %>(ctx, "missingkey")
-	assert.EqualError(t, err, "The privateValue key was not specified in transient data. Please try again")
+	assert.EqualError(t, err, "The PrivateValue key was not specified in transient data. Please try again")
 
 	transient["PrivateValue"] = []byte("some value")
 	err = c.Create<%= assetPascalCase %>(ctx, "missingkey")
 	assert.Nil(t, err, "should not return error when transaction data provided")
-	stub.AssertCalled(t, "PutPrivateData", "CollectionOne", "missingkey", []byte("{\"privateValue\":\"some value\"}"))
+	stub.AssertCalled(t, "PutPrivateData", "_implicit_org_Org1MSP", "missingkey", []byte("{\"privateValue\":\"some value\"}"))
 }
 
 func TestRead<%= assetPascalCase %>(t *testing.T) {
@@ -180,7 +200,7 @@ func TestUpdate<%= assetPascalCase %>(t *testing.T) {
 	expected<%= assetPascalCase %>.PrivateValue = "new value"
 	expected<%= assetPascalCase %>Bytes, _ := json.Marshal(expected<%= assetPascalCase %>)
 	assert.Nil(t, err, "should not return error when <%= assetPascalCase %> exists in private data collection when updating")
-	stub.AssertCalled(t, "PutPrivateData", "CollectionOne", "<%= assetCamelCase %>key", expected<%= assetPascalCase %>Bytes)
+	stub.AssertCalled(t, "PutPrivateData", "_implicit_org_Org1MSP", "<%= assetCamelCase %>key", expected<%= assetPascalCase %>Bytes)
 }
 
 func TestDelete<%= assetPascalCase %>(t *testing.T) {
@@ -197,7 +217,7 @@ func TestDelete<%= assetPascalCase %>(t *testing.T) {
 
 	err = c.Delete<%= assetPascalCase %>(ctx, "<%= assetCamelCase %>key")
 	assert.Nil(t, err, "should not return error when <%= assetPascalCase %> exists in private data collection when deleting")
-	stub.AssertCalled(t, "DelPrivateData", "CollectionOne", "<%= assetCamelCase %>key")
+	stub.AssertCalled(t, "DelPrivateData", "_implicit_org_Org1MSP", "<%= assetCamelCase %>key")
 }
 
 func TestVerify<%= assetPascalCase %>(t *testing.T) {
@@ -211,16 +231,16 @@ func TestVerify<%= assetPascalCase %>(t *testing.T) {
 	<%= assetCamelCase %> = new(<%= assetPascalCase %>)
 	<%= assetCamelCase %>.PrivateValue = "set value"
 
-	exists, err = c.Verify<%= assetPascalCase %>(ctx, "statebad", <%= assetCamelCase %>)
+	exists, err = c.Verify<%= assetPascalCase %>(ctx, "Org1MSP", "statebad", <%= assetCamelCase %>)
 	assert.False(t, exists, "should return false when unable to read the hash")
 	assert.EqualError(t, err, getStateError)
 
-	exists, err = c.Verify<%= assetPascalCase %>(ctx, "missingkey", <%= assetCamelCase %>)
+	exists, err = c.Verify<%= assetPascalCase %>(ctx, "Org1MSP", "missingkey", <%= assetCamelCase %>)
 	assert.False(t, exists, "should return false when key does not exist")
 	assert.EqualError(t, err, "No private data hash with the Key: missingkey", "should error when key does not exist")
 
-	exists, err = c.Verify<%= assetPascalCase %>(ctx, "<%= assetCamelCase %>key", <%= assetCamelCase %>)
+	exists, err = c.Verify<%= assetPascalCase %>(ctx, "Org1MSP", "<%= assetCamelCase %>key", <%= assetCamelCase %>)
 	assert.True(t, exists, "should return true when hash in world state matched hash from data collection")
 	assert.Nil(t, err, "should not return error when hash in world state matched hash from data collection")
-	stub.AssertCalled(t, "GetPrivateDataHash", "CollectionOne", "<%= assetCamelCase %>key")
+	stub.AssertCalled(t, "GetPrivateDataHash", "_implicit_org_Org1MSP", "<%= assetCamelCase %>key")
 }

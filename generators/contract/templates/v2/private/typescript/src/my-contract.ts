@@ -5,7 +5,12 @@
 import crypto = require('crypto');
 import { Context, Contract, Info, Returns, Transaction } from 'fabric-contract-api';
 import { <%= assetPascalCase %> } from './<%= assetDashSeparator %>';
-const myCollectionName: string = 'CollectionOne';
+
+async function getCollectionName(ctx: Context): Promise<string> {
+    const mspid: string = ctx.clientIdentity.getMSPID();
+    const collectionName: string = `_implicit_org_${mspid}`;
+    return collectionName;
+}
 
 @Info({title: '<%= assetPascalCase %>Contract', description: '<%= description %>' })
 export class <%= assetPascalCase %>Contract extends Contract {
@@ -13,7 +18,8 @@ export class <%= assetPascalCase %>Contract extends Contract {
     @Transaction(false)
     @Returns('boolean')
     public async <%= assetCamelCase %>Exists(ctx: Context, <%= assetCamelCase %>Id: string): Promise<boolean> {
-        const data: Uint8Array = await ctx.stub.getPrivateDataHash(myCollectionName, <%= assetCamelCase %>Id);
+        const collectionName: string = await getCollectionName(ctx);
+        const data: Uint8Array = await ctx.stub.getPrivateDataHash(collectionName, <%= assetCamelCase %>Id);
         return (!!data && data.length > 0);
     }
 
@@ -32,7 +38,8 @@ export class <%= assetPascalCase %>Contract extends Contract {
         }
         privateAsset.privateValue = transientData.get('privateValue').toString();
 
-        await ctx.stub.putPrivateData(myCollectionName, <%= assetCamelCase %>Id, Buffer.from(JSON.stringify(privateAsset)));
+        const collectionName: string = await getCollectionName(ctx);
+        await ctx.stub.putPrivateData(collectionName, <%= assetCamelCase %>Id, Buffer.from(JSON.stringify(privateAsset)));
     }
 
     @Transaction(false)
@@ -44,7 +51,9 @@ export class <%= assetPascalCase %>Contract extends Contract {
         }
 
         let privateDataString: string;
-        const privateData: Uint8Array = await ctx.stub.getPrivateData(myCollectionName, <%= assetCamelCase %>Id);
+
+        const collectionName: string = await getCollectionName(ctx);
+        const privateData: Uint8Array = await ctx.stub.getPrivateData(collectionName, <%= assetCamelCase %>Id);
 
         privateDataString = JSON.parse(privateData.toString());
         return privateDataString;
@@ -65,7 +74,8 @@ export class <%= assetPascalCase %>Contract extends Contract {
         }
         privateAsset.privateValue = transientData.get('privateValue').toString();
 
-        await ctx.stub.putPrivateData(myCollectionName, <%= assetCamelCase %>Id, Buffer.from(JSON.stringify(privateAsset)));
+        const collectionName: string = await getCollectionName(ctx);
+        await ctx.stub.putPrivateData(collectionName, <%= assetCamelCase %>Id, Buffer.from(JSON.stringify(privateAsset)));
     }
 
     @Transaction()
@@ -74,14 +84,16 @@ export class <%= assetPascalCase %>Contract extends Contract {
         if (!exists) {
             throw new Error(`The asset <%= assetSpaceSeparator %> ${<%= assetCamelCase %>Id} does not exist`);
         }
-        await ctx.stub.deletePrivateData(myCollectionName, <%= assetCamelCase %>Id);
+
+        const collectionName: string = await getCollectionName(ctx);
+        await ctx.stub.deletePrivateData(collectionName, <%= assetCamelCase %>Id);
     }
 
     @Transaction()
-    public async verify<%= assetPascalCase %>(ctx: Context, <%= assetCamelCase %>Id: string, objectToVerify: <%= assetPascalCase %>): Promise<boolean> {
+    public async verify<%= assetPascalCase %>(ctx: Context, mspid: string, <%= assetCamelCase %>Id: string, objectToVerify: <%= assetPascalCase %>): Promise<boolean> {
         // Convert user provided object into a hash
         const hashToVerify: string = crypto.createHash('sha256').update(JSON.stringify(objectToVerify)).digest('hex');
-        const pdHashBytes: Uint8Array = await ctx.stub.getPrivateDataHash(myCollectionName, <%= assetCamelCase %>Id);
+        const pdHashBytes: Uint8Array = await ctx.stub.getPrivateDataHash(`_implicit_org_${mspid}`, <%= assetCamelCase %>Id);
         if (pdHashBytes.length === 0) {
             throw new Error(`No private data hash with the Key: ${<%= assetCamelCase %>Id}`);
         }

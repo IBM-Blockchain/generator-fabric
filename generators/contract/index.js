@@ -27,11 +27,6 @@ module.exports = class extends Generator {
         }];
 
         const questions = [{
-            type : 'input',
-            name : 'mspId',
-            message : 'Please specify your mspId (you will need this for the Private Data Collection file):',
-            when : () => !this.options.mspId
-        }, {
             type : 'list',
             name : 'language',
             message : 'Please specify the contract language:',
@@ -82,14 +77,14 @@ module.exports = class extends Generator {
         typeAnswer = await this.prompt(typeQuestion);
         Object.assign(this.options, typeAnswer);
 
-        if (this.options.contractType === 'private') {
-            questions[1].choices = questions[1].choices.filter(choice => choice.name !== 'Kotlin');
-            questions[7].default = 'MyPrivateAsset';
+        if (['private', 'default'].includes(this.options.contractType)) {
 
-            answers = await this.prompt(questions);
+            // If the user wants to generate a private contract, modify the questions
+            if (this.options.contractType === 'private') {
+                questions[0].choices = questions[0].choices.filter(choice => choice.name !== 'Kotlin');
+                questions[6].default = 'MyPrivateAsset';
+            }
 
-        } else if (this.options.contractType === 'default') {
-            questions[0].when = () => this.options.mspId;
             answers = await this.prompt(questions);
         } else {
             throw new Error(`Sorry the contract type '${this.options.contractType}' does not exist.`);
