@@ -5,7 +5,7 @@ rem
 rem SPDX-License-Identifier: Apache-2.0
 rem
  
-for /f "usebackq tokens=*" %%i in (`docker ps -f label^=fabric-environment-name^="<%= name %>" -q`) do set container=%%i
+for /f "usebackq tokens=*" %%i in (`docker ps -f label^=fabric-environment-name^="<%= name %> Microfab" -q`) do set container=%%i
 
 if not defined container (
     exit /b 1

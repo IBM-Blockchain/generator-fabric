@@ -7,7 +7,7 @@ rem
 setlocal enabledelayedexpansion
 
 
-FOR /F "usebackq tokens=*" %%g IN (`docker ps -f label^=fabric-environment-name^="<%= name %>" -q -a`) do (SET CONTAINER=%%g)
+FOR /F "usebackq tokens=*" %%g IN (`docker ps -f label^=fabric-environment-name^="<%= name %> Microfab" -q -a`) do (SET CONTAINER=%%g)
 
 IF DEFINED CONTAINER (
      docker start %CONTAINER%
@@ -16,7 +16,7 @@ IF DEFINED CONTAINER (
     )
 ) ELSE (
     SET MICROFAB_CONFIG=<%-microfabConfig%>
-    docker run -e MICROFAB_CONFIG --label fabric-environment-name="<%= name %>" -d -p <%-port%>:<%-port%> ibmcom/ibp-microfab:0.0.7
+    docker run -e MICROFAB_CONFIG --label fabric-environment-name="<%= name %> Microfab" -d -p <%-port%>:<%-port%> ibmcom/ibp-microfab:0.0.7
 )
 
 

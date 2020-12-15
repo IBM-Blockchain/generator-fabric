@@ -33,18 +33,18 @@ describe('Network', () => {
             'teardown.cmd',
             'teardown.sh'
         ]);
-        assert.fileContent('is_running.cmd', /docker ps -f label\^=fabric-environment-name\^="local_fabric" -q/);
-        assert.fileContent('is_running.sh', /docker ps -f label=fabric-environment-name="local_fabric" -q/);
+        assert.fileContent('is_running.cmd', /docker ps -f label\^=fabric-environment-name\^="local_fabric Microfab" -q/);
+        assert.fileContent('is_running.sh', /docker ps -f label=fabric-environment-name="local_fabric Microfab" -q/);
         // assert.fileContent('kill_chaincode.sh', /docker stop localfabric-peer0.org1.example.com/);
         // assert.fileContent('kill_chaincode.cmd', /docker stop localfabric-peer0.org1.example.com/);
-        assert.fileContent('start.cmd', /docker ps -f label\^=fabric-environment-name\^="local_fabric" -q -a/);
-        assert.fileContent('start.sh', /docker ps -f label=fabric-environment-name="local_fabric" -q -a/);
-        assert.fileContent('stop.cmd', /docker ps -f label\^=fabric-environment-name\^="local_fabric" -q/);
-        assert.fileContent('stop.sh', /docker ps -f label=fabric-environment-name="local_fabric" -q/);
-        assert.fileContent('teardown.cmd', /docker ps -f label\^=fabric-environment-name\^="local_fabric" -q -a/);
-        assert.fileContent('teardown.cmd', /docker volume ls -f label\^=fabric-environment-name\^="local_fabric" -q/);
-        assert.fileContent('teardown.sh', /docker ps -f label=fabric-environment-name="local_fabric" -q -a/);
-        assert.fileContent('teardown.sh', /docker volume ls -f label=fabric-environment-name="local_fabric" -q/);
+        assert.fileContent('start.cmd', /docker ps -f label\^=fabric-environment-name\^="local_fabric Microfab" -q -a/);
+        assert.fileContent('start.sh', /docker ps -f label=fabric-environment-name="local_fabric Microfab" -q -a/);
+        assert.fileContent('stop.cmd', /docker ps -f label\^=fabric-environment-name\^="local_fabric Microfab" -q/);
+        assert.fileContent('stop.sh', /docker ps -f label=fabric-environment-name="local_fabric Microfab" -q/);
+        assert.fileContent('teardown.cmd', /docker ps -f label\^=fabric-environment-name\^="local_fabric Microfab" -q -a/);
+        assert.fileContent('teardown.cmd', /docker volume ls -f label\^=fabric-environment-name\^="local_fabric Microfab" -q/);
+        assert.fileContent('teardown.sh', /docker ps -f label=fabric-environment-name="local_fabric Microfab" -q -a/);
+        assert.fileContent('teardown.sh', /docker volume ls -f label=fabric-environment-name="local_fabric Microfab" -q/);
     }
 
     it('should generate a one organization network using prompts into a test directory', async () => {
