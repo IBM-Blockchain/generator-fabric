@@ -6,7 +6,7 @@
 #
 # Exit on first error, print all commands.
 set +ev
-NUM_CONTAINERS=$(docker container port $(docker ps -f label=fabric-environment-name="<%= name %>" -q) | grep <%-port%>/tcp | wc -l | tr -d ' ')
+NUM_CONTAINERS=$(docker container port $(docker ps -f label=fabric-environment-name="<%= name %> Microfab" -q) | grep <%-port%>/tcp | wc -l | tr -d ' ')
 if [ "${NUM_CONTAINERS}" -eq 0 ]; then
   exit 1
 fi
