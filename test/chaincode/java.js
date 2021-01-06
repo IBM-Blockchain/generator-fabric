@@ -23,7 +23,6 @@ describe('Chaincode (Java)', () => {
             });
         assert.file([
             '.vscode/extensions.json',
-            '.vscode/launch.json',
             'gradle/wrapper/gradle-wrapper.jar',
             'gradle/wrapper/gradle-wrapper.properties',
             'src/main/java/org/example/Chaincode.java',

@@ -43,7 +43,6 @@ describe('Contract (JavaScript)', () => {
             });
         assert.file([
             '.vscode/extensions.json',
-            '.vscode/launch.json',
             'lib/conga-contract.js',
             'test/conga-contract.js',
             '.editorconfig',

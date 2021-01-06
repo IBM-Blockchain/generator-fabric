@@ -44,7 +44,6 @@ describe('Chaincode (TypeScript)', () => {
             });
         assert.file([
             '.vscode/extensions.json',
-            '.vscode/launch.json',
             'src/chaincode.spec.ts',
             'src/chaincode.ts',
             'src/index.ts',
