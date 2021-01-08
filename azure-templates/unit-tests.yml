@@ -11,7 +11,7 @@ steps:
     displayName: Use Node.js ${{ parameters.nodeVersion }}
   - script: npm ci
     displayName: Install dependencies
-  - script: npm audit --audit-level=moderate
-    displayName: Audit dependencies
+  # - script: npm audit --audit-level=moderate
+  #   displayName: Audit dependencies
   - script: npm test
     displayName: Run unit tests

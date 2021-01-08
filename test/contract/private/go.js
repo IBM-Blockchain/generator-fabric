@@ -46,7 +46,6 @@ describe('Contract (Go)', () => {
 
         assert.file([
             '.vscode/extensions.json',
-            '.vscode/launch.json',
             'go.mod',
             'go.sum',
             'main.go',
@@ -105,7 +104,6 @@ describe('Contract (Go)', () => {
 
         assert.file([
             '.vscode/extensions.json',
-            '.vscode/launch.json',
             'go.mod',
             'go.sum',
             'main.go',

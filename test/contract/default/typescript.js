@@ -38,7 +38,6 @@ describe('Contract (TypeScript)', () => {
             });
         assert.file([
             '.vscode/extensions.json',
-            '.vscode/launch.json',
             'src/conga.ts',
             'src/conga-contract.spec.ts',
             'src/conga-contract.ts',
@@ -118,7 +117,6 @@ describe('Contract (TypeScript)', () => {
             });
         assert.file([
             '.vscode/extensions.json',
-            '.vscode/launch.json',
             'src/my-asset.ts',
             'src/my-asset-contract.spec.ts',
             'src/my-asset-contract.ts',
