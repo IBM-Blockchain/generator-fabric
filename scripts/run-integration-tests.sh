@@ -535,9 +535,6 @@ common_contract_test() {
 private_contract_test() {
     date
     priVal="privateValue"
-    if [ ${LANGUAGE} == "go" ]; then
-        priVal="PrivateValue"
-    fi
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \

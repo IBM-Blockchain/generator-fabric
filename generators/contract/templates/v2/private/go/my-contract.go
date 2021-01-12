@@ -58,10 +58,10 @@ func (c *<%= assetPascalCase %>Contract) Create<%= assetPascalCase %>(ctx contra
 
 	transientData, _ := ctx.GetStub().GetTransient()
 
-	privateValue, exists := transientData["PrivateValue"]
+	privateValue, exists := transientData["privateValue"]
 
 	if len(transientData) == 0 || !exists {
-		return fmt.Errorf("The PrivateValue key was not specified in transient data. Please try again")
+		return fmt.Errorf("The privateValue key was not specified in transient data. Please try again")
 	}
 
 	<%= assetCamelCase %>.PrivateValue = string(privateValue)
@@ -113,10 +113,10 @@ func (c *<%= assetPascalCase %>Contract) Update<%= assetPascalCase %>(ctx contra
 	}
 
 	transientData, _ := ctx.GetStub().GetTransient()
-	newValue, exists := transientData["PrivateValue"]
+	newValue, exists := transientData["privateValue"]
 
 	if len(transientData) == 0 || !exists {
-		return fmt.Errorf("The PrivateValue key was not specified in transient data. Please try again")
+		return fmt.Errorf("The privateValue key was not specified in transient data. Please try again")
 	}
 
 	<%= assetCamelCase %> := new(<%= assetPascalCase %>)

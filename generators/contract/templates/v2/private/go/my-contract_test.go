@@ -148,9 +148,9 @@ func TestCreate<%= assetPascalCase %>(t *testing.T) {
 	assert.EqualError(t, err, "The asset existingkey already exists", "should error when exists returns true")
 
 	err = c.Create<%= assetPascalCase %>(ctx, "missingkey")
-	assert.EqualError(t, err, "The PrivateValue key was not specified in transient data. Please try again")
+	assert.EqualError(t, err, "The privateValue key was not specified in transient data. Please try again")
 
-	transient["PrivateValue"] = []byte("some value")
+	transient["privateValue"] = []byte("some value")
 	err = c.Create<%= assetPascalCase %>(ctx, "missingkey")
 	assert.Nil(t, err, "should not return error when transaction data provided")
 	stub.AssertCalled(t, "PutPrivateData", "_implicit_org_Org1MSP", "missingkey", []byte("{\"privateValue\":\"some value\"}"))
@@ -194,7 +194,7 @@ func TestUpdate<%= assetPascalCase %>(t *testing.T) {
 	err = c.Update<%= assetPascalCase %>(ctx, "missingkey")
 	assert.EqualError(t, err, "The asset missingkey does not exist", "should error when exists is false when updating")
 
-	transient["PrivateValue"] = []byte("new value")
+	transient["privateValue"] = []byte("new value")
 	err = c.Update<%= assetPascalCase %>(ctx, "<%= assetCamelCase %>key")
 	expected<%= assetPascalCase %> := new(<%= assetPascalCase %>)
 	expected<%= assetPascalCase %>.PrivateValue = "new value"
