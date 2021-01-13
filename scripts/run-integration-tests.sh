@@ -535,9 +535,6 @@ common_contract_test() {
 private_contract_test() {
     date
     priVal="privateValue"
-    if [ ${LANGUAGE} == "go" ]; then
-        priVal="PrivateValue"
-    fi
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \
         -e "CORE_PEER_LOCALMSPID=Org1MSP" \
@@ -642,7 +639,7 @@ private_contract_test() {
         --network yofn \
         --rm \
         hyperledger/fabric-tools \
-        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["verifyPrivateConga","1001","{\"privateValue\":\"125\"}"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
+        peer chaincode invoke -o orderer.example.com:17061 -C mychannel -n ${LANGUAGE}-${CONTRACT}-contract -c '{"Args":["verifyPrivateConga","Org1MSP","1001","{\"privateValue\":\"125\"}"]}' --ordererTLSHostnameOverride orderer.example.com --tls true --cafile /etc/hyperledger/fabric/Org1/ca-tls-root.pem --waitForEvent --peerAddresses peer0.org1.example.com:17051 --peerAddresses peer0.org2.example.com:17056 --tlsRootCertFiles /etc/hyperledger/fabric/Org1/org1peer1tls/ca.crt --tlsRootCertFiles /etc/hyperledger/fabric/Org2/org2peer1tls/ca.crt
     date
     ${RETRY} docker run \
         -e "CORE_PEER_ADDRESS=peer0.org1.example.com:17051" \

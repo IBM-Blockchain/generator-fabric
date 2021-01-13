@@ -6,12 +6,18 @@
 
 const { Contract } = require('fabric-contract-api');
 const crypto = require('crypto');
-const myCollectionName = 'CollectionOne';
+
+async function getCollectionName(ctx) {
+    const mspid = ctx.clientIdentity.getMSPID();
+    const collectionName = `_implicit_org_${mspid}`;
+    return collectionName;
+}
 
 class <%= assetPascalCase %>Contract extends Contract {
 
     async <%= assetCamelCase %>Exists(ctx, <%= assetCamelCase %>Id) {
-        const data = await ctx.stub.getPrivateDataHash(myCollectionName, <%= assetCamelCase %>Id);
+        const collectionName = await getCollectionName(ctx);
+        const data = await ctx.stub.getPrivateDataHash(collectionName, <%= assetCamelCase %>Id);
         return (!!data && data.length > 0);
     }
 
@@ -29,7 +35,8 @@ class <%= assetPascalCase %>Contract extends Contract {
         }
         privateAsset.privateValue = transientData.get('privateValue').toString();
 
-        await ctx.stub.putPrivateData(myCollectionName, <%= assetCamelCase %>Id, Buffer.from(JSON.stringify(privateAsset)));
+        const collectionName = await getCollectionName(ctx);
+        await ctx.stub.putPrivateData(collectionName, <%= assetCamelCase %>Id, Buffer.from(JSON.stringify(privateAsset)));
     }
 
     async read<%= assetPascalCase %>(ctx, <%= assetCamelCase %>Id) {
@@ -38,7 +45,8 @@ class <%= assetPascalCase %>Contract extends Contract {
             throw new Error(`The asset <%= assetSpaceSeparator %> ${<%= assetCamelCase %>Id} does not exist`);
         }
         let privateDataString;
-        const privateData = await ctx.stub.getPrivateData(myCollectionName, <%= assetCamelCase %>Id);
+        const collectionName = await getCollectionName(ctx);
+        const privateData = await ctx.stub.getPrivateData(collectionName, <%= assetCamelCase %>Id);
         privateDataString = JSON.parse(privateData.toString());
         return privateDataString;
     }
@@ -56,7 +64,8 @@ class <%= assetPascalCase %>Contract extends Contract {
         }
         privateAsset.privateValue = transientData.get('privateValue').toString();
 
-        await ctx.stub.putPrivateData(myCollectionName, <%= assetCamelCase %>Id, Buffer.from(JSON.stringify(privateAsset)));
+        const collectionName = await getCollectionName(ctx);
+        await ctx.stub.putPrivateData(collectionName, <%= assetCamelCase %>Id, Buffer.from(JSON.stringify(privateAsset)));
     }
 
     async delete<%= assetPascalCase %>(ctx, <%= assetCamelCase %>Id) {
@@ -64,14 +73,15 @@ class <%= assetPascalCase %>Contract extends Contract {
         if (!exists) {
             throw new Error(`The asset <%= assetSpaceSeparator %> ${<%= assetCamelCase %>Id} does not exist`);
         }
-        await ctx.stub.deletePrivateData(myCollectionName, <%= assetCamelCase %>Id);
+        const collectionName = await getCollectionName(ctx);
+        await ctx.stub.deletePrivateData(collectionName, <%= assetCamelCase %>Id);
     }
 
-    async verify<%= assetPascalCase %>(ctx, <%= assetCamelCase %>Id, objectToVerify) {
+    async verify<%= assetPascalCase %>(ctx, mspid, <%= assetCamelCase %>Id, objectToVerify) {
 
         // Convert provided object into a hash
         const hashToVerify = crypto.createHash('sha256').update(objectToVerify).digest('hex');
-        const pdHashBytes = await ctx.stub.getPrivateDataHash(myCollectionName, <%= assetCamelCase %>Id);
+        const pdHashBytes = await ctx.stub.getPrivateDataHash(`_implicit_org_${mspid}`, <%= assetCamelCase %>Id);
         if (pdHashBytes.length === 0) {
             throw new Error('No private data hash with the key: ' + <%= assetCamelCase %>Id);
         }

@@ -3,6 +3,7 @@
  */
 package org.example;
 
+import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.contract.ContractInterface;
 import org.hyperledger.fabric.contract.annotation.Contract;
@@ -31,13 +32,19 @@ import java.util.Map;
                                                 url = "http://<%= name %>.me")))
 @Default
 public class <%= assetPascalCase %>Contract implements ContractInterface {
-    String collection = "CollectionOne";
+    private String getCollectionName(Context ctx) {
+        ClientIdentity clientIdentity = ctx.getClientIdentity();
+        String mspid = clientIdentity.getMSPID();
+        String collectionName = "_implicit_org_" + mspid;
+        return collectionName;
+    }
 
     public  <%= assetPascalCase %>Contract() {
 
     }
     @Transaction()
     public boolean <%= assetCamelCase %>Exists(Context ctx, String <%= assetCamelCase %>Id) {
+        String collection = this.getCollectionName(ctx);
         byte[] buffer = ctx.getStub().getPrivateDataHash(collection, <%= assetCamelCase %>Id);
         return (buffer != null && buffer.length > 0);
     }
@@ -56,6 +63,7 @@ public class <%= assetPascalCase %>Contract implements ContractInterface {
         }
         privateAsset.privateValue = new String(transientData.get("privateValue"), "UTF-8");
 
+        String collection = this.getCollectionName(ctx);
         ctx.getStub().putPrivateData(collection, <%= assetCamelCase %>Id, privateAsset.toJSONString().getBytes(StandardCharsets.UTF_8));
     }
 
@@ -66,6 +74,7 @@ public class <%= assetPascalCase %>Contract implements ContractInterface {
             throw new RuntimeException("The asset <%= assetSpaceSeparator %> " + <%= assetCamelCase %>Id + " does not exist");
         }
 
+        String collection = this.getCollectionName(ctx);
         byte[] privateData = ctx.getStub().getPrivateData(collection, <%= assetCamelCase %>Id);
         String privateDataString = new String(privateData, "UTF-8");
 
@@ -87,6 +96,7 @@ public class <%= assetPascalCase %>Contract implements ContractInterface {
         }
         privateAsset.privateValue = new String(transientData.get("privateValue"), "UTF-8");
 
+        String collection = this.getCollectionName(ctx);
         ctx.getStub().putPrivateData(collection, <%= assetCamelCase %>Id, privateAsset.toJSONString().getBytes(StandardCharsets.UTF_8));
     }
 
@@ -96,11 +106,13 @@ public class <%= assetPascalCase %>Contract implements ContractInterface {
         if (!exists) {
             throw new RuntimeException("The asset <%= assetSpaceSeparator %> " + <%= assetCamelCase %>Id + " does not exist");
         }
+
+        String collection = this.getCollectionName(ctx);
         ctx.getStub().delPrivateData(collection, <%= assetCamelCase %>Id);
     }
 
     @Transaction()
-    public boolean verify<%= assetPascalCase %>(Context ctx, String <%= assetCamelCase %>Id, <%= assetPascalCase %> objectToVerify) throws NoSuchAlgorithmException {
+    public boolean verify<%= assetPascalCase %>(Context ctx, String mspid, String <%= assetCamelCase %>Id, <%= assetPascalCase %> objectToVerify) throws NoSuchAlgorithmException {
 
         // Convert user provided object into hash
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -109,7 +121,7 @@ public class <%= assetPascalCase %>Contract implements ContractInterface {
         String hashToVerify = new BigInteger(1, hashByte).toString(16);
 
         // Get hash stored on the public ledger
-        byte[] pdHashBytes = ctx.getStub().getPrivateDataHash(collection, <%= assetCamelCase %>Id);
+        byte[] pdHashBytes = ctx.getStub().getPrivateDataHash("_implicit_org_" + mspid, <%= assetCamelCase %>Id);
         if (pdHashBytes.length == 0) {
             throw new RuntimeException("No private data hash with the key: " + <%= assetCamelCase %>Id);
         }

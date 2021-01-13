@@ -23,18 +23,6 @@ describe('Contract (Java)', () => {
         sandbox.restore();
     });
 
-
-    let genericPDC = [
-        {
-            name: 'CollectionOne',
-            policy: 'OR(\'Org1MSP.member\')',
-            requiredPeerCount: 0,
-            maxPeerCount: 1,
-            blockToLive: 0,
-            memberOnlyRead: true
-        }
-    ];
-
     it('should not create a rockstar project',async () => {
         const errorStub = sandbox.stub(Mocha.Runner.prototype, 'uncaught');
         const promise = new Promise((resolve) => {
@@ -44,7 +32,7 @@ describe('Contract (Java)', () => {
             .inTmpDir(() => {
             }).withPrompts({
                 subgenerator: 'contract',
-                contractType: 'default',
+                contractType: 'private',
                 language: 'rockstar',
                 name: 'JamesJavaContract',
                 version: '0.0.1',
@@ -103,7 +91,7 @@ describe('Contract (Java)', () => {
         assert.fileContent(contractFile, /public String readMyPrivateAsset\(Context ctx, String myPrivateAssetId\) throws UnsupportedEncodingException {/);
         assert.fileContent(contractFile, /public void updateMyPrivateAsset\(Context ctx, String myPrivateAssetId\) throws UnsupportedEncodingException {/);
         assert.fileContent(contractFile, /public void deleteMyPrivateAsset\(Context ctx, String myPrivateAssetId\) {/);
-        assert.fileContent(contractFile, /public boolean verifyMyPrivateAsset\(Context ctx, String myPrivateAssetId, MyPrivateAsset objectToVerify\) throws NoSuchAlgorithmException {/);
+        assert.fileContent(contractFile, /public boolean verifyMyPrivateAsset\(Context ctx, String mspid, String myPrivateAssetId, MyPrivateAsset objectToVerify\) throws NoSuchAlgorithmException {/);
         assert.fileContent('transaction_data/my-private-asset-transactions.txdata', /"transactionName": "myPrivateAssetExists",/);
         assert.fileContent('transaction_data/my-private-asset-transactions.txdata', /"transactionName": "createMyPrivateAsset",/);
         assert.fileContent('transaction_data/my-private-asset-transactions.txdata', /"transactionName": "readMyPrivateAsset",/);
@@ -160,7 +148,7 @@ describe('Contract (Java)', () => {
         assert.fileContent(contractFile, /public String readMyPrivateConga\(Context ctx, String myPrivateCongaId\) throws UnsupportedEncodingException {/);
         assert.fileContent(contractFile, /public void updateMyPrivateConga\(Context ctx, String myPrivateCongaId\) throws UnsupportedEncodingException {/);
         assert.fileContent(contractFile, /public void deleteMyPrivateConga\(Context ctx, String myPrivateCongaId\) {/);
-        assert.fileContent(contractFile, /public boolean verifyMyPrivateConga\(Context ctx, String myPrivateCongaId, MyPrivateConga objectToVerify\) throws NoSuchAlgorithmException {/);
+        assert.fileContent(contractFile, /public boolean verifyMyPrivateConga\(Context ctx, String mspid, String myPrivateCongaId, MyPrivateConga objectToVerify\) throws NoSuchAlgorithmException {/);
         assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "myPrivateCongaExists",/);
         assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "createMyPrivateConga",/);
         assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "readMyPrivateConga",/);
@@ -235,7 +223,7 @@ describe('Contract (Java)', () => {
         ]);
         const pdcJSON = require(path.join(dir, 'collections.json'));
         console.log('pdc variable' + pdcJSON);
-        pdcJSON.should.deep.equal(genericPDC);
+        pdcJSON.should.deep.equal([]);
     });
 
 });

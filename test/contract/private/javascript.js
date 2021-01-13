@@ -11,8 +11,11 @@ const Mocha = require('mocha');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+
 chai.should();
 chai.use(sinonChai);
+chai.use(chaiAsPromised);
 
 describe('Contract (JavaScript)', () => {
     let dir;
@@ -20,17 +23,6 @@ describe('Contract (JavaScript)', () => {
     afterEach(() => {
         sandbox.restore();
     });
-
-    let genericPDC = [
-        {
-            name: 'CollectionOne',
-            policy: 'OR(\'Org1MSP.member\')',
-            requiredPeerCount: 0,
-            maxPeerCount: 1,
-            blockToLive: 0,
-            memberOnlyRead: true
-        }
-    ];
 
     it('should generate a JavaScript project using prompts', async () => {
         await helpers.run(path.join(__dirname, '../../../generators/app'))
@@ -129,7 +121,7 @@ describe('Contract (JavaScript)', () => {
             });
         const pdcJSON = require(path.join(dir, 'collections.json'));
         console.log('pdc variable' + pdcJSON);
-        pdcJSON.should.deep.equal(genericPDC);
+        pdcJSON.should.deep.equal([]);
     });
 
     it('should generate a node package file', async () => {
@@ -183,7 +175,7 @@ describe('Contract (JavaScript)', () => {
         assert.fileContent('lib/my-private-conga-contract.js', /async readMyPrivateConga\(ctx, myPrivateCongaId\) {/);
         assert.fileContent('lib/my-private-conga-contract.js', /async updateMyPrivateConga\(ctx, myPrivateCongaId\) {/);
         assert.fileContent('lib/my-private-conga-contract.js', /async deleteMyPrivateConga\(ctx, myPrivateCongaId\) {/);
-        assert.fileContent('lib/my-private-conga-contract.js', /async verifyMyPrivateConga\(ctx, myPrivateCongaId, objectToVerify\) {/);
+        assert.fileContent('lib/my-private-conga-contract.js', /async verifyMyPrivateConga\(ctx, mspid, myPrivateCongaId, objectToVerify\) {/);
         assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "myPrivateCongaExists",/);
         assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "createMyPrivateConga",/);
         assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "readMyPrivateConga",/);

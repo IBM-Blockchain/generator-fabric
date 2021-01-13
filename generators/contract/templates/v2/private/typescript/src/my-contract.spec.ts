@@ -31,14 +31,16 @@ describe('<%= assetPascalCase %>Contract', () => {
 
     let contract: <%= assetPascalCase %>Contract;
     let ctx: TestContext;
-    const myCollectionName: string = 'CollectionOne';
+    const mspid = 'one';
+    const collectionName = `_implicit_org_${mspid}`;
 
     beforeEach(() => {
         contract = new <%= assetPascalCase %>Contract();
         ctx = new TestContext();
-        ctx.stub.getPrivateData.withArgs(myCollectionName, '001').resolves(Buffer.from('{"privateValue":"150"}'));
+        ctx.clientIdentity.getMSPID.returns(mspid);
+        ctx.stub.getPrivateData.withArgs(collectionName, '001').resolves(Buffer.from('{"privateValue":"150"}'));
         const hashToVerify = crypto.createHash('sha256').update('{"privateValue":"150"}').digest('hex');
-        ctx.stub.getPrivateDataHash.withArgs(myCollectionName, '001').resolves(Buffer.from(hashToVerify, 'hex'));
+        ctx.stub.getPrivateDataHash.withArgs(collectionName, '001').resolves(Buffer.from(hashToVerify, 'hex'));
     });
 
     describe('#<%= assetCamelCase %>Exists', () => {
@@ -76,7 +78,7 @@ describe('<%= assetPascalCase %>Contract', () => {
             transientMap.set('privateValue', Buffer.from('1500'));
             ctx.stub.getTransient.returns(transientMap);
             await contract.create<%= assetPascalCase %>(ctx, '002');
-            ctx.stub.putPrivateData.should.have.been.calledOnceWithExactly(myCollectionName, '002', Buffer.from('{"privateValue":"1500"}'));
+            ctx.stub.putPrivateData.should.have.been.calledOnceWithExactly(collectionName, '002', Buffer.from('{"privateValue":"1500"}'));
         });
     });
 
@@ -88,7 +90,7 @@ describe('<%= assetPascalCase %>Contract', () => {
 
         it('should return a <%= assetSpaceSeparator %>', async () => {
             await contract.read<%= assetPascalCase %>(ctx, '001').should.eventually.deep.equal({ privateValue: '150' });
-            ctx.stub.getPrivateData.should.have.been.calledWithExactly(myCollectionName, '001');
+            ctx.stub.getPrivateData.should.have.been.calledWithExactly(collectionName, '001');
         });
     });
 
@@ -109,7 +111,7 @@ describe('<%= assetPascalCase %>Contract', () => {
             transientMap.set('privateValue', Buffer.from('99'));
             ctx.stub.getTransient.returns(transientMap);
             await contract.update<%= assetPascalCase %>(ctx, '001');
-            ctx.stub.putPrivateData.should.have.been.calledOnceWithExactly(myCollectionName, '001', Buffer.from('{"privateValue":"99"}'));
+            ctx.stub.putPrivateData.should.have.been.calledOnceWithExactly(collectionName, '001', Buffer.from('{"privateValue":"99"}'));
         });
 
         it('should throw an error if transient data key is not privateValue', async () => {
@@ -128,7 +130,7 @@ describe('<%= assetPascalCase %>Contract', () => {
 
         it('should delete a <%= assetSpaceSeparator %>', async () => {
             await contract.delete<%= assetPascalCase %>(ctx, '001');
-            ctx.stub.deletePrivateData.should.have.been.calledOnceWithExactly(myCollectionName, '001');
+            ctx.stub.deletePrivateData.should.have.been.calledOnceWithExactly(collectionName, '001');
         });
     });
 
@@ -137,20 +139,20 @@ describe('<%= assetPascalCase %>Contract', () => {
         it('should return true if hash calculated from object provided matches the hash of the private data', async () => {
             const privateObj: string = '{"privateValue":"125"}';
             const hashToVerify: string = crypto.createHash('sha256').update(privateObj).digest('hex');
-            ctx.stub.getPrivateDataHash.withArgs(myCollectionName, '001').resolves(Buffer.from(hashToVerify, 'hex'));
-            const result: boolean = await contract.verify<%= assetPascalCase %>(ctx, '001', {privateValue: '125'});
+            ctx.stub.getPrivateDataHash.withArgs(collectionName, '001').resolves(Buffer.from(hashToVerify, 'hex'));
+            const result: boolean = await contract.verify<%= assetPascalCase %>(ctx, mspid, '001', {privateValue: '125'});
             result.should.equal(true);
         });
 
         it('should return false if hash calculated from object provided does not match the hash of the private data', async () => {
-            ctx.stub.getPrivateDataHash.withArgs(myCollectionName, '001').resolves(Buffer.from('someHash'));
-            const result: boolean = await contract.verify<%= assetPascalCase %>(ctx, '001', {privateValue: 'someValue'});
+            ctx.stub.getPrivateDataHash.withArgs(collectionName, '001').resolves(Buffer.from('someHash'));
+            const result: boolean = await contract.verify<%= assetPascalCase %>(ctx, mspid, '001', {privateValue: 'someValue'});
             result.should.equal(false);
         });
 
         it('should throw an error when user tries to verify an asset that doesnt exist', async () => {
-            ctx.stub.getPrivateDataHash.withArgs(myCollectionName, '001').resolves(Buffer.from(''));
-            await contract.verify<%= assetPascalCase %>(ctx, '001', {privateValue: 'someValue'}).should.be.rejectedWith('No private data hash with the Key: 001');
+            ctx.stub.getPrivateDataHash.withArgs(collectionName, '001').resolves(Buffer.from(''));
+            await contract.verify<%= assetPascalCase %>(ctx, mspid, '001', {privateValue: 'someValue'}).should.be.rejectedWith('No private data hash with the Key: 001');
         });
     });
 });

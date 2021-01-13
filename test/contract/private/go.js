@@ -15,16 +15,6 @@ chai.use(require('chai-as-promised'));
 
 describe('Contract (Go)', () => {
     let dir;
-    let genericPDC = [
-        {
-            name: 'CollectionOne',
-            policy: 'OR(\'Org1MSP.member\')',
-            requiredPeerCount: 0,
-            maxPeerCount: 1,
-            blockToLive: 0,
-            memberOnlyRead: true
-        }
-    ];
 
     it ('should generate a Go project using prompts (custom asset)', async () => {
         await helpers.run(path.join(__dirname, '../../../generators/app'))
@@ -79,11 +69,11 @@ describe('Contract (Go)', () => {
         assert.fileContent('my-private-conga-contract.go', /func \(c \*MyPrivateCongaContract\) UpdateMyPrivateConga\(ctx contractapi.TransactionContextInterface, myPrivateCongaID string\) error/);
         assert.fileContent('my-private-conga-contract.go', /func \(c \*MyPrivateCongaContract\) DeleteMyPrivateConga\(ctx contractapi.TransactionContextInterface, myPrivateCongaID string\) error/);
         assert.fileContent('my-private-conga-contract.go', /func \(c \*MyPrivateCongaContract\) DeleteMyPrivateConga\(ctx contractapi.TransactionContextInterface, myPrivateCongaID string\) error/);
-        assert.fileContent('my-private-conga-contract.go', /func \(c \*MyPrivateCongaContract\) VerifyMyPrivateConga\(ctx contractapi.TransactionContextInterface, myPrivateCongaID string, objectToVerify \*MyPrivateConga\) \(bool, error\)/);
+        assert.fileContent('my-private-conga-contract.go', /func \(c \*MyPrivateCongaContract\) VerifyMyPrivateConga\(ctx contractapi.TransactionContextInterface, mspid string, myPrivateCongaID string, objectToVerify \*MyPrivateConga\) \(bool, error\)/);
 
         const pdcJSON = require(path.join(dir, 'collections.json'));
         console.log('pdc variable' + pdcJSON);
-        pdcJSON.should.deep.equal(genericPDC);
+        pdcJSON.should.deep.equal([]);
     });
 
     it ('should generate a Go project using prompts (default asset)', async () => {
@@ -99,7 +89,6 @@ describe('Contract (Go)', () => {
                 author: 'Andy Conga',
                 license: 'Beerware',
                 asset: 'MyAsset',
-                mspId: 'Org1MSP'
             });
 
         assert.file([
@@ -136,7 +125,7 @@ describe('Contract (Go)', () => {
         assert.fileContent('my-asset-contract.go', /func \(c \*MyAssetContract\) ReadMyAsset\(ctx contractapi.TransactionContextInterface, myAssetID string\) \(\*MyAsset, error\)/);
         assert.fileContent('my-asset-contract.go', /func \(c \*MyAssetContract\) UpdateMyAsset\(ctx contractapi.TransactionContextInterface, myAssetID string\) error/);
         assert.fileContent('my-asset-contract.go', /func \(c \*MyAssetContract\) DeleteMyAsset\(ctx contractapi.TransactionContextInterface, myAssetID string\) error/);
-        assert.fileContent('my-asset-contract.go', /func \(c \*MyAssetContract\) VerifyMyAsset\(ctx contractapi.TransactionContextInterface, myAssetID string, objectToVerify \*MyAsset\) \(bool, error\)/);
+        assert.fileContent('my-asset-contract.go', /func \(c \*MyAssetContract\) VerifyMyAsset\(ctx contractapi.TransactionContextInterface, mspid string, myAssetID string, objectToVerify \*MyAsset\) \(bool, error\)/);
 
     });
 });
