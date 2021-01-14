@@ -14,7 +14,7 @@
             "001"
         ],
         "transientData": {
-            "PrivateValue": "some value"
+            "privateValue": "some value"
         }
     },
     {
@@ -32,7 +32,7 @@
             "001"
         ],
         "transientData": {
-            "PrivateValue": "some other value"
+            "privateValue": "some other value"
         }
     },
     {
@@ -47,6 +47,7 @@
         "transactionName": "Verify<%= assetPascalCase %>",
         "transactionLabel": "A test Verify<%= assetPascalCase %> transaction",
         "arguments":[
+            "Org1MSP",
             "001",
             {
                 "privateValue": "some other value"

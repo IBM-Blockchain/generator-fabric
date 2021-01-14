@@ -47,6 +47,7 @@
         "transactionName": "verify<%= assetPascalCase %>",
         "transactionLabel": "A test verify<%= assetPascalCase %> transaction",
         "arguments":[
+            "Org1MSP",
             "001",
             {
                 "privateValue": "some other value"
