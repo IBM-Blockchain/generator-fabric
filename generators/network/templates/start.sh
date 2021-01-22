@@ -10,7 +10,7 @@ CONTAINER=$(docker ps -f label=fabric-environment-name="<%= name %> Microfab" -q
 if [ -z "$CONTAINER" ]
 then
     export MICROFAB_CONFIG='<%-microfabConfig%>'
-    docker run -e MICROFAB_CONFIG --label fabric-environment-name="<%= name %> Microfab" -d -p <%-port%>:<%-port%> ibmcom/ibp-microfab:0.0.7
+    docker run -e MICROFAB_CONFIG --label fabric-environment-name="<%= name %> Microfab" -d -p <%-port%>:<%-port%> ibmcom/ibp-microfab:0.0.8
 else
     docker start ${CONTAINER}
 fi

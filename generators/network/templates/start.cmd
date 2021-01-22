@@ -16,7 +16,7 @@ IF DEFINED CONTAINER (
     )
 ) ELSE (
     SET MICROFAB_CONFIG=<%-microfabConfig%>
-    docker run -e MICROFAB_CONFIG --label fabric-environment-name="<%= name %> Microfab" -d -p <%-port%>:<%-port%> ibmcom/ibp-microfab:0.0.7
+    docker run -e MICROFAB_CONFIG --label fabric-environment-name="<%= name %> Microfab" -d -p <%-port%>:<%-port%> ibmcom/ibp-microfab:0.0.8
 )
 
 
