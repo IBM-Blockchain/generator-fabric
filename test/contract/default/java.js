@@ -90,11 +90,33 @@ describe('Contract (Java)', () => {
         assert.fileContent(contractFile, /public Conga readConga\(Context ctx, String congaId\) {/);
         assert.fileContent(contractFile, /public void updateConga\(Context ctx, String congaId, String newValue\) {/);
         assert.fileContent(contractFile, /public void deleteConga\(Context ctx, String congaId\) {/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
+        assert.JSONFileContent('transaction_data/conga-transactions.txdata', [
+            {
+                transactionName: 'congaExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'createConga',
+                arguments: ['001', 'some value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'readConga',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'updateConga',
+                arguments: ['001', 'some other value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'deleteConga',
+                arguments: ['001'],
+                transientData: {}
+            }
+        ]);
         let str = fs.readFileSync(path.join(dir, 'build.gradle'),'utf8');
         let gradleBuildFile = await g2js.parseText(str.replace(/\r\n/g,'\n'));
         gradleBuildFile.version.should.equal('0.0.1');
@@ -143,11 +165,33 @@ describe('Contract (Java)', () => {
         assert.fileContent(contractFile, /public MyAsset readMyAsset\(Context ctx, String myAssetId\) {/);
         assert.fileContent(contractFile, /public void updateMyAsset\(Context ctx, String myAssetId, String newValue\) {/);
         assert.fileContent(contractFile, /public void deleteMyAsset\(Context ctx, String myAssetId\) {/);
-        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "myAssetExists",/);
-        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "createMyAsset",/);
-        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "readMyAsset",/);
-        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "updateMyAsset",/);
-        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "deleteMyAsset",/);
+        assert.JSONFileContent('transaction_data/my-asset-transactions.txdata', [
+            {
+                transactionName: 'myAssetExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'createMyAsset',
+                arguments: ['001', 'some value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'readMyAsset',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'updateMyAsset',
+                arguments: ['001', 'some other value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'deleteMyAsset',
+                arguments: ['001'],
+                transientData: {}
+            }
+        ]);
         let str = fs.readFileSync(path.join(dir, 'build.gradle'),'utf8');
         let gradleBuildFile = await g2js.parseText(str.replace(/\r\n/g,'\n'));
         gradleBuildFile.version.should.equal('0.0.1');

@@ -89,11 +89,33 @@ describe('Contract (Kotlin)', () => {
         assert.fileContent(contractFile, /fun readConga\(ctx: Context, congaId: String\): Conga {/);
         assert.fileContent(contractFile, /fun updateConga\(ctx: Context, congaId: String, newValue: String\) {/);
         assert.fileContent(contractFile, /fun deleteConga\(ctx: Context, congaId: String\) {/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
+        assert.JSONFileContent('transaction_data/conga-transactions.txdata', [
+            {
+                transactionName: 'congaExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'createConga',
+                arguments: ['001', 'some value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'readConga',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'updateConga',
+                arguments: ['001', 'some other value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'deleteConga',
+                arguments: ['001'],
+                transientData: {}
+            }
+        ]);
         let str = fs.readFileSync(path.join(dir, 'build.gradle'),'utf8');
         let gradleBuildFile = await g2js.parseText(str.replace(/\r\n/g,'\n'));
         gradleBuildFile.version.should.equal('0.0.1');
@@ -142,11 +164,33 @@ describe('Contract (Kotlin)', () => {
         assert.fileContent(contractFile, /fun readMyAsset\(ctx: Context, myAssetId: String\): MyAsset {/);
         assert.fileContent(contractFile, /fun updateMyAsset\(ctx: Context, myAssetId: String, newValue: String\) {/);
         assert.fileContent(contractFile, /fun deleteMyAsset\(ctx: Context, myAssetId: String\) {/);
-        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "myAssetExists",/);
-        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "createMyAsset",/);
-        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "readMyAsset",/);
-        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "updateMyAsset",/);
-        assert.fileContent('transaction_data/my-asset-transactions.txdata', /"transactionName": "deleteMyAsset",/);
+        assert.JSONFileContent('transaction_data/my-asset-transactions.txdata', [
+            {
+                transactionName: 'myAssetExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'createMyAsset',
+                arguments: ['001', 'some value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'readMyAsset',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'updateMyAsset',
+                arguments: ['001', 'some other value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'deleteMyAsset',
+                arguments: ['001'],
+                transientData: {}
+            }
+        ]);
         let str = fs.readFileSync(path.join(dir, 'build.gradle'),'utf8');
         let gradleBuildFile = await g2js.parseText(str.replace(/\r\n/g,'\n'));
         gradleBuildFile.version.should.equal('0.0.1');

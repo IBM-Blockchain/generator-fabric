@@ -176,12 +176,41 @@ describe('Contract (JavaScript)', () => {
         assert.fileContent('lib/my-private-conga-contract.js', /async updateMyPrivateConga\(ctx, myPrivateCongaId\) {/);
         assert.fileContent('lib/my-private-conga-contract.js', /async deleteMyPrivateConga\(ctx, myPrivateCongaId\) {/);
         assert.fileContent('lib/my-private-conga-contract.js', /async verifyMyPrivateConga\(ctx, mspid, myPrivateCongaId, objectToVerify\) {/);
-        assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "myPrivateCongaExists",/);
-        assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "createMyPrivateConga",/);
-        assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "readMyPrivateConga",/);
-        assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "updateMyPrivateConga",/);
-        assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "deleteMyPrivateConga",/);
-        assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "verifyMyPrivateConga",/);
+        assert.JSONFileContent('transaction_data/my-private-conga-transactions.txdata', [
+            {
+                transactionName: 'myPrivateCongaExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'createMyPrivateConga',
+                arguments: ['001'],
+                transientData: {
+                    privateValue: 'some value'
+                }
+            },
+            {
+                transactionName: 'readMyPrivateConga',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'updateMyPrivateConga',
+                arguments: ['001'],
+                transientData: {
+                    privateValue: 'some other value'
+                }
+            },
+            {
+                transactionName: 'deleteMyPrivateConga',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'verifyMyPrivateConga',
+                arguments: ['Org1MSP', '001', {privateValue: 'some other value'}]
+            }
+        ]);
     });
 
     it('should throw an error if an incorrect contract type is provided', async () => {

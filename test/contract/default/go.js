@@ -36,7 +36,8 @@ describe('Contract (Go)', () => {
             'main.go',
             'conga-contract.go',
             'conga-contract_test.go',
-            'conga.go'
+            'conga.go',
+            'transaction_data/my-transactions.txdata'
         ]);
 
 
@@ -63,6 +64,33 @@ describe('Contract (Go)', () => {
         assert.fileContent('conga-contract.go', /func \(c \*CongaContract\) ReadConga\(ctx contractapi.TransactionContextInterface, congaID string\) \(\*Conga, error\)/);
         assert.fileContent('conga-contract.go', /func \(c \*CongaContract\) UpdateConga\(ctx contractapi.TransactionContextInterface, congaID string, newValue string\) error/);
         assert.fileContent('conga-contract.go', /func \(c \*CongaContract\) DeleteConga\(ctx contractapi.TransactionContextInterface, congaID string\) error/);
+        assert.JSONFileContent('transaction_data/my-transactions.txdata', [
+            {
+                transactionName: 'CongaExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'CreateConga',
+                arguments: ['001', 'some value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'ReadConga',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'UpdateConga',
+                arguments: ['001', 'some other value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'DeleteConga',
+                arguments: ['001'],
+                transientData: {}
+            }
+        ]);
     });
 
     it ('should generate a Go project using prompts (default asset)', async () => {
@@ -87,7 +115,8 @@ describe('Contract (Go)', () => {
             'main.go',
             'my-asset-contract.go',
             'my-asset-contract_test.go',
-            'my-asset.go'
+            'my-asset.go',
+            'transaction_data/my-transactions.txdata'
         ]);
 
 
@@ -114,5 +143,32 @@ describe('Contract (Go)', () => {
         assert.fileContent('my-asset-contract.go', /func \(c \*MyAssetContract\) ReadMyAsset\(ctx contractapi.TransactionContextInterface, myAssetID string\) \(\*MyAsset, error\)/);
         assert.fileContent('my-asset-contract.go', /func \(c \*MyAssetContract\) UpdateMyAsset\(ctx contractapi.TransactionContextInterface, myAssetID string, newValue string\) error/);
         assert.fileContent('my-asset-contract.go', /func \(c \*MyAssetContract\) DeleteMyAsset\(ctx contractapi.TransactionContextInterface, myAssetID string\) error/);
+        assert.JSONFileContent('transaction_data/my-transactions.txdata', [
+            {
+                transactionName: 'MyAssetExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'CreateMyAsset',
+                arguments: ['001', 'some value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'ReadMyAsset',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'UpdateMyAsset',
+                arguments: ['001', 'some other value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'DeleteMyAsset',
+                arguments: ['001'],
+                transientData: {}
+            }
+        ]);
     });
 });
