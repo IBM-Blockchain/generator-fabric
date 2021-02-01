@@ -61,11 +61,33 @@ describe('Contract (JavaScript)', () => {
         assert.fileContent('lib/conga-contract.js', /async readConga\(ctx, congaId\) {/);
         assert.fileContent('lib/conga-contract.js', /async updateConga\(ctx, congaId, newValue\) {/);
         assert.fileContent('lib/conga-contract.js', /async deleteConga\(ctx, congaId\) {/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
+        assert.JSONFileContent('transaction_data/conga-transactions.txdata', [
+            {
+                transactionName: 'congaExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'createConga',
+                arguments: ['001', 'some value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'readConga',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'updateConga',
+                arguments: ['001', 'some other value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'deleteConga',
+                arguments: ['001'],
+                transientData: {}
+            }
+        ]);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.containSubset({
             name: 'my-javascript-contract',
@@ -115,11 +137,33 @@ describe('Contract (JavaScript)', () => {
         assert.fileContent('lib/conga-contract.js', /async readConga\(ctx, congaId\) {/);
         assert.fileContent('lib/conga-contract.js', /async updateConga\(ctx, congaId, newValue\) {/);
         assert.fileContent('lib/conga-contract.js', /async deleteConga\(ctx, congaId\) {/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
+        assert.JSONFileContent('transaction_data/conga-transactions.txdata', [
+            {
+                transactionName: 'congaExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'createConga',
+                arguments: ['001', 'some value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'readConga',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'updateConga',
+                arguments: ['001', 'some other value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'deleteConga',
+                arguments: ['001'],
+                transientData: {}
+            }
+        ]);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.containSubset({
             name: 'my-javascript-contract',
@@ -176,11 +220,33 @@ describe('Contract (JavaScript)', () => {
         assert.fileContent('lib/conga-contract.js', /async readConga\(ctx, congaId\) {/);
         assert.fileContent('lib/conga-contract.js', /async updateConga\(ctx, congaId, newValue\) {/);
         assert.fileContent('lib/conga-contract.js', /async deleteConga\(ctx, congaId\) {/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
+        assert.JSONFileContent('transaction_data/conga-transactions.txdata', [
+            {
+                transactionName: 'congaExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'createConga',
+                arguments: ['001', 'some value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'readConga',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'updateConga',
+                arguments: ['001', 'some other value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'deleteConga',
+                arguments: ['001'],
+                transientData: {}
+            }
+        ]);
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.containSubset({
             name: 'my-javascript-contract',
@@ -231,11 +297,33 @@ describe('Contract (JavaScript)', () => {
         assert.fileContent('lib/conga-contract.js', /async readConga\(ctx, congaId\) {/);
         assert.fileContent('lib/conga-contract.js', /async updateConga\(ctx, congaId, newValue\) {/);
         assert.fileContent('lib/conga-contract.js', /async deleteConga\(ctx, congaId\) {/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "congaExists",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "createConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "readConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "updateConga",/);
-        assert.fileContent('transaction_data/conga-transactions.txdata', /"transactionName": "deleteConga",/);
+        assert.JSONFileContent('transaction_data/conga-transactions.txdata', [
+            {
+                transactionName: 'congaExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'createConga',
+                arguments: ['001', 'some value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'readConga',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'updateConga',
+                arguments: ['001', 'some other value'],
+                transientData: {}
+            },
+            {
+                transactionName: 'deleteConga',
+                arguments: ['001'],
+                transientData: {}
+            }
+        ]);
         const packageJSON = require(path.join(tmpdir, 'package.json'));
         packageJSON.should.containSubset({
             name: 'my-javascript-contract',

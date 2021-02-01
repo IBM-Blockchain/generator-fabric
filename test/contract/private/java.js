@@ -92,12 +92,41 @@ describe('Contract (Java)', () => {
         assert.fileContent(contractFile, /public void updateMyPrivateAsset\(Context ctx, String myPrivateAssetId\) throws UnsupportedEncodingException {/);
         assert.fileContent(contractFile, /public void deleteMyPrivateAsset\(Context ctx, String myPrivateAssetId\) {/);
         assert.fileContent(contractFile, /public boolean verifyMyPrivateAsset\(Context ctx, String mspid, String myPrivateAssetId, MyPrivateAsset objectToVerify\) throws NoSuchAlgorithmException {/);
-        assert.fileContent('transaction_data/my-private-asset-transactions.txdata', /"transactionName": "myPrivateAssetExists",/);
-        assert.fileContent('transaction_data/my-private-asset-transactions.txdata', /"transactionName": "createMyPrivateAsset",/);
-        assert.fileContent('transaction_data/my-private-asset-transactions.txdata', /"transactionName": "readMyPrivateAsset",/);
-        assert.fileContent('transaction_data/my-private-asset-transactions.txdata', /"transactionName": "updateMyPrivateAsset",/);
-        assert.fileContent('transaction_data/my-private-asset-transactions.txdata', /"transactionName": "deleteMyPrivateAsset",/);
-        assert.fileContent('transaction_data/my-private-asset-transactions.txdata', /"transactionName": "verifyMyPrivateAsset",/);
+        assert.JSONFileContent('transaction_data/my-private-asset-transactions.txdata', [
+            {
+                transactionName: 'myPrivateAssetExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'createMyPrivateAsset',
+                arguments: ['001'],
+                transientData: {
+                    privateValue: 'some value'
+                }
+            },
+            {
+                transactionName: 'readMyPrivateAsset',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'updateMyPrivateAsset',
+                arguments: ['001'],
+                transientData: {
+                    privateValue: 'some other value'
+                }
+            },
+            {
+                transactionName: 'deleteMyPrivateAsset',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'verifyMyPrivateAsset',
+                arguments: ['Org1MSP', '001', {privateValue: 'some other value'}]
+            }
+        ]);
         let str = fs.readFileSync(path.join(dir, 'build.gradle'),'utf8');
         let gradleBuildFile = await g2js.parseText(str.replace(/\r\n/g,'\n'));
         gradleBuildFile.version.should.equal('0.0.1');
@@ -149,12 +178,41 @@ describe('Contract (Java)', () => {
         assert.fileContent(contractFile, /public void updateMyPrivateConga\(Context ctx, String myPrivateCongaId\) throws UnsupportedEncodingException {/);
         assert.fileContent(contractFile, /public void deleteMyPrivateConga\(Context ctx, String myPrivateCongaId\) {/);
         assert.fileContent(contractFile, /public boolean verifyMyPrivateConga\(Context ctx, String mspid, String myPrivateCongaId, MyPrivateConga objectToVerify\) throws NoSuchAlgorithmException {/);
-        assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "myPrivateCongaExists",/);
-        assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "createMyPrivateConga",/);
-        assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "readMyPrivateConga",/);
-        assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "updateMyPrivateConga",/);
-        assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "deleteMyPrivateConga",/);
-        assert.fileContent('transaction_data/my-private-conga-transactions.txdata', /"transactionName": "verifyMyPrivateConga",/);
+        assert.JSONFileContent('transaction_data/my-private-conga-transactions.txdata', [
+            {
+                transactionName: 'myPrivateCongaExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'createMyPrivateConga',
+                arguments: ['001'],
+                transientData: {
+                    privateValue: 'some value'
+                }
+            },
+            {
+                transactionName: 'readMyPrivateConga',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'updateMyPrivateConga',
+                arguments: ['001'],
+                transientData: {
+                    privateValue: 'some other value'
+                }
+            },
+            {
+                transactionName: 'deleteMyPrivateConga',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'verifyMyPrivateConga',
+                arguments: ['Org1MSP', '001', {privateValue: 'some other value'}]
+            }
+        ]);
         let str = fs.readFileSync(path.join(dir, 'build.gradle'),'utf8');
         let gradleBuildFile = await g2js.parseText(str.replace(/\r\n/g,'\n'));
         gradleBuildFile.version.should.equal('0.0.1');

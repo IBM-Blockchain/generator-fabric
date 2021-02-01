@@ -16,7 +16,7 @@ chai.use(require('chai-as-promised'));
 describe('Contract (Go)', () => {
     let dir;
 
-    it ('should generate a Go project using prompts (custom asset)', async () => {
+    it('should generate a Go project using prompts (custom asset)', async () => {
         await helpers.run(path.join(__dirname, '../../../generators/app'))
             .inTmpDir((dir_) => {
                 dir = dir_;
@@ -41,7 +41,8 @@ describe('Contract (Go)', () => {
             'main.go',
             'my-private-conga-contract.go',
             'my-private-conga-contract_test.go',
-            'my-private-conga.go'
+            'my-private-conga.go',
+            'transaction_data/my-private-conga-transactions.txdata'
         ]);
 
 
@@ -71,6 +72,42 @@ describe('Contract (Go)', () => {
         assert.fileContent('my-private-conga-contract.go', /func \(c \*MyPrivateCongaContract\) DeleteMyPrivateConga\(ctx contractapi.TransactionContextInterface, myPrivateCongaID string\) error/);
         assert.fileContent('my-private-conga-contract.go', /func \(c \*MyPrivateCongaContract\) VerifyMyPrivateConga\(ctx contractapi.TransactionContextInterface, mspid string, myPrivateCongaID string, objectToVerify \*MyPrivateConga\) \(bool, error\)/);
 
+        assert.JSONFileContent('transaction_data/my-private-conga-transactions.txdata', [
+            {
+                transactionName: 'MyPrivateCongaExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'CreateMyPrivateConga',
+                arguments: ['001'],
+                transientData: {
+                    privateValue: 'some value'
+                }
+            },
+            {
+                transactionName: 'ReadMyPrivateConga',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'UpdateMyPrivateConga',
+                arguments: ['001'],
+                transientData: {
+                    privateValue: 'some other value'
+                }
+            },
+            {
+                transactionName: 'DeleteMyPrivateConga',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'VerifyMyPrivateConga',
+                arguments: ['Org1MSP', '001', {privateValue: 'some other value'}]
+            }
+        ]);
+
         const pdcJSON = require(path.join(dir, 'collections.json'));
         console.log('pdc variable' + pdcJSON);
         pdcJSON.should.deep.equal([]);
@@ -98,7 +135,8 @@ describe('Contract (Go)', () => {
             'main.go',
             'my-asset-contract.go',
             'my-asset-contract_test.go',
-            'my-asset.go'
+            'my-asset.go',
+            'transaction_data/my-asset-transactions.txdata'
         ]);
 
 
@@ -127,5 +165,40 @@ describe('Contract (Go)', () => {
         assert.fileContent('my-asset-contract.go', /func \(c \*MyAssetContract\) DeleteMyAsset\(ctx contractapi.TransactionContextInterface, myAssetID string\) error/);
         assert.fileContent('my-asset-contract.go', /func \(c \*MyAssetContract\) VerifyMyAsset\(ctx contractapi.TransactionContextInterface, mspid string, myAssetID string, objectToVerify \*MyAsset\) \(bool, error\)/);
 
+        assert.JSONFileContent('transaction_data/my-asset-transactions.txdata', [
+            {
+                transactionName: 'MyAssetExists',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'CreateMyAsset',
+                arguments: ['001'],
+                transientData: {
+                    privateValue: 'some value'
+                }
+            },
+            {
+                transactionName: 'ReadMyAsset',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'UpdateMyAsset',
+                arguments: ['001'],
+                transientData: {
+                    privateValue: 'some other value'
+                }
+            },
+            {
+                transactionName: 'DeleteMyAsset',
+                arguments: ['001'],
+                transientData: {}
+            },
+            {
+                transactionName: 'VerifyMyAsset',
+                arguments: ['Org1MSP', '001', {privateValue: 'some other value'}]
+            }
+        ]);
     });
 });
