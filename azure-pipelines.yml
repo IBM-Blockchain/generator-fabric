@@ -106,11 +106,6 @@ stages:
             displayName: Commit version bump
           - script: |
               set -ex
-              if [[ $(Build.SourceBranchName) == v1* ]]; then
-                export branch_name=master
-              else
-                export branch_name=v2
-              fi
-
+              export branch_name=master
               git -c http.extraheader="Authorization: Basic $(GITHUB_BASIC_AUTH)" push $(Build.Repository.Uri) HEAD:$branch_name -f
             displayName: Push commit to GitHub
