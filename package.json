@@ -23,7 +23,7 @@
         "decamelize": "^4.0.0",
         "find-free-port": "^2.0.0",
         "gradle-to-js": "^2.0.0",
-        "yeoman-generator": "^4.10.1"
+        "yeoman-generator": "^5.0.1"
     },
     "devDependencies": {
         "chai": "^4.2.0",
