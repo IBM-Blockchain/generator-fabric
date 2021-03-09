@@ -94,6 +94,10 @@ jobs:
         run: npx npm-cli-login -u ${NPM_USER} -p ${NPM_PASS} -e ${NPM_EMAIL}
       - name: Publish to npm
         run: npm publish
+      - name: Clean repository
+        run: |
+          git clean -df
+          git reset --hard
       - name: Set GitHub user name and email
         env:
           AUTO_GITHUB_NAME: ${{ secrets.AUTO_GITHUB_NAME }}
