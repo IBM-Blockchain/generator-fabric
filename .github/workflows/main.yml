@@ -117,4 +117,4 @@ jobs:
           AUTO_GITHUB_NAME: ${{ secrets.AUTO_GITHUB_NAME }}
           AUTO_GITHUB_ACCESS_TOKEN: ${{ secrets.AUTO_GITHUB_ACCESS_TOKEN }}
         run: |
-          git -c http.extraheader="Authorization: Basic $(echo -n ${AUTO_GITHUB_NAME}:${AUTO_GITHUB_ACCESS_TOKEN} | base64)" push ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY} HEAD:master -f
+          git -c http.extraheader="Authorization: Basic $(echo -n ${AUTO_GITHUB_NAME}:${AUTO_GITHUB_ACCESS_TOKEN} | base64)" push ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY} HEAD:main -f
