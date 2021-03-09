@@ -1,0 +1,114 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+---
+name: CI
+on:
+  push:
+    branches-ignore:
+      - gh-pages
+  pull_request:
+    branches-ignore:
+      - gh-pages
+  schedule:
+    - cron: "0 0 * * *"
+  create:
+    tags:
+      - "*"
+  workflow_dispatch: {}
+jobs:
+  build:
+    name: Build (${{ matrix.name }})
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            runs-on: ubuntu-latest
+          - name: macOS
+            runs-on: macos-latest
+          - name: Windows
+            runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Use Node.js 12
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12
+      - name: Install dependencies
+        run: npm ci
+      - name: Run unit tests
+        run: npm test
+  tests:
+    name: Tests (${{ matrix.name }})
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Chaincode
+            tests: chaincode_tests
+          - name: Contracts
+            tests: contract_tests
+          - name: Contracts w/ private data
+            tests: private_contract_tests
+          - name: Networks
+            tests: network_test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Use Go 1.14
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.14
+      - name: Use Java 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Use Node.js 12
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12
+      - name: Install dependencies
+        run: npm ci
+      - name: Run integration tests
+        run: scripts/run-integration-tests.sh ${{ matrix.tests }}
+  publish:
+    name: Publish
+    needs: tests
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: npm install --no-optional
+      - name: Login to npm
+        env:
+          NPM_USER: ${{ secrets.NPM_USER }}
+          NPM_PASS: ${{ secrets.NPM_PASS }}
+          NPM_EMAIL: ${{ secrets.NPM_EMAIL }}
+        run: npx npm-cli-login -u ${NPM_USER} -p ${NPM_PASS} -e ${NPM_EMAIL}
+      - name: Publish to npm
+        run: npm publish
+      - name: Set GitHub user name and email
+        env:
+          AUTO_GITHUB_NAME: ${{ secrets.AUTO_GITHUB_NAME }}
+          AUTO_GITHUB_EMAIL: ${{ secrets.AUTO_GITHUB_EMAIL }}
+        run: |
+          git config --global user.name ${AUTO_GITHUB_NAME}
+          git config --global user.email ${AUTO_GITHUB_EMAIL}
+          git config --local --unset-all http.${GITHUB_SERVER_URL}/.extraheader
+      - name: Use npm to bump version
+        run: npm version patch --no-git-tag-version
+      - name: Commit version bump
+        run: |
+          VERSION=$(jq -r ".version" package.json)
+          git commit -asm "Automatic version bump to ${VERSION}"
+      - name: Push commit to GitHub
+        env:
+          AUTO_GITHUB_NAME: ${{ secrets.AUTO_GITHUB_NAME }}
+          AUTO_GITHUB_ACCESS_TOKEN: ${{ secrets.AUTO_GITHUB_ACCESS_TOKEN }}
+        run: |
+          git -c http.extraheader="Authorization: Basic $(echo -n ${AUTO_GITHUB_NAME}:${AUTO_GITHUB_ACCESS_TOKEN} | base64)" push ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY} HEAD:master -f
