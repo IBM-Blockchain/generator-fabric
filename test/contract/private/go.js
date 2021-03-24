@@ -13,7 +13,7 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 
-describe('Contract (Go)', () => {
+describe('Contract (Go, private)', () => {
     let dir;
 
     it('should generate a Go project using prompts (custom asset)', async () => {

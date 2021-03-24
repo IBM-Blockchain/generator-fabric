@@ -9,7 +9,6 @@ const helpers = require('yeoman-test');
 const path = require('path');
 const g2js = require('gradle-to-js/lib/parser');
 const fs = require('fs');
-const Mocha = require('mocha');
 const sinon = require('sinon');
 const chai = require('chai');
 
@@ -25,7 +24,7 @@ describe('Contract (Java)', () => {
     });
 
     it('should not create a rockstar project',async () => {
-        const errorStub = sandbox.stub(Mocha.Runner.prototype, 'uncaught');
+        const errorStub = sandbox.stub();
         const promise = new Promise((resolve) => {
             errorStub.callsFake(resolve);
         });
@@ -41,7 +40,8 @@ describe('Contract (Java)', () => {
                 author: 'James Conga',
                 license: 'WTFPL',
                 asset: 'conga'
-            }).then();
+            })
+            .on('error', errorStub);
         await promise;
         errorStub.should.have.been.calledOnceWithExactly(sinon.match.instanceOf(Error));
         const error = errorStub.args[0][0];
@@ -198,7 +198,7 @@ describe('Contract (Java)', () => {
     });
 
     it('should throw an error if an incorrect contract type is provided', async () => {
-        const errorStub = sandbox.stub(Mocha.Runner.prototype, 'uncaught');
+        const errorStub = sandbox.stub();
         const promise = new Promise((resolve) => {
             errorStub.callsFake(resolve);
         });
@@ -217,7 +217,8 @@ describe('Contract (Java)', () => {
                 license: 'WTFPL',
                 asset: 'myPrivateConga',
                 mspId: 'Org1MSP'
-            });
+            })
+            .on('error', errorStub);
         await promise;
         errorStub.should.have.been.calledOnceWithExactly(sinon.match.instanceOf(Error));
         const error = errorStub.args[0][0];
