@@ -7,7 +7,6 @@
 const assert = require('yeoman-assert');
 const helpers = require('yeoman-test');
 const path = require('path');
-const Mocha = require('mocha');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const chai = require('chai');
@@ -17,7 +16,7 @@ chai.should();
 chai.use(sinonChai);
 chai.use(chaiAsPromised);
 
-describe('Contract (JavaScript)', () => {
+describe('Contract (JavaScript, private)', () => {
     let dir;
     const sandbox = sinon.createSandbox();
     afterEach(() => {
@@ -214,7 +213,7 @@ describe('Contract (JavaScript)', () => {
     });
 
     it('should throw an error if an incorrect contract type is provided', async () => {
-        const errorStub = sandbox.stub(Mocha.Runner.prototype, 'uncaught');
+        const errorStub = sandbox.stub();
         const promise = new Promise((resolve) => {
             errorStub.callsFake(resolve);
         });
@@ -233,7 +232,8 @@ describe('Contract (JavaScript)', () => {
                 license: 'WTFPL',
                 asset: 'myPrivateConga',
                 mspId: 'Org1MSP'
-            });
+            })
+            .on('error', errorStub);
         await promise;
         errorStub.should.have.been.calledOnceWithExactly(sinon.match.instanceOf(Error));
         const error = errorStub.args[0][0];
@@ -241,7 +241,7 @@ describe('Contract (JavaScript)', () => {
     });
 
     it('should throw error if language is not recognised', async () => {
-        const errorStub = sandbox.stub(Mocha.Runner.prototype, 'uncaught');
+        const errorStub = sandbox.stub();
         const promise = new Promise((resolve) => {
             errorStub.callsFake(resolve);
         });
@@ -260,7 +260,8 @@ describe('Contract (JavaScript)', () => {
                 license: 'WTFPL',
                 asset: 'myPrivateConga',
                 mspId: 'Org1MSP'
-            });
+            })
+            .on('error', errorStub);
         await promise;
         errorStub.should.have.been.calledOnceWithExactly(sinon.match.instanceOf(Error));
         const error = errorStub.args[0][0];

@@ -58,7 +58,7 @@ describe('Network', () => {
                 fabricCapabilities: 'V2_0'
             });
         testGeneratedNetwork();
-    }).timeout(os.platform === 'win32' ? 60 * 1000 : undefined);
+    }).timeout(os.platform === 'win32' ? 60 * 1000 : 10 * 1000);
 
     it('should generate a one organization network using options into a specified directory (v2)', async () => {
         const tmpdir = path.join(os.tmpdir(), crypto.randomBytes(20).toString('hex'));
@@ -82,7 +82,7 @@ describe('Network', () => {
         } finally {
             process.chdir(cwd);
         }
-    }).timeout(os.platform === 'win32' ? 60 * 1000 : undefined);
+    }).timeout(os.platform === 'win32' ? 60 * 1000 : 10 * 1000);
 
 
     it('should generate a one organization network using options into a specified directory (v1)', async () => {
@@ -107,7 +107,7 @@ describe('Network', () => {
         } finally {
             process.chdir(cwd);
         }
-    }).timeout(os.platform === 'win32' ? 60 * 1000 : undefined);
+    }).timeout(os.platform === 'win32' ? 60 * 1000 : 10 * 1000);
 
     it('should generate a two organization network using prompts into a test directory', async () => {
         await helpers.run(path.join(__dirname, '../generators/app'))
@@ -120,5 +120,5 @@ describe('Network', () => {
                 fabricCapabilities: 'V2_0'
             });
         testGeneratedNetwork();
-    }).timeout(os.platform === 'win32' ? 60 * 1000 : undefined);
+    }).timeout(os.platform === 'win32' ? 60 * 1000 : 10 * 1000);
 });

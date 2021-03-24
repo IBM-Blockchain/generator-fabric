@@ -7,7 +7,6 @@
 const assert = require('yeoman-assert');
 const helpers = require('yeoman-test');
 const path = require('path');
-const Mocha = require('mocha');
 const sinon = require('sinon');
 
 require('chai').should();
@@ -223,7 +222,7 @@ describe('Contract (TypeScript)', () => {
     });
 
     it('should throw an error if an incorrect contract type is provided', async () => {
-        const errorStub = sandbox.stub(Mocha.Runner.prototype, 'uncaught');
+        const errorStub = sandbox.stub();
         const promise = new Promise((resolve) => {
             errorStub.callsFake(resolve);
         });
@@ -242,7 +241,8 @@ describe('Contract (TypeScript)', () => {
                 license: 'WTFPL',
                 asset: 'myPrivateConga',
                 mspId: 'Org1MSP'
-            });
+            })
+            .on('error', errorStub);
         await promise;
         errorStub.should.have.been.calledOnceWithExactly(sinon.match.instanceOf(Error));
         const error = errorStub.args[0][0];
@@ -250,7 +250,7 @@ describe('Contract (TypeScript)', () => {
     });
 
     it('should throw error if language is not recognised', async () => {
-        const errorStub = sandbox.stub(Mocha.Runner.prototype, 'uncaught');
+        const errorStub = sandbox.stub();
         const promise = new Promise((resolve) => {
             errorStub.callsFake(resolve);
         });
@@ -269,7 +269,8 @@ describe('Contract (TypeScript)', () => {
                 license: 'WTFPL',
                 asset: 'myPrivateConga',
                 mspId: 'Org1MSP'
-            });
+            })
+            .on('error', errorStub);
         await promise;
         errorStub.should.have.been.calledOnceWithExactly(sinon.match.instanceOf(Error));
         const error = errorStub.args[0][0];
