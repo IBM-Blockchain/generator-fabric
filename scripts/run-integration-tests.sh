@@ -24,6 +24,13 @@ fi
 if [ "$1" != "network_test" ]; then
     pushd tmp
     curl -sSL http://bit.ly/2ysbOFE | bash -s 2.2.0
+    # fabric-ca:1.4.7 includes an expired certificate which breaks the tests
+    # unfortunately generate.sh uses vscode-prereqs:fabric-v2.2 which has been archived
+    # see https://github.com/IBM-Blockchain-Archive/ansible-role-blockchain-platform-manager
+    # ideally the tests would create networks using something which hasn't been archived but
+    # tagging a working version of fabric-ca with 1.4.7 fixes the tests
+    docker pull hyperledger/fabric-ca:1.5
+    docker tag hyperledger/fabric-ca:1.5 hyperledger/fabric-ca:1.4.7
     mkdir yofn
     pushd yofn
     cp ../../scripts/network/*.* ./

@@ -57,8 +57,8 @@ describe('Contract (JavaScript, private)', () => {
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.containSubset({
             dependencies: {
-                'fabric-contract-api': '^2.2.0',
-                'fabric-shim': '^2.2.0'
+                'fabric-contract-api': '^2.4.1',
+                'fabric-shim': '^2.4.1'
             }
         });
     });
@@ -95,8 +95,8 @@ describe('Contract (JavaScript, private)', () => {
         const packageJSON = require(path.join(dir, 'package.json'));
         packageJSON.should.containSubset({
             dependencies: {
-                'fabric-contract-api': '^2.2.0',
-                'fabric-shim': '^2.2.0'
+                'fabric-contract-api': '^2.4.1',
+                'fabric-shim': '^2.4.1'
             }
         });
     });

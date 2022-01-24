@@ -95,8 +95,8 @@ describe('Contract (TypeScript)', () => {
         });
         packageJSON.should.containSubset({
             dependencies: {
-                'fabric-contract-api': '^2.2.0',
-                'fabric-shim': '^2.2.0'
+                'fabric-contract-api': '^2.4.1',
+                'fabric-shim': '^2.4.1'
             }
         });
         const tsconfigJSON = require(path.join(dir, 'tsconfig.json'));
@@ -196,8 +196,8 @@ describe('Contract (TypeScript)', () => {
         });
         packageJSON.should.containSubset({
             dependencies: {
-                'fabric-contract-api': '^2.2.0',
-                'fabric-shim': '^2.2.0'
+                'fabric-contract-api': '^2.4.1',
+                'fabric-shim': '^2.4.1'
             }
         });
         const tsconfigJSON = require(path.join(dir, 'tsconfig.json'));
