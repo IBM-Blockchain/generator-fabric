@@ -2,6 +2,8 @@
  * <%= spdxAndLicense // SPDX-License-Identifier: Apache-2.0 %>
  */
 
+'use strict';
+
 module.exports = {
     env: {
         node: true,
@@ -11,7 +13,7 @@ module.exports = {
         ecmaVersion: 8,
         sourceType: 'script'
     },
-    extends: "eslint:recommended",
+    extends: 'eslint:recommended',
     rules: {
         indent: ['error', 4],
         quotes: ['error', 'single'],
