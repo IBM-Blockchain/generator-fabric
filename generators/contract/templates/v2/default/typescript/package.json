@@ -21,8 +21,8 @@
   "author": "<%= author %>",
   "license": "<%= license %>",
   "dependencies": {
-    "fabric-contract-api": "^2.2.0",
-    "fabric-shim": "^2.2.0"
+    "fabric-contract-api": "^2.4.1",
+    "fabric-shim": "^2.4.1"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",
@@ -33,7 +33,7 @@
     "@types/sinon-chai": "^3.2.3",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "mocha": "^7.1.1",
+    "mocha": "^9.2.0",
     "nyc": "^15.0.0",
     "sinon": "^9.0.1",
     "sinon-chai": "^3.5.0",
