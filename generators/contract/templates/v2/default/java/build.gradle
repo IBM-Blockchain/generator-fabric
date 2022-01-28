@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:2.2.0'
+    implementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:2.4.+'
     implementation 'com.owlike:genson:1.6'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
     testImplementation 'org.assertj:assertj-core:3.11.1'
