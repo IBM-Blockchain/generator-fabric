@@ -1,12 +1,13 @@
-module example.org/chaincode
+module <%= name %>
 
 go 1.13
 
 require (
 	github.com/fsouza/go-dockerclient v1.6.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0 // indirect
-    github.com/hyperledger/fabric-chaincode-go v0.0.0-20200128192331-2d899240a7ed
 	github.com/hyperledger/fabric-amcl v0.0.0-20190902191507-f66264322317 // indirect
+	github.com/hyperledger/fabric-chaincode-go v0.0.0-20220131132609-1476cf1d3206
+	github.com/hyperledger/fabric-protos-go v0.0.0-20190919234611-2a87503ac7c9
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
 	github.com/spf13/viper v1.5.0 // indirect
 	github.com/sykesm/zap-logfmt v0.0.3 // indirect
