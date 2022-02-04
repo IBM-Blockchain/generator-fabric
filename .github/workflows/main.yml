@@ -85,16 +85,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+          registry-url: 'https://registry.npmjs.org'
       - name: Install dependencies
         run: npm install --no-optional
-      - name: Login to npm
-        env:
-          NPM_USER: ${{ secrets.NPM_USER }}
-          NPM_PASS: ${{ secrets.NPM_PASS }}
-          NPM_EMAIL: ${{ secrets.NPM_EMAIL }}
-        run: npx npm-cli-login -u ${NPM_USER} -p ${NPM_PASS} -e ${NPM_EMAIL}
       - name: Publish to npm
         run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Clean repository
         run: |
           git clean -df
